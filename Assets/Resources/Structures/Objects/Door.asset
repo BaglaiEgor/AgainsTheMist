@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 188ade1f98f86c34c82dc18d33a34f7d, type: 3}
+  m_Name: Door
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  itemID: Door
+  itemName: "\u0414\u0432\u0435\u0440\u044C"
+  description: 
+  icon: {fileID: -148418942, guid: 37779d330e133fd428e0371be2b6db6c, type: 3}
+  maxStack: 99
+  pickupPrefab: {fileID: 8011084173767057958, guid: 7e68514fdbdf57541b52fd07c54812ed, type: 3}
+  type: 3
+  placementMode: 0
+  prefab: {fileID: 1000000000000000001, guid: dd00d6513b3648349ff0b78fb7a0f05f, type: 3}
+  isDoor: 1
+  doorWallMarkerTile: {fileID: 11400000, guid: 59b099594a06440da7aa42261a4ead7b, type: 2}
+  tileToPlace: {fileID: 0}
+  occupiesBuildCell: 1
+  seedCrop: {fileID: 0}
+  attackPrefab: {fileID: 0}
+  actionRadius: 4
+  toolType: 0
+  toolPower: 1
+  damage: 1
+  isLantern: 0
+  lanternLightRadius: 2.5
+  lanternDrainPerSecond: 1
+  lanternMaxCharge: 100
+  consumableEffectType: 0
+  effectDuration: 0
+  healAmount: 0
+  cooldown: 0
+  equipmentType: 0
+  activeEquipmentEffect: 0
+  defense: 0
+  frostDamageMultiplier: 1
+  pressureGrowthMultiplier: 1
+  foodRestore: 0
+  furnaceFuelSeconds: 0
+  furnaceSmeltResult: {fileID: 0}
+  furnaceSmeltResultAmount: 1
+  furnaceSmeltDuration: 0

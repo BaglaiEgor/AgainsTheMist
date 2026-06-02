@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 188ade1f98f86c34c82dc18d33a34f7d, type: 3}
+  m_Name: Shovel
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  itemID: Shovel
+  itemName: "\u041B\u043E\u043F\u0430\u0442\u0430"
+  description: "\u0421\u0442\u0430\u0432\u0438\u0442 \u0438 \u0443\u0431\u0438\u0440\u0430\u0435\u0442
+    \u0442\u0440\u043E\u043F\u0438\u043D\u043A\u0438"
+  icon: {fileID: 7669951894810734190, guid: 651f702f43b79074ba5dfbe9c7e53193, type: 3}
+  maxStack: 1
+  pickupPrefab: {fileID: 5642904015008106225, guid: faa70bd46d46ed24a9eec08e3eebfb59, type: 3}
+  type: 2
+  placementMode: 0
+  prefab: {fileID: 0}
+  isDoor: 0
+  doorWallMarkerTile: {fileID: 0}
+  tileToPlace: {fileID: 0}
+  occupiesBuildCell: 1
+  canPlaceOnWater: 0
+  waterTileToPlace: {fileID: 0}
+  seedCrop: {fileID: 0}
+  attackPrefab: {fileID: 5642904015008106225, guid: faa70bd46d46ed24a9eec08e3eebfb59, type: 3}
+  actionRadius: 5
+  toolType: 4
+  toolPower: 1
+  damage: 1
+  attackSpeed: 3
+  isLantern: 0
+  lanternLightRadius: 2.5
+  lanternDrainPerSecond: 1
+  lanternMaxCharge: 100
+  consumableEffectType: 0
+  effectDuration: 0
+  healAmount: 0
+  cooldown: 0
+  foodRestore: 0
+  equipmentType: 0
+  activeEquipmentEffect: 0
+  defense: 0
+  frostDamageMultiplier: 1
+  pressureGrowthMultiplier: 1
+  furnaceFuelSeconds: 0
+  furnaceSmeltResult: {fileID: 0}
+  furnaceSmeltResultAmount: 1
+  furnaceSmeltDuration: 0

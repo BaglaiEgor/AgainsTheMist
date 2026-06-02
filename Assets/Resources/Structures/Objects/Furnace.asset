@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 188ade1f98f86c34c82dc18d33a34f7d, type: 3}
+  m_Name: Furnace
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  itemID: Furnace
+  itemName: "\u041F\u0435\u0447\u043A\u0430"
+  description: 
+  icon: {fileID: 5839503353984351374, guid: 1f32bb39da8d1ab4488b9ed667660d7e, type: 3}
+  maxStack: 99
+  pickupPrefab: {fileID: 5996793340830461179, guid: fbbb354cdd6a4cdea03521e04b20eb32, type: 3}
+  type: 3
+  placementMode: 0
+  prefab: {fileID: 2439470639307641166, guid: 3d29aa0b443106145bf8aada6c1fb1dc, type: 3}
+  tileToPlace: {fileID: 0}
+  occupiesBuildCell: 1
+  canPlaceOnWater: 0
+  waterTileToPlace: {fileID: 0}
+  seedCrop: {fileID: 0}
+  attackPrefab: {fileID: 0}
+  actionRadius: 3
+  toolType: 0
+  toolPower: 1
+  damage: 1
+  attackSpeed: 1
+  isLantern: 0
+  lanternLightRadius: 2.5
+  lanternDrainPerSecond: 1
+  lanternMaxCharge: 100
+  consumableEffectType: 0
+  effectDuration: 0
+  healAmount: 0
+  cooldown: 0
+  foodRestore: 0
+  equipmentType: 0
+  defense: 0
+  frostDamageMultiplier: 1
+  pressureGrowthMultiplier: 1
+  furnaceFuelSeconds: 0
+  furnaceSmeltResult: {fileID: 0}
+  furnaceSmeltResultAmount: 1
+  furnaceSmeltDuration: 0

@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 188ade1f98f86c34c82dc18d33a34f7d, type: 3}
+  m_Name: Carrot
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  itemID: Carrot
+  itemName: "\u041C\u043E\u0440\u043A\u043E\u0432\u044C"
+  description: 
+  icon: {fileID: 0}
+  maxStack: 99
+  pickupPrefab: {fileID: 8266306878654680791, guid: 039102d3642d8694d82bd8c542543030, type: 3}
+  type: 0
+  placementMode: 0
+  prefab: {fileID: 0}
+  tileToPlace: {fileID: 0}
+  occupiesBuildCell: 1
+  seedCrop: {fileID: 0}
+  attackPrefab: {fileID: 0}
+  actionRadius: 1
+  toolType: 0
+  toolPower: 1
+  damage: 1
+  isLantern: 0
+  lanternLightRadius: 2.5
+  lanternDrainPerSecond: 1
+  lanternMaxCharge: 100
+  consumableEffectType: 0
+  effectDuration: 0
+  healAmount: 0
+  cooldown: 0
+  equipmentType: 0
+  frostDamageMultiplier: 1
+  pressureGrowthMultiplier: 1
+  furnaceFuelSeconds: 0
+  furnaceSmeltResult: {fileID: 0}
+  furnaceSmeltResultAmount: 1
+  furnaceSmeltDuration: 0

@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 188ade1f98f86c34c82dc18d33a34f7d, type: 3}
+  m_Name: WoodWall
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  itemID: WoodWall
+  itemName: "\u0414\u0435\u0440\u0435\u0432\u044F\u043D\u043D\u0430\u044F \u0441\u0442\u0435\u043D\u0430"
+  description: 
+  icon: {fileID: -148418942, guid: 37779d330e133fd428e0371be2b6db6c, type: 3}
+  maxStack: 99
+  pickupPrefab: {fileID: 8011084173767057958, guid: 7e68514fdbdf57541b52fd07c54812ed, type: 3}
+  type: 3
+  placementMode: 1
+  prefab: {fileID: 0}
+  tileToPlace: {fileID: 11400000, guid: 1063c2bf089561b48a20eace918f7dd8, type: 2}
+  occupiesBuildCell: 1
+  seedCrop: {fileID: 0}
+  attackPrefab: {fileID: 0}
+  actionRadius: 4
+  toolType: 2
+  toolPower: 1
+  damage: 1
+  isLantern: 0
+  lanternLightRadius: 2.5
+  lanternDrainPerSecond: 1
+  lanternMaxCharge: 100
+  consumableEffectType: 0
+  effectDuration: 0
+  healAmount: 0
+  cooldown: 0
+  equipmentType: 0
+  frostDamageMultiplier: 1
+  pressureGrowthMultiplier: 1
+  furnaceFuelSeconds: 0
+  furnaceSmeltResult: {fileID: 0}
+  furnaceSmeltResultAmount: 1
+  furnaceSmeltDuration: 0

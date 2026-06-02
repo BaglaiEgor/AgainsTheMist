@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 188ade1f98f86c34c82dc18d33a34f7d, type: 3}
+  m_Name: FogEssence
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  itemID: FogEssence
+  itemName: "\u0422\u0443\u043C\u0430\u043D\u043D\u0430\u044F \u044D\u0441\u0441\u0435\u043D\u0446\u0438\u044F"
+  description: "\u041A\u043E\u043D\u0446\u0435\u043D\u0442\u0440\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u0430\u044F
+    \u044D\u0441\u0441\u0435\u043D\u0446\u0438\u044F, \u0438\u0437\u0432\u043B\u0435\u0447\u0435\u043D\u043D\u0430\u044F
+    \u0438\u0437 \u0441\u0443\u0449\u0435\u0441\u0442\u0432, \u043E\u0431\u0438\u0442\u0430\u044E\u0449\u0438\u0445
+    \u0432 \u0442\u0443\u043C\u0430\u043D\u0435"
+  icon: {fileID: -4572420196032167209, guid: 960b321f080c4cc48924989c109fdb9c, type: 3}
+  maxStack: 99
+  pickupPrefab: {fileID: 5996793340830461179, guid: 7f6c14f4d8d84a86bae8e8fdb3999a8e, type: 3}
+  type: 0
+  placementMode: 0
+  prefab: {fileID: 0}
+  tileToPlace: {fileID: 0}
+  occupiesBuildCell: 1
+  seedCrop: {fileID: 0}
+  attackPrefab: {fileID: 0}
+  actionRadius: 1
+  toolType: 0
+  toolPower: 1
+  damage: 1
+  attackSpeed: 1
+  isLantern: 0
+  lanternLightRadius: 2.5
+  lanternDrainPerSecond: 1
+  lanternMaxCharge: 100
+  consumableEffectType: 0
+  effectDuration: 0
+  healAmount: 0
+  cooldown: 0
+  foodRestore: 0
+  equipmentType: 0
+  defense: 0
+  frostDamageMultiplier: 1
+  pressureGrowthMultiplier: 1
+  furnaceFuelSeconds: 0
+  furnaceSmeltResult: {fileID: 0}
+  furnaceSmeltResultAmount: 1
+  furnaceSmeltDuration: 0

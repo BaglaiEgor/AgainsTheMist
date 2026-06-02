@@ -1,0 +1,59 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 188ade1f98f86c34c82dc18d33a34f7d, type: 3}
+  m_Name: Hoe
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  itemID: Hoe
+  itemName: "\u041C\u043E\u0442\u044B\u0433\u0430"
+  description: "\u041D\u0443\u0436\u043D\u0430 \u0434\u043B\u044F \u0440\u0430\u0431\u043E\u0442\u044B
+    \u0441 \u043E\u0433\u043E\u0440\u043E\u0434\u043E\u043C. \u0412\u044B\u0433\u043B\u044F\u0434\u0438\u0442
+    \u043F\u043B\u043E\u0445\u043E \\n [b]\u041B\u041A\u041C[/b] \u0447\u0442\u043E\u0431\u044B
+    \u0443\u0441\u0442\u0430\u043D\u043E\u0432\u0438\u0442\u044C \u0433\u0440\u044F\u0434\u043A\u0443
+    \\n [b]\u041F\u041A\u041C[/b] \u0447\u0442\u043E\u0431\u044B \u0441\u043D\u0435\u0441\u0442\u0438
+    \u0433\u0440\u044F\u0434\u043A\u0443"
+  icon: {fileID: 2166726014042408083, guid: 409132b6beac1094baf57104546cd1b0, type: 3}
+  maxStack: 1
+  pickupPrefab: {fileID: 5642904015008106225, guid: aba0698c83946334eaff6316b3796dc6, type: 3}
+  type: 2
+  placementMode: 0
+  prefab: {fileID: 0}
+  isDoor: 0
+  doorWallMarkerTile: {fileID: 0}
+  tileToPlace: {fileID: 0}
+  occupiesBuildCell: 1
+  canPlaceOnWater: 0
+  waterTileToPlace: {fileID: 0}
+  seedCrop: {fileID: 0}
+  attackPrefab: {fileID: 5642904015008106225, guid: aba0698c83946334eaff6316b3796dc6, type: 3}
+  actionRadius: 5
+  toolType: 3
+  toolPower: 1
+  damage: 1
+  attackSpeed: 3
+  isLantern: 0
+  lanternLightRadius: 2.5
+  lanternDrainPerSecond: 1
+  lanternMaxCharge: 100
+  consumableEffectType: 0
+  effectDuration: 0
+  healAmount: 0
+  cooldown: 0
+  foodRestore: 0
+  equipmentType: 0
+  activeEquipmentEffect: 0
+  defense: 0
+  frostDamageMultiplier: 1
+  pressureGrowthMultiplier: 1
+  furnaceFuelSeconds: 0
+  furnaceSmeltResult: {fileID: 0}
+  furnaceSmeltResultAmount: 1
+  furnaceSmeltDuration: 0

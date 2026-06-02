@@ -1,0 +1,83 @@
+using Unity.Cinemachine;
+using UnityEngine;
+using UnityEngine.Tilemaps;
+
+[DisallowMultipleComponent]
+[RequireComponent(typeof(Collider2D))]
+public class EntryAndExit : MonoBehaviour
+{
+    [Header("Teleport")]
+    [SerializeField] private GameObject tpPoint;
+    [Min(0.2f)] [SerializeField] private float interactDistance = 1.6f;
+
+    [Header("Dungeon")]
+    [SerializeField] private Tilemap dungeonTilemap;
+    [SerializeField] private GameObject dungeonObjectsRoot;
+
+    [Header("Camera")]
+    [SerializeField] private CinemachineConfiner2D cameraConfiner;
+    [SerializeField] private Collider2D cameraBounds;
+
+    public bool isEntry;
+
+    public string InteractLabel => isEntry ? "Войти" : "Выйти";
+
+    public bool CanInteract(Transform interactor)
+    {
+        if (interactor == null || tpPoint == null)
+            return false;
+
+        return Vector2.Distance(interactor.position, transform.position) <= interactDistance;
+    }
+
+    public bool TryInteract(Transform interactor)
+    {
+        if (!TryGetTeleportPosition(interactor, out Vector3 targetPosition))
+            return false;
+
+        Rigidbody2D rb = interactor.GetComponent<Rigidbody2D>();
+        if (rb != null)
+            rb.position = targetPosition;
+
+        interactor.position = targetPosition;
+        return true;
+    }
+
+    public bool TryGetTeleportPosition(Transform interactor, out Vector3 targetPosition)
+    {
+        targetPosition = Vector3.zero;
+        if (!CanInteract(interactor))
+            return false;
+
+        targetPosition = GetTeleportTargetPosition();
+        return true;
+    }
+
+    private Vector3 GetTeleportTargetPosition()
+    {
+        Collider2D targetCollider = tpPoint.GetComponent<Collider2D>();
+        if (targetCollider == null)
+            targetCollider = tpPoint.GetComponentInChildren<Collider2D>();
+
+        if (targetCollider == null)
+            return tpPoint.transform.position;
+
+        Bounds bounds = targetCollider.bounds;
+        return new Vector3(bounds.center.x, bounds.min.y, tpPoint.transform.position.z);
+    }
+
+    public void ApplyDungeonState()
+    {
+        if (dungeonTilemap != null)
+            dungeonTilemap.gameObject.SetActive(isEntry);
+
+        if (dungeonObjectsRoot != null)
+            dungeonObjectsRoot.SetActive(isEntry);
+
+        if (cameraConfiner == null)
+            return;
+
+        cameraConfiner.BoundingShape2D = isEntry ? cameraBounds : null;
+        cameraConfiner.InvalidateBoundingShapeCache();
+    }
+}

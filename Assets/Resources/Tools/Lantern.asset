@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 188ade1f98f86c34c82dc18d33a34f7d, type: 3}
+  m_Name: Lantern
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  itemID: Lantern
+  itemName: "\u0424\u043E\u043D\u0430\u0440\u044C"
+  description: "\u0412\u0440\u0435\u043C\u0435\u043D\u043D\u043E \u043E\u0441\u0432\u0435\u0449\u0430\u0435\u0442
+    \u0442\u0443\u043C\u0430\u043D, \u043D\u043E \u043D\u0435 \u0434\u0435\u043B\u0430\u0435\u0442
+    \u0437\u043E\u043D\u0443 \u0431\u0435\u0437\u043E\u043F\u0430\u0441\u043D\u043E\u0439."
+  icon: {fileID: 6562057756026062677, guid: 531af3746e0e3fb419e3ef3f6854f81b, type: 3}
+  maxStack: 1
+  pickupPrefab: {fileID: 8266306878654680791, guid: fa87c193456f5fe4a99e8aff9495e2bb, type: 3}
+  type: 5
+  placementMode: 0
+  prefab: {fileID: 5642904015008106225, guid: 245d65635fe61f5468cfe21b2024d2c0, type: 3}
+  isDoor: 0
+  doorWallMarkerTile: {fileID: 0}
+  tileToPlace: {fileID: 0}
+  occupiesBuildCell: 1
+  canPlaceOnWater: 0
+  waterTileToPlace: {fileID: 0}
+  seedCrop: {fileID: 0}
+  attackPrefab: {fileID: 0}
+  actionRadius: 1
+  toolType: 0
+  toolPower: 1
+  damage: 1
+  attackSpeed: 3
+  isLantern: 1
+  lanternLightRadius: 2.2
+  lanternDrainPerSecond: 2
+  lanternMaxCharge: 100
+  consumableEffectType: 0
+  effectDuration: 0
+  healAmount: 0
+  cooldown: 0
+  foodRestore: 0
+  equipmentType: 0
+  activeEquipmentEffect: 0
+  defense: 0
+  frostDamageMultiplier: 1
+  pressureGrowthMultiplier: 1
+  furnaceFuelSeconds: 0
+  furnaceSmeltResult: {fileID: 0}
+  furnaceSmeltResultAmount: 1
+  furnaceSmeltDuration: 0

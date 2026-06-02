@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 378d010904904f20a7f8451ebd29931c, type: 3}
+  m_Name: Quest_02_Stone
+  m_EditorClassIdentifier: 
+  id: keeper_stone
+  title: "\u041A\u0430\u043C\u0435\u043D\u043D\u044B\u0439 \u043A\u0440\u0443\u0433"
+  description: "\u041F\u0440\u0438\u043D\u0435\u0441\u0438 \u043A\u0430\u043C\u0435\u043D\u044C.
+    \u0421\u0442\u0430\u0440\u044B\u0439 \u0444\u0443\u043D\u0434\u0430\u043C\u0435\u043D\u0442
+    \u043C\u0430\u044F\u043A\u0430 \u0434\u0435\u0440\u0436\u0438\u0442\u0441\u044F
+    \u0442\u043E\u043B\u044C\u043A\u043E \u043D\u0430 \u0447\u0435\u0441\u0442\u043D\u043E\u043C
+    \u0440\u0435\u043C\u043E\u043D\u0442\u0435."
+  requiredItem: {fileID: 11400000, guid: d5e345033704a4d488d96321e5eb1924, type: 2}
+  requiredAmount: 12
+  rewardPickupPrefab: {fileID: 5996793340830461179, guid: c505257f40db4c938aa0277fa9691574, type: 3}
+  rewardAmount: 4
