@@ -102,7 +102,7 @@ public class CraftingMenuUI : MonoBehaviour
         }
 
         Transform basicParent = basicRecipesParent != null ? basicRecipesParent : recipesParent;
-        if (basicParent != null)
+        if (basicParent != null && !includeBasicRecipesInStationContext)
         {
             List<CraftingRecipe> basicRecipes = CollectRecipesForStation(CraftStationType.None);
             BuildFlatRecipes(basicRecipes, basicParent);
@@ -112,18 +112,18 @@ public class CraftingMenuUI : MonoBehaviour
         if (stationParent == null)
             return;
 
-        List<CraftingRecipe> stationRecipes = CollectRecipesForStation(activeStationType);
-        if (stationRecipes.Count == 0)
+        List<CraftingRecipe> availableStationRecipes = CollectRecipesForActiveStationContext();
+        if (availableStationRecipes.Count == 0)
             return;
 
         if (categoryGroupPrefab == null)
         {
             Debug.LogWarning("CraftingMenuUI: categoryGroupPrefab is not assigned for station crafting.");
-            BuildFlatRecipes(stationRecipes, stationParent);
+            BuildFlatRecipes(availableStationRecipes, stationParent);
             return;
         }
 
-        BuildGroupedRecipes(stationRecipes, stationParent);
+        BuildGroupedRecipes(availableStationRecipes, stationParent);
     }
 
     private void BuildFlatRecipes(List<CraftingRecipe> recipes, Transform parent)
@@ -229,6 +229,27 @@ public class CraftingMenuUI : MonoBehaviour
                 continue;
 
             visible.Add(recipe);
+        }
+
+        return visible;
+    }
+
+    private List<CraftingRecipe> CollectRecipesForActiveStationContext()
+    {
+        List<CraftingRecipe> visible = new();
+
+        IReadOnlyList<CraftingRecipe> allRecipes = craftingManager.AllRecipes;
+        for (int i = 0; i < allRecipes.Count; i++)
+        {
+            CraftingRecipe recipe = allRecipes[i];
+            if (recipe == null)
+                continue;
+
+            if (recipe.station == activeStationType ||
+                (includeBasicRecipesInStationContext && recipe.station == CraftStationType.None))
+            {
+                visible.Add(recipe);
+            }
         }
 
         return visible;

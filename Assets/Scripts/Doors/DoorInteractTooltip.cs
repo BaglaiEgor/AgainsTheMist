@@ -83,6 +83,7 @@ public class DoorInteractTooltip : MonoBehaviour
         tooltipInstance = Instantiate(prefab, canvas.transform);
         tooltipRect = tooltipInstance.GetComponent<RectTransform>();
         tooltipText = tooltipInstance.GetComponentInChildren<TextMeshProUGUI>(true);
+        TooltipTextMotion.EnsureOn(tooltipText);
         tooltipInstance.SetActive(false);
     }
 
@@ -92,6 +93,7 @@ public class DoorInteractTooltip : MonoBehaviour
             return;
 
         tooltipText.text = door != null && door.IsOpen ? "Закрыть" : "Открыть";
+        TooltipTextMotion.EnsureOn(tooltipText)?.RefreshBasePosition();
     }
 
     void FollowCursor()

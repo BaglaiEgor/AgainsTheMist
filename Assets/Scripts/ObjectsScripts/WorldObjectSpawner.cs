@@ -255,7 +255,8 @@ public class WorldObjectSpawner : MonoBehaviour
                 continue;
 
             Vector3 worldPos = GetCellCenterWorld(cell);
-            Instantiate(prefab, worldPos, Quaternion.identity, objectsParent);
+            GameObject spawnedObject = Instantiate(prefab, worldPos, Quaternion.identity, objectsParent);
+            FogObjectTint.EnsureOn(spawnedObject);
             return true;
         }
 

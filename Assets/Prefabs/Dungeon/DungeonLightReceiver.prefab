@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 4205}
   - component: {fileID: 2397531424710504671}
   - component: {fileID: 8130186277040665675}
-  m_Layer: 11
+  m_Layer: 0
   m_Name: DungeonLightReceiver
   m_TagString: Untagged
   m_Icon: {fileID: 0}

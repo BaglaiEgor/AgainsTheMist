@@ -25,6 +25,7 @@ public class InventoryWorldTooltipController : MonoBehaviour
         canvas = ownerCanvas;
         if (source != null)
             interactionSource = source;
+        TooltipTextMotion.EnsureOn(worldInteractTooltipText);
         Hide();
     }
 
@@ -48,6 +49,8 @@ public class InventoryWorldTooltipController : MonoBehaviour
             worldInteractTooltipText = tooltipText;
         if (!string.IsNullOrWhiteSpace(label))
             worldInteractLabel = label;
+
+        TooltipTextMotion.EnsureOn(worldInteractTooltipText);
 
         worldInteractTooltipOffset = offset;
         hideWorldTooltipOverUI = hideOverUi;
@@ -102,6 +105,7 @@ public class InventoryWorldTooltipController : MonoBehaviour
 
         Component stationCandidate = null;
         BeaconUpgrade beaconCandidate = null;
+        DonationFountain fountainCandidate = null;
 
         for (int i = 0; i < hits.Length; i++)
         {
@@ -136,6 +140,16 @@ public class InventoryWorldTooltipController : MonoBehaviour
                     continue;
 
                 interactable = door;
+                return true;
+            }
+
+            KeyFence keyFence = hit.GetComponentInParent<KeyFence>();
+            if (keyFence != null)
+            {
+                if (interactionSource != null && !keyFence.CanShowTooltip(interactionSource))
+                    continue;
+
+                interactable = keyFence;
                 return true;
             }
 
@@ -203,6 +217,16 @@ public class InventoryWorldTooltipController : MonoBehaviour
                 beaconCandidate = beaconUpgrade;
                 break;
             }
+
+            DonationFountain fountain = hit.GetComponentInParent<DonationFountain>();
+            if (fountain != null)
+            {
+                if (interactionSource != null && !fountain.CanShowTooltip(interactionSource))
+                    continue;
+
+                fountainCandidate = fountain;
+                break;
+            }
         }
 
         if (stationCandidate != null)
@@ -217,6 +241,12 @@ public class InventoryWorldTooltipController : MonoBehaviour
             return true;
         }
 
+        if (fountainCandidate != null)
+        {
+            interactable = fountainCandidate;
+            return true;
+        }
+
         return false;
     }
     private string GetLabel(Component interactable)
@@ -226,6 +256,12 @@ public class InventoryWorldTooltipController : MonoBehaviour
 
         if (interactable is Door door)
             return door.IsOpen ? "Закрыть" : "Открыть";
+
+        if (interactable is KeyFence keyFence)
+            return keyFence.InteractLabel;
+
+        if (interactable is DonationFountain fountain)
+            return fountain.InteractLabel;
 
         if (interactable is EntryAndExit entryAndExit)
             return entryAndExit.InteractLabel;
@@ -243,6 +279,8 @@ public class InventoryWorldTooltipController : MonoBehaviour
     {
         if (worldInteractTooltipText != null)
             worldInteractTooltipText.text = label;
+
+        TooltipTextMotion.EnsureOn(worldInteractTooltipText)?.RefreshBasePosition();
 
         if (worldInteractTooltipIcon != null)
             worldInteractTooltipIcon.enabled = worldInteractTooltipIcon.sprite != null;

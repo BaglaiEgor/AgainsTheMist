@@ -13,7 +13,15 @@ MonoBehaviour:
   m_Name: Dungeon1LootTable
   m_EditorClassIdentifier: Assembly-CSharp::LootTable
   entries:
-  - item: {fileID: 0}
+  - item: {fileID: 11400000, guid: c3b085f5eed370d4892003fbabe09f0a, type: 2}
     minAmount: 1
     maxAmount: 1
-    chance: 0
+    chance: 1
+  - item: {fileID: 11400000, guid: c80e381ddddc455ebf6d0c085b92e2aa, type: 2}
+    minAmount: 3
+    maxAmount: 5
+    chance: 1
+  - item: {fileID: 11400000, guid: 00e91092d48b5ae429b8f4edc76ed029, type: 2}
+    minAmount: 1
+    maxAmount: 1
+    chance: 1

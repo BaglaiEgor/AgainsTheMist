@@ -20,7 +20,7 @@ MonoBehaviour:
   icon: {fileID: 6562057756026062677, guid: 531af3746e0e3fb419e3ef3f6854f81b, type: 3}
   maxStack: 1
   pickupPrefab: {fileID: 8266306878654680791, guid: fa87c193456f5fe4a99e8aff9495e2bb, type: 3}
-  type: 5
+  type: 6
   placementMode: 0
   prefab: {fileID: 5642904015008106225, guid: 245d65635fe61f5468cfe21b2024d2c0, type: 3}
   isDoor: 0

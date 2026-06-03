@@ -19,7 +19,7 @@ MonoBehaviour:
   icon: {fileID: 7669951894810734190, guid: 651f702f43b79074ba5dfbe9c7e53193, type: 3}
   maxStack: 1
   pickupPrefab: {fileID: 5642904015008106225, guid: faa70bd46d46ed24a9eec08e3eebfb59, type: 3}
-  type: 2
+  type: 3
   placementMode: 0
   prefab: {fileID: 0}
   isDoor: 0
@@ -30,11 +30,11 @@ MonoBehaviour:
   waterTileToPlace: {fileID: 0}
   seedCrop: {fileID: 0}
   attackPrefab: {fileID: 5642904015008106225, guid: faa70bd46d46ed24a9eec08e3eebfb59, type: 3}
-  actionRadius: 5
+  actionRadius: 3
   toolType: 4
   toolPower: 1
   damage: 1
-  attackSpeed: 3
+  attackSpeed: 2
   isLantern: 0
   lanternLightRadius: 2.5
   lanternDrainPerSecond: 1

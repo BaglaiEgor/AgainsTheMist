@@ -7,6 +7,10 @@ public class FogSystem : MonoBehaviour
 {
     private static FogSystem instance;
 
+    [Header("Enemy Fog")]
+    [SerializeField] private FogMaskDrawer fogMaskDrawer;
+    [Min(0f)] [SerializeField] private float enemySoftEdgeFallbackPadding = 0.25f;
+
     private readonly List<FogRepeller> activeRepellers = new List<FogRepeller>();
 
     public static FogSystem Instance
@@ -67,6 +71,12 @@ public class FogSystem : MonoBehaviour
         }
     }
 
+    void Start()
+    {
+        if (Application.isPlaying)
+            EnsureSceneObjectTints();
+    }
+
     void OnDestroy()
     {
         if (instance == this)
@@ -99,6 +109,16 @@ public class FogSystem : MonoBehaviour
             FogRepeller repeller = repellersInScene[i];
             if (repeller != null)
                 activeRepellers.Add(repeller);
+        }
+    }
+
+    void EnsureSceneObjectTints()
+    {
+        WorldObjectOccupier[] occupiers = FindObjectsByType<WorldObjectOccupier>(FindObjectsSortMode.None);
+        for (int i = 0; i < occupiers.Length; i++)
+        {
+            if (occupiers[i] != null)
+                FogObjectTint.EnsureOn(occupiers[i].gameObject);
         }
     }
 
@@ -146,6 +166,11 @@ public class FogSystem : MonoBehaviour
         return GetFogDepth(position) > 0f;
     }
 
+    public bool IsPositionInEnemyFog(Vector3 position)
+    {
+        return GetFogDepth(position) > GetEnemySoftEdgePadding();
+    }
+
     public bool IsPositionInLanternLight(Vector3 position)
     {
         if (activeRepellers.Count == 0)
@@ -172,5 +197,23 @@ public class FogSystem : MonoBehaviour
         }
 
         return false;
+    }
+
+    private float GetEnemySoftEdgePadding()
+    {
+        if (fogMaskDrawer == null)
+            fogMaskDrawer = FindFirstObjectByType<FogMaskDrawer>();
+
+        if (fogMaskDrawer == null)
+            return Mathf.Max(0f, enemySoftEdgeFallbackPadding);
+
+        Transform fogSprite = fogMaskDrawer.fogSprite;
+        float minScale = 100f;
+        if (fogSprite != null)
+            minScale = Mathf.Max(0.0001f, Mathf.Min(Mathf.Abs(fogSprite.localScale.x), Mathf.Abs(fogSprite.localScale.y)));
+
+        float transitionPixels = Mathf.Lerp(1f, 12f, Mathf.Clamp01(fogMaskDrawer.edgeSoftness));
+        float transitionWorld = transitionPixels / Mathf.Max(1f, fogMaskDrawer.textureSize) * minScale;
+        return Mathf.Max(0f, transitionWorld * 0.5f, enemySoftEdgeFallbackPadding);
     }
 }

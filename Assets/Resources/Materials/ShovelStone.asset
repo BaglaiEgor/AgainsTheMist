@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 188ade1f98f86c34c82dc18d33a34f7d, type: 3}
+  m_Name: ShovelStone
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  itemID: ShovelStone
+  itemName: "\u041A\u0430\u043C\u0435\u043D\u043D\u0430\u044F \u043B\u043E\u043F\u0430\u0442\u0430"
+  description: "\u0427\u0443\u0442\u044C \u044D\u0444\u0444\u0435\u043A\u0442\u0438\u0432\u043D\u0435\u0435
+    \u043E\u0431\u044B\u0447\u043D\u043E\u0439"
+  icon: {fileID: 8057577027865174060, guid: 0678d36acfb2a97448dffbf01bcb3e95, type: 3}
+  maxStack: 1
+  pickupPrefab: {fileID: 5642904015008106225, guid: 582ce9d3e2197ef40bda26c6b48db151, type: 3}
+  type: 3
+  placementMode: 0
+  prefab: {fileID: 0}
+  isDoor: 0
+  doorWallMarkerTile: {fileID: 0}
+  tileToPlace: {fileID: 0}
+  occupiesBuildCell: 1
+  canPlaceOnWater: 0
+  waterTileToPlace: {fileID: 0}
+  seedCrop: {fileID: 0}
+  attackPrefab: {fileID: 5642904015008106225, guid: fa2b99613f5302945ad74871cea8991e, type: 3}
+  actionRadius: 3
+  toolType: 4
+  toolPower: 1
+  damage: 1
+  attackSpeed: 4
+  isLantern: 0
+  lanternLightRadius: 2.5
+  lanternDrainPerSecond: 1
+  lanternMaxCharge: 100
+  consumableEffectType: 0
+  effectDuration: 0
+  healAmount: 0
+  cooldown: 0
+  foodRestore: 0
+  equipmentType: 0
+  activeEquipmentEffect: 0
+  defense: 0
+  frostDamageMultiplier: 1
+  pressureGrowthMultiplier: 1
+  furnaceFuelSeconds: 0
+  furnaceSmeltResult: {fileID: 0}
+  furnaceSmeltResultAmount: 1
+  furnaceSmeltDuration: 0

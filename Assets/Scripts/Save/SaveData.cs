@@ -22,6 +22,8 @@ public class GameSaveData
     public string activeGuidanceText;
     public int beaconLevel;
     public float beaconRadius;
+    public int donationFountainLevel;
+    public int donationFountainCoins;
     public List<SaveContainerData> chests = new();
     public List<SaveFurnaceData> furnaces = new();
     public List<SaveGardenBedData> gardenBeds = new();

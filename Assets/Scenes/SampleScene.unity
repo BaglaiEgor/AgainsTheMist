@@ -138281,7 +138281,7 @@ MonoBehaviour:
   tooltipPresenter: {fileID: 1961954265}
   basicCraftPanel: {fileID: 1804785651}
   stationCraftPanel: {fileID: 1249437754}
-  includeBasicRecipesInStationContext: 0
+  includeBasicRecipesInStationContext: 1
   currentCategory: 1
 --- !u!114 &1847846228
 MonoBehaviour:

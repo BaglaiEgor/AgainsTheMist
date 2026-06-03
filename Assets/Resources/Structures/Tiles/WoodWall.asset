@@ -18,7 +18,7 @@ MonoBehaviour:
   icon: {fileID: -148418942, guid: 37779d330e133fd428e0371be2b6db6c, type: 3}
   maxStack: 99
   pickupPrefab: {fileID: 8011084173767057958, guid: 7e68514fdbdf57541b52fd07c54812ed, type: 3}
-  type: 3
+  type: 4
   placementMode: 1
   prefab: {fileID: 0}
   tileToPlace: {fileID: 11400000, guid: 1063c2bf089561b48a20eace918f7dd8, type: 2}

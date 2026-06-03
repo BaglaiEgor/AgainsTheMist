@@ -133,11 +133,14 @@ public class ItemTooltip : MonoBehaviour
     {
         switch (item.type)
         {
+            case ItemType.None:
+                return "Предмет";
             case ItemType.Weapon:
                 return "Урон: " + item.damage + "\n" +
                        "Скорость: " + Mathf.Max(0.1f, item.attackSpeed).ToString("0.##") + "/сек";
             case ItemType.Tool:
-                return "Эффективность: " + item.toolPower;
+                return "Эффективность: " + item.toolPower + "\n" +
+                       "Скорость: " + Mathf.Max(0.1f, item.attackSpeed).ToString("0.##") + "/сек";
             case ItemType.Structure:
                 return "Можно поставить";
             case ItemType.Material:
@@ -211,6 +214,10 @@ public class ItemTooltip : MonoBehaviour
         ConfigureNameTextBlock(nameText);
         ConfigureTextBlock(descriptionText);
         ConfigureExtraTextBlock(extraText);
+
+        TooltipTextMotion.EnsureOn(nameText);
+        TooltipTextMotion.EnsureOn(descriptionText);
+        TooltipTextMotion.EnsureOn(extraText);
     }
 
     private static void ConfigureNameTextBlock(TextMeshProUGUI text)
@@ -262,6 +269,7 @@ public class ItemTooltip : MonoBehaviour
             LayoutRebuilder.ForceRebuildLayoutImmediate(rect);
 
         Canvas.ForceUpdateCanvases();
+        RefreshTextMotionBasePositions();
     }
 
     private void ApplyManualLayout()
@@ -334,5 +342,22 @@ public class ItemTooltip : MonoBehaviour
 
         rect.pivot = useLeftBottomPosition ? new Vector2(1f, 1f) : new Vector2(0f, 1f);
         rect.sizeDelta = new Vector2(left + contentWidth + right, y + bottom);
+    }
+
+    private void RefreshTextMotionBasePositions()
+    {
+        RefreshTextMotionBasePosition(nameText);
+        RefreshTextMotionBasePosition(descriptionText);
+        RefreshTextMotionBasePosition(extraText);
+    }
+
+    private static void RefreshTextMotionBasePosition(TextMeshProUGUI text)
+    {
+        if (text == null)
+            return;
+
+        TooltipTextMotion motion = text.GetComponent<TooltipTextMotion>();
+        if (motion != null)
+            motion.RefreshBasePosition();
     }
 }

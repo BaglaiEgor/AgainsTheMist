@@ -16,6 +16,7 @@ public class PauseMenuController : MonoBehaviour
 
     [Header("Optional")]
     [SerializeField] private PlayerController playerController;
+    [SerializeField] private TabManager tabManager;
 
     private bool isPaused;
     private float previousTimeScale = 1f;
@@ -43,6 +44,9 @@ public class PauseMenuController : MonoBehaviour
     {
         Keyboard keyboard = Keyboard.current;
         if (keyboard == null || !keyboard.escapeKey.wasPressedThisFrame)
+            return;
+
+        if (!isPaused && tabManager != null && tabManager.CloseOpenedPanels())
             return;
 
         if (InventoryUI.HasAnyBlockingUiOpen && !isPaused)
@@ -131,5 +135,8 @@ public class PauseMenuController : MonoBehaviour
 
         if (playerController == null)
             playerController = FindFirstObjectByType<PlayerController>();
+
+        if (tabManager == null)
+            tabManager = FindFirstObjectByType<TabManager>();
     }
 }

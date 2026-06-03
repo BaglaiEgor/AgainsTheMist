@@ -131,7 +131,7 @@ public class FogEnemy : MonoBehaviour, IDamageable
         if (fogSystem == null)
             return;
 
-        bool inFog = fogSystem.IsPositionInFog(transform.position);
+        bool inFog = fogSystem.IsPositionInEnemyFog(transform.position);
         if (!inFog)
         {
             lightDespawnTimer += Time.deltaTime;
@@ -280,6 +280,9 @@ public class FogEnemy : MonoBehaviour, IDamageable
             destination,
             Mathf.Max(0f, moveSpeed) * Time.deltaTime
         );
+
+        if (!fogSystem.IsPositionInEnemyFog(nextPosition))
+            return;
 
         if (lanternRepelsEnemy && fogSystem.IsPositionInLanternLight(nextPosition))
             return;
@@ -472,7 +475,14 @@ public class FogEnemy : MonoBehaviour, IDamageable
         if (state == EnemyState.Roll)
         {
             float normalized = Mathf.Clamp01(stateTimer / stateDuration);
-            transform.position = Vector3.Lerp(stateStartPosition, stateEndPosition, normalized);
+            Vector3 nextPosition = Vector3.Lerp(stateStartPosition, stateEndPosition, normalized);
+            if (!CanMoveToEnemyFog(nextPosition))
+            {
+                FinishSpecialState();
+                return;
+            }
+
+            transform.position = nextPosition;
             stateMovementThisFrame = true;
 
             if (stateTimer >= Mathf.Max(0f, rollInvulnerableTime))
@@ -498,7 +508,14 @@ public class FogEnemy : MonoBehaviour, IDamageable
         if (state == EnemyState.AttackDash)
         {
             float normalized = Mathf.Clamp01(stateTimer / stateDuration);
-            transform.position = Vector3.Lerp(stateStartPosition, stateEndPosition, normalized);
+            Vector3 nextPosition = Vector3.Lerp(stateStartPosition, stateEndPosition, normalized);
+            if (!CanMoveToEnemyFog(nextPosition))
+            {
+                FinishSpecialState();
+                return;
+            }
+
+            transform.position = nextPosition;
             stateMovementThisFrame = true;
             TryApplyLineAttackDamage();
 
@@ -512,7 +529,10 @@ public class FogEnemy : MonoBehaviour, IDamageable
         {
             float knockbackTime = Mathf.Max(0.01f, hitKnockbackDuration);
             float normalized = Mathf.Clamp01(stateTimer / knockbackTime);
-            transform.position = Vector3.Lerp(stateStartPosition, stateEndPosition, normalized);
+            Vector3 nextPosition = Vector3.Lerp(stateStartPosition, stateEndPosition, normalized);
+            if (CanMoveToEnemyFog(nextPosition))
+                transform.position = nextPosition;
+
             stateMovementThisFrame = normalized < 1f;
 
             if (stateTimer >= stateDuration)
@@ -646,6 +666,12 @@ public class FogEnemy : MonoBehaviour, IDamageable
     {
         if (ownCollider != null)
             ownCollider.enabled = enabled;
+    }
+
+    bool CanMoveToEnemyFog(Vector3 position)
+    {
+        FogSystem fogSystem = FogSystem.Instance;
+        return fogSystem == null || fogSystem.IsPositionInEnemyFog(position);
     }
 
     void DropResources()

@@ -114,6 +114,12 @@ public class CraftRecipeTooltipPresenter : MonoBehaviour
             resultNameText.overflowMode = TextOverflowModes.Overflow;
             resultNameText.textWrappingMode = TextWrappingModes.NoWrap;
         }
+
+        EnsureTooltipTextMotion(resultNameText);
+        EnsureTooltipTextMotion(resultDescriptionText);
+        EnsureTooltipTextMotion(resultExtraText);
+        EnsureTooltipTextMotion(resultAmountText);
+        EnsureTooltipTextMotion(ingredientsFallbackText);
     }
 
     private void BuildTooltip()
@@ -203,10 +209,14 @@ public class CraftRecipeTooltipPresenter : MonoBehaviour
 
         switch (item.type)
         {
+            case ItemType.None:
+                return "Предмет";
             case ItemType.Weapon:
-                return "Урон: " + item.damage;
+                return "Урон: " + item.damage + "\n" +
+                       "Скорость: " + Mathf.Max(0.1f, item.attackSpeed).ToString("0.##") + "/сек";
             case ItemType.Tool:
-                return "Эффективность: " + item.toolPower;
+                return "Эффективность: " + item.toolPower + "\n" +
+                       "Скорость: " + Mathf.Max(0.1f, item.attackSpeed).ToString("0.##") + "/сек";
             case ItemType.Structure:
                 return "Можно поставить";
             case ItemType.Material:
@@ -283,6 +293,8 @@ public class CraftRecipeTooltipPresenter : MonoBehaviour
 
         LayoutElement textLayout = textGo.AddComponent<LayoutElement>();
         textLayout.flexibleWidth = 1f;
+
+        EnsureTooltipTextMotion(text);
     }
 
     private static string BuildIngredientLabel(CraftingRecipe.Ingredient ingredient, int current, int need)
@@ -330,6 +342,7 @@ public class CraftRecipeTooltipPresenter : MonoBehaviour
         tooltipRoot.SetAsLastSibling();
         ApplyMaxContentWidth();
         LayoutRebuilder.ForceRebuildLayoutImmediate(tooltipRoot);
+        RefreshTooltipTextMotion();
         FollowCursor();
         SubscribeToInventory();
     }
@@ -422,6 +435,8 @@ public class CraftRecipeTooltipPresenter : MonoBehaviour
 
         if (tooltipRoot != null)
             LayoutRebuilder.ForceRebuildLayoutImmediate(tooltipRoot);
+
+        RefreshTooltipTextMotion();
     }
 
     private void ApplyMaxContentWidth()
@@ -446,6 +461,21 @@ public class CraftRecipeTooltipPresenter : MonoBehaviour
         float preferredWidth = LayoutUtility.GetPreferredWidth(tooltipRoot);
         float targetWidth = Mathf.Clamp(preferredWidth, minWidthFromName, widthLimit);
         tooltipRoot.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, targetWidth);
+    }
+
+    private static void EnsureTooltipTextMotion(TextMeshProUGUI text)
+    {
+        TooltipTextMotion.EnsureOn(text);
+    }
+
+    private void RefreshTooltipTextMotion()
+    {
+        if (tooltipRoot == null)
+            return;
+
+        TooltipTextMotion[] motions = tooltipRoot.GetComponentsInChildren<TooltipTextMotion>(true);
+        for (int i = 0; i < motions.Length; i++)
+            motions[i].RefreshBasePosition();
     }
 
     private void ClearIngredientRows()

@@ -58,7 +58,7 @@ public class FogEnemySpawner : MonoBehaviour
 
         spawnCheckTimer = 0f;
 
-        if (!fogSystem.IsPositionInFog(playerTransform.position))
+        if (!fogSystem.IsPositionInEnemyFog(playerTransform.position))
             return;
 
         bool playerInFrostZone = FrostFogZone.IsAnyZoneActiveAtPosition(playerTransform.position);
@@ -167,7 +167,7 @@ public class FogEnemySpawner : MonoBehaviour
             Vector3 candidate = playerPosition + new Vector3(direction.x, direction.y, 0f) * distance;
             candidate.z = playerPosition.z;
 
-            if (!fogSystem.IsPositionInFog(candidate))
+            if (!fogSystem.IsPositionInEnemyFog(candidate))
                 continue;
             if (requireFrostZone && !FrostFogZone.IsAnyZoneActiveAtPosition(candidate))
                 continue;

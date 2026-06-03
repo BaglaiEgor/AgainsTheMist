@@ -45,6 +45,10 @@ public class CraftingCategoryGroupUI : MonoBehaviour
                 return "\u0412\u044B\u0436\u0438\u0432\u0430\u043D\u0438\u0435";
             case CraftingCategory.Consumables:
                 return "\u0420\u0430\u0441\u0445\u043E\u0434\u043D\u0438\u043A\u0438";
+            case CraftingCategory.Weapons:
+                return "\u041E\u0440\u0443\u0436\u0438\u0435";
+            case CraftingCategory.Others:
+                return "\u041F\u0440\u043E\u0447\u0435\u0435";
             default:
                 return category.ToString();
         }

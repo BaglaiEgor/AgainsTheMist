@@ -70,6 +70,9 @@ public class EntryAndExit : MonoBehaviour
 
     public void ApplyDungeonState()
     {
+        if (isEntry)
+            DestroyFogEnemies();
+
         if (dayNightLightController == null)
             dayNightLightController = FindFirstObjectByType<DayNightLightController>();
 
@@ -92,5 +95,15 @@ public class EntryAndExit : MonoBehaviour
 
         cameraConfiner.BoundingShape2D = isEntry ? cameraBounds : null;
         cameraConfiner.InvalidateBoundingShapeCache();
+    }
+
+    private void DestroyFogEnemies()
+    {
+        FogEnemy[] fogEnemies = FindObjectsByType<FogEnemy>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        for (int i = 0; i < fogEnemies.Length; i++)
+        {
+            if (fogEnemies[i] != null)
+                Destroy(fogEnemies[i].gameObject);
+        }
     }
 }

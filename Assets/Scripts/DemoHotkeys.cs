@@ -78,7 +78,7 @@ public class DemoHotkeys : MonoBehaviour
 
         GUILayout.BeginArea(new Rect(12f, 12f, 420f, 285f), GUI.skin.box);
         GUILayout.Label("ДЕМО-ХОТКЕИ");
-        GUILayout.Label("F2: +материалы (дерево/камень/шерсть/железо/золото/уголь)");
+        GUILayout.Label("F2: +материалы (дерево/камень/шерсть/железо/золото/уголь/мастер-ключ)");
         GUILayout.Label("F3: +инструменты (топор/кирка/меч)");
         GUILayout.Label("F4: +набор строительства (печь/грядка/пол/стена)");
         GUILayout.Label("F5: +семена моркови");
@@ -119,6 +119,7 @@ public class DemoHotkeys : MonoBehaviour
         added += AddByPath("Garden/MistHerb", materialAmount) ? 1 : 0;
         added += AddByPath("Materials/FogEssence", materialAmount) ? 1 : 0;
         added += AddByPath("Materials/FrostEssence", materialAmount) ? 1 : 0;
+        added += AddByPath("Materials/Master key", 1) ? 1 : 0;
         lastAction = added > 0
             ? $"Материалы добавлены x{materialAmount}"
             : "Материалы не найдены в Resources";

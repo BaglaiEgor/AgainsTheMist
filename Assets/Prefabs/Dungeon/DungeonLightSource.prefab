@@ -247,7 +247,7 @@ MonoBehaviour:
   raycastMask:
     serializedVersion: 2
     m_Bits: 2039
-  maxDistance: 12
+  maxDistance: 80
   maxBounces: 6
   rayOffset: 0.05
   mirrorVisualGap: 0

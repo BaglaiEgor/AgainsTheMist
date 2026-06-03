@@ -264,6 +264,9 @@ public class PlayerController : MonoBehaviour
             {
                 switch (cursorItem.type)
                 {
+                    case ItemType.None:
+                        break;
+
                     case ItemType.Structure:
                         PlaceStructure(cursorItem, true);
                         break;
@@ -295,6 +298,9 @@ public class PlayerController : MonoBehaviour
 
         switch (currentItem.type)
         {
+            case ItemType.None:
+                break;
+
             case ItemType.Weapon:
                 UseWeapon(currentItem);
                 break;
@@ -388,6 +394,10 @@ public class PlayerController : MonoBehaviour
                 door.Toggle();
                 return;
             }
+
+            KeyFence keyFence = hit.GetComponentInParent<KeyFence>();
+            if (keyFence != null && keyFence.TryOpen(transform, inventory))
+                return;
 
             EntryAndExit entryAndExit = hit.GetComponentInParent<EntryAndExit>();
             if (entryAndExit != null && !isEntryExitTeleporting && entryAndExit.TryGetTeleportPosition(transform, out _))
@@ -487,6 +497,17 @@ public class PlayerController : MonoBehaviour
             }
             return;
         }
+
+        for (int i = 0; i < hits.Length; i++)
+        {
+            Collider2D hit = hits[i];
+            if (hit == null)
+                continue;
+
+            DonationFountain fountain = hit.GetComponentInParent<DonationFountain>();
+            if (fountain != null && fountain.TryDonate(transform, inventory))
+                return;
+        }
     }
 
     void PlaceLantern(ItemData item)
@@ -509,6 +530,7 @@ public class PlayerController : MonoBehaviour
             return;
 
         GameObject placedObject = Instantiate(item.prefab, spawnPos, Quaternion.identity);
+        FogObjectTint.EnsureOn(placedObject);
 
         PlacedLantern placedLantern = placedObject.GetComponent<PlacedLantern>();
         if (placedLantern == null)
@@ -870,7 +892,8 @@ public class PlayerController : MonoBehaviour
             return false;
 
         Vector3 spawnPos = GetCellCenterWorld(anchorCell);
-        Instantiate(prefab, spawnPos, Quaternion.identity);
+        GameObject gardenBed = Instantiate(prefab, spawnPos, Quaternion.identity);
+        FogObjectTint.EnsureOn(gardenBed);
         AudioController.Instance?.PlayPlace();
         return true;
     }
@@ -1357,6 +1380,7 @@ public class PlayerController : MonoBehaviour
         Vector3 spawnPos = groundTilemap.GetCellCenterWorld(anchorCell);
         Quaternion rotation = Quaternion.Euler(0f, 0f, rotationSteps * 90f);
         GameObject placedObject = Instantiate(item.prefab, spawnPos, rotation);
+        FogObjectTint.EnsureOn(placedObject);
 
         WorldObjectOccupier occupier = placedObject.GetComponent<WorldObjectOccupier>();
         if (occupier != null)
@@ -1395,6 +1419,7 @@ public class PlayerController : MonoBehaviour
 
         Vector3 spawnPos = groundTilemap.GetCellCenterWorld(anchorCell);
         GameObject placedObject = Instantiate(item.prefab, spawnPos, Quaternion.identity);
+        FogObjectTint.EnsureOn(placedObject);
 
         Door door = placedObject.GetComponent<Door>();
         if (door != null)

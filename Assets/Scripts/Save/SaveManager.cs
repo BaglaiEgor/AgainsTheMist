@@ -239,6 +239,14 @@ public class SaveManager : MonoBehaviour
             data.beaconRadius = snapshot.radius;
         }
 
+        DonationFountain fountain = FindFirstObjectByType<DonationFountain>();
+        if (fountain != null)
+        {
+            DonationFountainSnapshot snapshot = fountain.CreateSnapshot();
+            data.donationFountainLevel = snapshot.level;
+            data.donationFountainCoins = snapshot.coinsInCurrentLevel;
+        }
+
         foreach (ChestInventory chest in FindObjectsByType<ChestInventory>(FindObjectsSortMode.None))
         {
             data.chests.Add(new SaveContainerData
@@ -332,6 +340,10 @@ public class SaveManager : MonoBehaviour
         BeaconUpgrade beacon = FindFirstObjectByType<BeaconUpgrade>();
         if (beacon != null)
             beacon.RestoreSnapshot(new BeaconUpgradeSnapshot(data.beaconLevel, data.beaconRadius));
+
+        DonationFountain fountain = FindFirstObjectByType<DonationFountain>();
+        if (fountain != null)
+            fountain.RestoreSnapshot(new DonationFountainSnapshot(data.donationFountainLevel, data.donationFountainCoins));
 
         RestoreChests(data.chests);
         RestoreFurnaces(data.furnaces);

@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 188ade1f98f86c34c82dc18d33a34f7d, type: 3}
+  m_Name: SwordGold
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  itemID: SwordGold
+  itemName: "\u0417\u043E\u043B\u043E\u0442\u043E\u0439 \u043C\u0435\u0447"
+  description: "\u0411\u043B\u0435\u0441\u0442\u044F\u0449\u0435 \u0441\u043F\u0440\u0430\u0432\u043B\u044F\u0435\u0442\u0441\u044F
+    \u0441 \u0432\u0440\u0430\u0433\u0430\u043C\u0438"
+  icon: {fileID: -1670773418415759112, guid: ac06abed6d4829249bab9676684d39b9, type: 3}
+  maxStack: 1
+  pickupPrefab: {fileID: 5642904015008106225, guid: 620fff0d10f6b1f468b0a2714c7091da, type: 3}
+  type: 2
+  placementMode: 0
+  prefab: {fileID: 0}
+  isDoor: 0
+  doorWallMarkerTile: {fileID: 0}
+  tileToPlace: {fileID: 0}
+  occupiesBuildCell: 1
+  canPlaceOnWater: 0
+  waterTileToPlace: {fileID: 0}
+  seedCrop: {fileID: 0}
+  attackPrefab: {fileID: 5642904015008106225, guid: 663d65b3057466049a11f5e7cad34a0d, type: 3}
+  actionRadius: 3
+  toolType: 0
+  toolPower: 1
+  damage: 8
+  attackSpeed: 1
+  isLantern: 0
+  lanternLightRadius: 2.5
+  lanternDrainPerSecond: 1
+  lanternMaxCharge: 100
+  consumableEffectType: 0
+  effectDuration: 0
+  healAmount: 0
+  cooldown: 0
+  foodRestore: 0
+  equipmentType: 0
+  activeEquipmentEffect: 0
+  defense: 0
+  frostDamageMultiplier: 1
+  pressureGrowthMultiplier: 1
+  furnaceFuelSeconds: 0
+  furnaceSmeltResult: {fileID: 0}
+  furnaceSmeltResultAmount: 1
+  furnaceSmeltDuration: 0

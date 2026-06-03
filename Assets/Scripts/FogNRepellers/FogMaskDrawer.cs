@@ -210,12 +210,16 @@ public class FogMaskDrawer : MonoBehaviour
         float uvX = drawPosition.x / fogScale.x + 0.5f;
         float uvY = drawPosition.y / fogScale.y + 0.5f;
 
-        float minScale = Mathf.Max(0.0001f, Mathf.Min(fogScale.x, fogScale.y));
-        float radiusUV = repeller.clearRadius / minScale;
+        float scaleX = Mathf.Max(0.0001f, Mathf.Abs(fogScale.x));
+        float scaleY = Mathf.Max(0.0001f, Mathf.Abs(fogScale.y));
+        float radiusUvX = repeller.clearRadius / scaleX;
+        float radiusUvY = repeller.clearRadius / scaleY;
         float transitionPixels = Mathf.Lerp(1f, 12f, edgeSoftness);
-        float transitionUV = transitionPixels / Mathf.Max(1f, textureSize);
-        float halfTransitionUV = transitionUV * 0.5f;
-        float coreRadiusUV = Mathf.Max(0f, radiusUV - halfTransitionUV);
+        float transitionWorld = transitionPixels / Mathf.Max(1f, textureSize) * Mathf.Min(scaleX, scaleY);
+        float transitionUvX = transitionWorld / scaleX;
+        float transitionUvY = transitionWorld / scaleY;
+        float coreRadiusUvX = Mathf.Max(0f, radiusUvX - transitionUvX * 0.5f);
+        float coreRadiusUvY = Mathf.Max(0f, radiusUvY - transitionUvY * 0.5f);
 
         int segments = Mathf.Clamp(Mathf.RoundToInt(Mathf.Lerp(64f, 192f, edgeSoftness)), 32, 192);
         int steps = Mathf.Clamp(Mathf.RoundToInt(Mathf.Lerp(4f, 20f, edgeSoftness)), 2, 24);
@@ -228,8 +232,8 @@ public class FogMaskDrawer : MonoBehaviour
             float angle2 = (i + 1) * Mathf.PI * 2f / segments;
 
             GL.Vertex3(uvX, uvY, 0f);
-            GL.Vertex3(uvX + Mathf.Cos(angle1) * coreRadiusUV, uvY + Mathf.Sin(angle1) * coreRadiusUV, 0f);
-            GL.Vertex3(uvX + Mathf.Cos(angle2) * coreRadiusUV, uvY + Mathf.Sin(angle2) * coreRadiusUV, 0f);
+            GL.Vertex3(uvX + Mathf.Cos(angle1) * coreRadiusUvX, uvY + Mathf.Sin(angle1) * coreRadiusUvY, 0f);
+            GL.Vertex3(uvX + Mathf.Cos(angle2) * coreRadiusUvX, uvY + Mathf.Sin(angle2) * coreRadiusUvY, 0f);
         }
         GL.End();
 
@@ -238,8 +242,10 @@ public class FogMaskDrawer : MonoBehaviour
             float t0 = (float)s / steps;
             float t1 = (float)(s + 1) / steps;
 
-            float r0 = coreRadiusUV + t0 * transitionUV;
-            float r1 = coreRadiusUV + t1 * transitionUV;
+            float r0X = coreRadiusUvX + t0 * transitionUvX;
+            float r0Y = coreRadiusUvY + t0 * transitionUvY;
+            float r1X = coreRadiusUvX + t1 * transitionUvX;
+            float r1Y = coreRadiusUvY + t1 * transitionUvY;
 
             float alpha0 = Mathf.SmoothStep(1f, 0f, t0);
             float alpha1 = Mathf.SmoothStep(1f, 0f, t1);
@@ -255,10 +261,10 @@ public class FogMaskDrawer : MonoBehaviour
                 float sin = Mathf.Sin(angle);
 
                 GL.Color(c0);
-                GL.Vertex3(uvX + cos * r0, uvY + sin * r0, 0f);
+                GL.Vertex3(uvX + cos * r0X, uvY + sin * r0Y, 0f);
 
                 GL.Color(c1);
-                GL.Vertex3(uvX + cos * r1, uvY + sin * r1, 0f);
+                GL.Vertex3(uvX + cos * r1X, uvY + sin * r1Y, 0f);
             }
             GL.End();
         }

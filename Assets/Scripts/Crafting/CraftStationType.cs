@@ -17,5 +17,7 @@ public enum CraftingCategory
     Resources,
     Furniture,
     Survival,
-    Consumables
+    Consumables,
+    Weapons,
+    Others
 }
