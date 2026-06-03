@@ -159,6 +159,16 @@ public class InventoryWorldTooltipController : MonoBehaviour
                 return true;
             }
 
+            DungeonLightMirror lightMirror = hit.GetComponentInParent<DungeonLightMirror>();
+            if (lightMirror != null)
+            {
+                if (interactionSource != null && !lightMirror.CanInteract(interactionSource))
+                    continue;
+
+                interactable = lightMirror;
+                return true;
+            }
+
             CraftingStation station = hit.GetComponentInParent<CraftingStation>();
             if (station == null)
                 continue;
@@ -222,6 +232,9 @@ public class InventoryWorldTooltipController : MonoBehaviour
 
         if (interactable is DungeonLightSource lightSource)
             return lightSource.InteractLabel;
+
+        if (interactable is DungeonLightMirror lightMirror)
+            return lightMirror.InteractLabel;
 
         return worldInteractLabel;
     }

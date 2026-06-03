@@ -9,7 +9,7 @@ public class DungeonLightDoor : MonoBehaviour
     [SerializeField] private Collider2D blockingCollider;
     [SerializeField] private SpriteRenderer spriteRenderer;
     [SerializeField] private GameObject visualRoot;
-    [SerializeField] private TextMeshPro counterText;
+    [SerializeField] private TMP_Text counterText;
     [SerializeField] private bool autoCreateCounterText = true;
 
     [Header("Sprites")]
@@ -140,7 +140,6 @@ public class DungeonLightDoor : MonoBehaviour
         counterText.alignment = TextAlignmentOptions.Center;
         counterText.fontSize = 3f;
         counterText.color = Color.white;
-        counterText.text = "0/0";
-        counterText.sortingOrder = 20;
+        counterText.text = "0/0"; 
     }
 }

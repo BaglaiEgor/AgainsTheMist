@@ -1,29 +1,48 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
+using UnityEngine.Tilemaps;
 
 [DisallowMultipleComponent]
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(Collider2D))]
-[RequireComponent(typeof(LineRenderer))]
 public class DungeonLightSource : MonoBehaviour
 {
-    [Header("Light")]
+    [Header("Ray")]
     [SerializeField] private Transform lightOrigin;
     [SerializeField] private LayerMask raycastMask = ~0;
     [Min(0.5f)] [SerializeField] private float maxDistance = 12f;
     [Min(0)] [SerializeField] private int maxBounces = 6;
-    [Min(0.001f)] [SerializeField] private float rayOffset = 0.03f;
+    [Min(0.001f)] [SerializeField] private float rayOffset = 0.05f;
+    [Min(0f)] [SerializeField] private float mirrorVisualGap = 0f;
+
+    [Header("Beam Light2D")]
+    [SerializeField] private Light2D beamTemplateLight;
+    [SerializeField] private Color beamColor = new Color(0.89f, 0.52f, 0.35f, 1f);
+    [Min(0f)] [SerializeField] private float beamIntensity = 0.75f;
+    [InspectorName("Inner Width")] [Min(0.05f)] [SerializeField] private float beamWidth = 0.15f;
+    [InspectorName("Outer Width")] [Min(0.05f)] [SerializeField] private float beamOuterWidth = 0.75f;
+    [Range(0f, 1f)] [SerializeField] private float beamFalloffIntensity = 0.75f;
+    [Min(0f)] [SerializeField] private float beamVolumeIntensity = 0.25f;
+    [SerializeField] private bool beamVolumetricEnabled = true;
+    [Min(0f)] [SerializeField] private float beamShadowIntensity = 0f;
+    [SerializeField] private int beamBlendStyleIndex = 0;
+    [SerializeField] private int beamLightOrder = 0;
 
     [Header("Interaction")]
     [SerializeField] private float interactDistance = 2f;
     [SerializeField] private bool configureRigidbodyOnAwake = true;
+    [SerializeField] private Transform rotationCenterOverride;
 
-    [Header("Visual")]
-    [SerializeField] private LineRenderer lineRenderer;
-    [SerializeField] private float lineWidth = 0.06f;
-    [SerializeField] private Color lineColor = new Color(1f, 0.88f, 0.2f, 1f);
+    private struct BeamSegment
+    {
+        public Vector3 start;
+        public Vector3 end;
+    }
 
-    private readonly List<Vector3> points = new();
+    private readonly List<BeamSegment> beamSegments = new();
+    private readonly List<Light2D> beamLights = new();
+    private readonly RaycastHit2D[] raycastHits = new RaycastHit2D[32];
 
     public string InteractLabel => "\u041f\u043e\u0432\u0435\u0440\u043d\u0443\u0442\u044c";
 
@@ -32,20 +51,16 @@ public class DungeonLightSource : MonoBehaviour
         if (lightOrigin == null)
             lightOrigin = transform;
 
-        if (lineRenderer == null)
-            lineRenderer = GetComponent<LineRenderer>();
+        EnsureBeamTemplate();
 
         if (configureRigidbodyOnAwake)
             ConfigureRigidbody();
-
-        ConfigureLineRenderer();
     }
 
     private void Reset()
     {
-        lineRenderer = GetComponent<LineRenderer>();
         ConfigureRigidbody();
-        ConfigureLineRenderer();
+        EnsureBeamTemplate();
     }
 
     private void Update()
@@ -66,79 +81,266 @@ public class DungeonLightSource : MonoBehaviour
         if (!CanInteract(interactor))
             return false;
 
+        Vector3 centerBeforeRotation = GetRotationCenterWorld();
         float nextAngle = Mathf.Round((transform.eulerAngles.z - 90f) / 90f) * 90f;
         transform.rotation = Quaternion.Euler(0f, 0f, nextAngle);
+
+        Vector3 centerAfterRotation = GetRotationCenterWorld();
+        transform.position += centerBeforeRotation - centerAfterRotation;
 
         Rigidbody2D rb = GetComponent<Rigidbody2D>();
         if (rb != null)
         {
+            rb.position = transform.position;
             rb.rotation = nextAngle;
-            rb.angularVelocity = 0f;
+            if (rb.bodyType != RigidbodyType2D.Static)
+            {
+                rb.linearVelocity = Vector2.zero;
+                rb.angularVelocity = 0f;
+            }
         }
 
         return true;
     }
 
+    private Vector3 GetRotationCenterWorld()
+    {
+        if (rotationCenterOverride != null)
+            return rotationCenterOverride.position;
+
+        SpriteRenderer renderer = GetComponentInChildren<SpriteRenderer>();
+        if (renderer != null)
+            return renderer.bounds.center;
+
+        Collider2D collider = GetComponent<Collider2D>();
+        if (collider != null)
+            return collider.bounds.center;
+
+        return transform.position;
+    }
+
     private void CastLight()
     {
-        points.Clear();
+        beamSegments.Clear();
 
         Vector2 origin = lightOrigin != null ? lightOrigin.position : transform.position;
         Vector2 direction = SnapDirection(lightOrigin != null ? lightOrigin.right : transform.right);
-        points.Add(origin);
+        Collider2D previousMirrorTrigger = null;
 
         for (int bounce = 0; bounce <= maxBounces; bounce++)
         {
-            RaycastHit2D hit = GetFirstValidHit(origin + direction * rayOffset, direction);
+            RaycastHit2D hit = GetFirstValidHit(origin + direction * rayOffset, direction, previousMirrorTrigger);
             if (hit.collider == null)
             {
-                points.Add(origin + direction * maxDistance);
+                AddBeamSegment(origin, origin + direction * maxDistance);
                 break;
             }
 
-            points.Add(hit.point);
-
             DungeonLightReceiver receiver = hit.collider.GetComponentInParent<DungeonLightReceiver>();
             if (receiver != null)
+            {
                 receiver.ReceiveLight();
+                AddBeamSegment(origin, hit.point);
+                break;
+            }
 
             DungeonLightMirror mirror = hit.collider.GetComponentInParent<DungeonLightMirror>();
-            if (mirror == null)
+            if (mirror == null || !mirror.CanReflectFrom(hit.collider))
+            {
+                AddBeamSegment(origin, hit.point);
                 break;
+            }
 
-            origin = hit.point;
-            direction = mirror.Reflect(direction);
+            Vector2 reflectedDirection = mirror.Reflect(direction);
+            AddBeamSegment(origin, hit.point);
+
+            origin = hit.point + reflectedDirection * Mathf.Max(rayOffset, mirrorVisualGap);
+            direction = reflectedDirection;
+            previousMirrorTrigger = hit.collider;
         }
 
-        RefreshLineRenderer();
+        RefreshBeamLights();
     }
 
-    private void RefreshLineRenderer()
+    private void AddBeamSegment(Vector3 start, Vector3 end)
     {
-        if (lineRenderer == null)
-            return;
-
-        lineRenderer.positionCount = points.Count;
-        for (int i = 0; i < points.Count; i++)
-            lineRenderer.SetPosition(i, points[i]);
-    }
-
-    private RaycastHit2D GetFirstValidHit(Vector2 origin, Vector2 direction)
-    {
-        RaycastHit2D[] hits = Physics2D.RaycastAll(origin, direction, maxDistance, raycastMask);
-        for (int i = 0; i < hits.Length; i++)
+        beamSegments.Add(new BeamSegment
         {
-            Collider2D hitCollider = hits[i].collider;
+            start = start,
+            end = end
+        });
+    }
+
+    private void RefreshBeamLights()
+    {
+        EnsureBeamTemplate();
+
+        if (beamSegments.Count == 0)
+        {
+            SetActiveBeamCount(0);
+            return;
+        }
+
+        int usedCount = 0;
+        for (int i = 0; i < beamSegments.Count; i++)
+        {
+            Vector3 start = beamSegments[i].start;
+            Vector3 end = beamSegments[i].end;
+            Vector3 segment = end - start;
+            float distance = segment.magnitude;
+            if (distance <= 0.01f)
+                continue;
+
+            Light2D beamLight = GetBeamLight(usedCount);
+            Vector3 segmentDirection = segment / distance;
+            float angle = Mathf.Atan2(segmentDirection.y, segmentDirection.x) * Mathf.Rad2Deg;
+
+            beamLight.transform.position = start;
+            beamLight.transform.rotation = Quaternion.Euler(0f, 0f, angle);
+            ApplyBeamSettings(beamLight);
+            beamLight.SetShapePath(CreateBeamShapePath(distance));
+            beamLight.gameObject.SetActive(true);
+            usedCount++;
+        }
+
+        SetActiveBeamCount(usedCount);
+    }
+
+    private Light2D GetBeamLight(int index)
+    {
+        while (beamLights.Count <= index)
+        {
+            GameObject lightObject = new GameObject($"BeamLight2D_{beamLights.Count}");
+            lightObject.transform.SetParent(transform, true);
+
+            Light2D beamLight = lightObject.AddComponent<Light2D>();
+            beamLight.lightType = Light2D.LightType.Freeform;
+            beamLights.Add(beamLight);
+        }
+
+        return beamLights[index];
+    }
+
+    private void ApplyBeamSettings(Light2D beamLight)
+    {
+        beamLight.lightType = Light2D.LightType.Freeform;
+        beamLight.enabled = true;
+
+        if (beamTemplateLight == null)
+        {
+            beamLight.color = beamColor;
+            beamLight.intensity = beamIntensity;
+            beamLight.shapeLightFalloffSize = GetBeamFalloffSize();
+            beamLight.falloffIntensity = beamFalloffIntensity;
+            beamLight.volumeIntensity = beamVolumeIntensity;
+            beamLight.volumetricEnabled = beamVolumetricEnabled && beamVolumeIntensity > 0f;
+            beamLight.shadowIntensity = beamShadowIntensity;
+            beamLight.blendStyleIndex = beamBlendStyleIndex;
+            beamLight.lightOrder = beamLightOrder;
+            return;
+        }
+
+        beamLight.color = beamTemplateLight.color;
+        beamLight.intensity = beamTemplateLight.intensity;
+        beamLight.shapeLightFalloffSize = beamTemplateLight.shapeLightFalloffSize;
+        beamLight.falloffIntensity = beamTemplateLight.falloffIntensity;
+        beamLight.volumeIntensity = beamTemplateLight.volumeIntensity;
+        beamLight.volumetricEnabled = beamTemplateLight.volumetricEnabled;
+        beamLight.shadowIntensity = beamTemplateLight.shadowIntensity;
+        beamLight.blendStyleIndex = beamTemplateLight.blendStyleIndex;
+        beamLight.lightOrder = beamTemplateLight.lightOrder;
+    }
+
+    private Vector3[] CreateBeamShapePath(float length)
+    {
+        float halfWidth = Mathf.Max(beamWidth, beamOuterWidth) * 0.5f;
+        return new[]
+        {
+            new Vector3(0f, -halfWidth, 0f),
+            new Vector3(length, -halfWidth, 0f),
+            new Vector3(length, halfWidth, 0f),
+            new Vector3(0f, halfWidth, 0f)
+        };
+    }
+
+    private float GetBeamFalloffSize()
+    {
+        return Mathf.Max(0f, (Mathf.Max(beamWidth, beamOuterWidth) - beamWidth) * 0.5f);
+    }
+
+    private void SetActiveBeamCount(int activeCount)
+    {
+        for (int i = 0; i < beamLights.Count; i++)
+            beamLights[i].gameObject.SetActive(i < activeCount);
+    }
+
+    private RaycastHit2D GetFirstValidHit(Vector2 origin, Vector2 direction, Collider2D ignoredCollider)
+    {
+        ContactFilter2D filter = CreateRaycastFilter();
+        int hitCount = Physics2D.Raycast(origin, direction, filter, raycastHits, maxDistance);
+        RaycastHit2D closestHit = default;
+        float closestDistance = float.MaxValue;
+
+        for (int i = 0; i < hitCount; i++)
+        {
+            Collider2D hitCollider = raycastHits[i].collider;
             if (hitCollider == null)
                 continue;
 
             if (hitCollider.transform == transform || hitCollider.transform.IsChildOf(transform))
                 continue;
 
-            return hits[i];
+            if (hitCollider == ignoredCollider)
+                continue;
+
+            if (hitCollider is TilemapCollider2D)
+                continue;
+
+            DungeonLightMirror mirror = hitCollider.GetComponentInParent<DungeonLightMirror>();
+            if (mirror != null)
+            {
+                if (!mirror.CanReflectFrom(hitCollider))
+                    continue;
+            }
+
+            if (raycastHits[i].distance < closestDistance)
+            {
+                closestDistance = raycastHits[i].distance;
+                closestHit = raycastHits[i];
+            }
         }
 
-        return default;
+        return closestHit;
+    }
+
+    private ContactFilter2D CreateRaycastFilter()
+    {
+        ContactFilter2D filter = new ContactFilter2D
+        {
+            useLayerMask = true,
+            useTriggers = true
+        };
+        filter.SetLayerMask(raycastMask);
+        return filter;
+    }
+
+    private void EnsureBeamTemplate()
+    {
+        if (beamTemplateLight == null)
+        {
+            Light2D[] lights = GetComponentsInChildren<Light2D>(true);
+            for (int i = 0; i < lights.Length; i++)
+            {
+                if (lights[i] != null && !beamLights.Contains(lights[i]))
+                {
+                    beamTemplateLight = lights[i];
+                    break;
+                }
+            }
+        }
+
+        if (beamTemplateLight != null)
+            beamTemplateLight.enabled = false;
     }
 
     private static Vector2 SnapDirection(Vector2 direction)
@@ -158,25 +360,5 @@ public class DungeonLightSource : MonoBehaviour
         rb.bodyType = RigidbodyType2D.Dynamic;
         rb.gravityScale = 0f;
         rb.freezeRotation = true;
-    }
-
-    private void ConfigureLineRenderer()
-    {
-        if (lineRenderer == null)
-            return;
-
-        lineRenderer.useWorldSpace = true;
-        lineRenderer.startWidth = lineWidth;
-        lineRenderer.endWidth = lineWidth;
-        lineRenderer.startColor = lineColor;
-        lineRenderer.endColor = lineColor;
-        lineRenderer.positionCount = 0;
-
-        if (lineRenderer.sharedMaterial == null)
-        {
-            Shader shader = Shader.Find("Sprites/Default");
-            if (shader != null)
-                lineRenderer.sharedMaterial = new Material(shader);
-        }
     }
 }

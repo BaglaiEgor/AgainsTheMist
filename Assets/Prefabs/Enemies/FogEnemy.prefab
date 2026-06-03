@@ -31,7 +31,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -83,10 +83,10 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 11
+  m_SortingOrder: 1
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -198421680, guid: d598549faf977094697e84312f682286, type: 3}
-  m_Color: {r: 0.8, g: 0.94, b: 0.85, a: 1}
+  m_Sprite: {fileID: 7398763074073571630, guid: b61ecdab482e2bb479402e324a09d707, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -180,6 +180,49 @@ MonoBehaviour:
   maxHealth: 20
   contactDamage: 5
   contactDamageInterval: 1
+  enableGoblinMoves: 0
+  lineAttackDamage: 8
+  attackRange: 1.6
+  attackCooldown: 1.4
+  attackTelegraphTime: 0.45
+  attackDashDistance: 1.25
+  attackDashDuration: 0.18
+  attackLineWidth: 0.08
+  attackLineColor: {r: 1, g: 0.12, b: 0.08, a: 0.9}
+  approachRollChance: 0.25
+  approachRollCooldown: 2.2
+  rollDodgeChance: 0.45
+  rollDuration: 0.35
+  rollSpeedMultiplier: 2.8
+  rollInvulnerableTime: 0.28
+  hitKnockbackDistance: 0.35
+  hitKnockbackDuration: 0.16
+  hitAnimationDuration: 0.22
+  deathAnimationDuration: 0.75
+  enableSpriteAnimation: 1
+  spriteRenderer: {fileID: 9008969921172199115}
+  idleSprites:
+  - {fileID: 7398763074073571630, guid: b61ecdab482e2bb479402e324a09d707, type: 3}
+  - {fileID: -8742149664922486167, guid: b61ecdab482e2bb479402e324a09d707, type: 3}
+  - {fileID: -4043558831823597747, guid: b61ecdab482e2bb479402e324a09d707, type: 3}
+  - {fileID: -4839116797880745726, guid: b61ecdab482e2bb479402e324a09d707, type: 3}
+  - {fileID: -1551046000167251484, guid: b61ecdab482e2bb479402e324a09d707, type: 3}
+  - {fileID: -8529052904691096059, guid: b61ecdab482e2bb479402e324a09d707, type: 3}
+  runSprites:
+  - {fileID: 7398763074073571630, guid: b61ecdab482e2bb479402e324a09d707, type: 3}
+  - {fileID: -8742149664922486167, guid: b61ecdab482e2bb479402e324a09d707, type: 3}
+  - {fileID: -4043558831823597747, guid: b61ecdab482e2bb479402e324a09d707, type: 3}
+  - {fileID: -4839116797880745726, guid: b61ecdab482e2bb479402e324a09d707, type: 3}
+  - {fileID: -1551046000167251484, guid: b61ecdab482e2bb479402e324a09d707, type: 3}
+  - {fileID: -8529052904691096059, guid: b61ecdab482e2bb479402e324a09d707, type: 3}
+  rollSprites: []
+  hitSprites: []
+  deathSprites: []
+  idleFrameTime: 0.1
+  runFrameTime: 0.1
+  rollFrameTime: 0.045
+  hitFrameTime: 0.07
+  deathFrameTime: 0.07
   despawnDelayInLight: 2
   lanternProtectionBreakPressure: 70
 --- !u!114 &-4943983729187571601

@@ -124,7 +124,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1719967716596661215}
-  - component: {fileID: 4092452913750916226}
+  - component: {fileID: 5924169757172373993}
   m_Layer: 0
   m_Name: Spot Light 2D
   m_TagString: Untagged
@@ -147,7 +147,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 3297835385330614061}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4092452913750916226
+--- !u!114 &5924169757172373993
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -188,7 +188,7 @@ MonoBehaviour:
   m_PointLightInnerAngle: 360
   m_PointLightOuterAngle: 360
   m_PointLightInnerRadius: 0.15
-  m_PointLightOuterRadius: 20
+  m_PointLightOuterRadius: 17
   m_ShapeLightParametricSides: 5
   m_ShapeLightParametricAngleOffset: 0
   m_ShapeLightParametricRadius: 1

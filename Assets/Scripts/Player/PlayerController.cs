@@ -367,6 +367,13 @@ public class PlayerController : MonoBehaviour
                 AudioController.Instance?.PlayInteract();
                 return;
             }
+
+            DungeonLightMirror lightMirror = hit.GetComponentInParent<DungeonLightMirror>();
+            if (lightMirror != null && lightMirror.TryToggleDirection(transform))
+            {
+                AudioController.Instance?.PlayInteract();
+                return;
+            }
         }
 
         for (int i = 0; i < hits.Length; i++)

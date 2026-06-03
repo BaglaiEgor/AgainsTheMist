@@ -14,6 +14,16 @@ public class DungeonPushBox : MonoBehaviour
             ConfigureRigidbody();
     }
 
+    private void FixedUpdate()
+    {
+        Rigidbody2D rb = GetComponent<Rigidbody2D>();
+        if (rb == null)
+            return;
+
+        rb.rotation = 0f;
+        rb.angularVelocity = 0f;
+    }
+
     private void Reset()
     {
         ConfigureRigidbody();

@@ -1,0 +1,429 @@
+fileFormatVersion: 2
+guid: 591f671286e1655479cf250230f27293
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 8138448624139301542
+    second: goblin scout - silhouette v4 - unarmed-death 1_0
+  - first:
+      213: -1287460880816314165
+    second: goblin scout - silhouette v4 - unarmed-death 1_1
+  - first:
+      213: -9173340008157689354
+    second: goblin scout - silhouette v4 - unarmed-death 1_2
+  - first:
+      213: -932201999448518557
+    second: goblin scout - silhouette v4 - unarmed-death 1_3
+  - first:
+      213: 6544536157558649332
+    second: goblin scout - silhouette v4 - unarmed-death 1_4
+  - first:
+      213: 2368698267156486849
+    second: goblin scout - silhouette v4 - unarmed-death 1_5
+  - first:
+      213: -9178820945398669527
+    second: goblin scout - silhouette v4 - unarmed-death 1_6
+  - first:
+      213: -8338915263988853054
+    second: goblin scout - silhouette v4 - unarmed-death 1_7
+  - first:
+      213: -5789093043614528467
+    second: goblin scout - silhouette v4 - unarmed-death 1_8
+  - first:
+      213: -7047402353291687544
+    second: goblin scout - silhouette v4 - unarmed-death 1_9
+  - first:
+      213: -2029080566896298397
+    second: goblin scout - silhouette v4 - unarmed-death 1_10
+  - first:
+      213: 4126103822030847496
+    second: goblin scout - silhouette v4 - unarmed-death 1_11
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 16
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: goblin scout - silhouette v4 - unarmed-death 1_0
+      rect:
+        serializedVersion: 2
+        x: 22
+        y: 18
+        width: 18
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6a2f69087e391f070800000000000000
+      internalID: 8138448624139301542
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goblin scout - silhouette v4 - unarmed-death 1_1
+      rect:
+        serializedVersion: 2
+        x: 89
+        y: 18
+        width: 16
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bc86bb07625022ee0800000000000000
+      internalID: -1287460880816314165
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goblin scout - silhouette v4 - unarmed-death 1_2
+      rect:
+        serializedVersion: 2
+        x: 153
+        y: 18
+        width: 15
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6f9c1e17ddfb1b080800000000000000
+      internalID: -9173340008157689354
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goblin scout - silhouette v4 - unarmed-death 1_3
+      rect:
+        serializedVersion: 2
+        x: 217
+        y: 18
+        width: 15
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 36056f378372013f0800000000000000
+      internalID: -932201999448518557
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goblin scout - silhouette v4 - unarmed-death 1_4
+      rect:
+        serializedVersion: 2
+        x: 281
+        y: 18
+        width: 15
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4f1bbfaf5fcd2da50800000000000000
+      internalID: 6544536157558649332
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goblin scout - silhouette v4 - unarmed-death 1_5
+      rect:
+        serializedVersion: 2
+        x: 346
+        y: 18
+        width: 18
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1ca12f9268e4fd020800000000000000
+      internalID: 2368698267156486849
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goblin scout - silhouette v4 - unarmed-death 1_6
+      rect:
+        serializedVersion: 2
+        x: 413
+        y: 18
+        width: 20
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 92fd89c4bf64e9080800000000000000
+      internalID: -9178820945398669527
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goblin scout - silhouette v4 - unarmed-death 1_7
+      rect:
+        serializedVersion: 2
+        x: 477
+        y: 18
+        width: 21
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2c69cd5bfb8364c80800000000000000
+      internalID: -8338915263988853054
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goblin scout - silhouette v4 - unarmed-death 1_8
+      rect:
+        serializedVersion: 2
+        x: 541
+        y: 18
+        width: 22
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d2ccbab7c8209afa0800000000000000
+      internalID: -5789093043614528467
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goblin scout - silhouette v4 - unarmed-death 1_9
+      rect:
+        serializedVersion: 2
+        x: 605
+        y: 18
+        width: 22
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8890ccef5e8923e90800000000000000
+      internalID: -7047402353291687544
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goblin scout - silhouette v4 - unarmed-death 1_10
+      rect:
+        serializedVersion: 2
+        x: 669
+        y: 18
+        width: 22
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3667f7599f147d3e0800000000000000
+      internalID: -2029080566896298397
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goblin scout - silhouette v4 - unarmed-death 1_11
+      rect:
+        serializedVersion: 2
+        x: 733
+        y: 18
+        width: 22
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 80eb78aa09dd24930800000000000000
+      internalID: 4126103822030847496
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      goblin scout - silhouette v4 - unarmed-death 1_0: 8138448624139301542
+      goblin scout - silhouette v4 - unarmed-death 1_1: -1287460880816314165
+      goblin scout - silhouette v4 - unarmed-death 1_10: -2029080566896298397
+      goblin scout - silhouette v4 - unarmed-death 1_11: 4126103822030847496
+      goblin scout - silhouette v4 - unarmed-death 1_2: -9173340008157689354
+      goblin scout - silhouette v4 - unarmed-death 1_3: -932201999448518557
+      goblin scout - silhouette v4 - unarmed-death 1_4: 6544536157558649332
+      goblin scout - silhouette v4 - unarmed-death 1_5: 2368698267156486849
+      goblin scout - silhouette v4 - unarmed-death 1_6: -9178820945398669527
+      goblin scout - silhouette v4 - unarmed-death 1_7: -8338915263988853054
+      goblin scout - silhouette v4 - unarmed-death 1_8: -5789093043614528467
+      goblin scout - silhouette v4 - unarmed-death 1_9: -7047402353291687544
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

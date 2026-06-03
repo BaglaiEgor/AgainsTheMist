@@ -22,6 +22,9 @@ public class DayNightLightController : MonoBehaviour
     );
     [SerializeField] private Gradient colorByTime;
 
+    private bool forceIntensity;
+    private float forcedIntensity;
+
     private void Reset()
     {
         globalLight = GetComponent<Light2D>();
@@ -51,6 +54,12 @@ public class DayNightLightController : MonoBehaviour
         if (timeSystem == null || globalLight == null)
             return;
 
+        if (forceIntensity)
+        {
+            globalLight.intensity = forcedIntensity;
+            return;
+        }
+
         float t = usePreciseTime ? timeSystem.TimeOfDayPrecise01 : timeSystem.TimeOfDay01;
         t = Mathf.Clamp01(t);
 
@@ -62,6 +71,21 @@ public class DayNightLightController : MonoBehaviour
 
         if (colorByTime != null)
             globalLight.color = colorByTime.Evaluate(t);
+    }
+
+    public void ForceIntensity(float intensity)
+    {
+        forcedIntensity = Mathf.Max(0f, intensity);
+        forceIntensity = true;
+
+        if (globalLight != null)
+            globalLight.intensity = forcedIntensity;
+    }
+
+    public void ClearForcedIntensity()
+    {
+        forceIntensity = false;
+        ApplyLightNow();
     }
 
     private void EnsureDefaultGradient()

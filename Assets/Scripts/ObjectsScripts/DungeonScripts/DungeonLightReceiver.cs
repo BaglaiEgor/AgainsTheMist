@@ -8,9 +8,9 @@ public class DungeonLightReceiver : MonoBehaviour
     [Header("Refs")]
     [SerializeField] private SpriteRenderer spriteRenderer;
 
-    [Header("Colors")]
-    [SerializeField] private Color unlitColor = new Color(0.45f, 0.45f, 0.45f, 1f);
-    [SerializeField] private Color litColor = new Color(1f, 0.9f, 0.25f, 1f);
+    [Header("Sprites")]
+    [SerializeField] private Sprite unlitSprite;
+    [SerializeField] private Sprite litSprite;
 
     private int lastLightFrame = -1;
     private bool isLit;
@@ -50,7 +50,11 @@ public class DungeonLightReceiver : MonoBehaviour
 
     private void RefreshVisual()
     {
-        if (spriteRenderer != null)
-            spriteRenderer.color = isLit ? litColor : unlitColor;
+        if (spriteRenderer == null)
+            return;
+
+        Sprite targetSprite = isLit ? litSprite : unlitSprite;
+        if (targetSprite != null)
+            spriteRenderer.sprite = targetSprite;
     }
 }
