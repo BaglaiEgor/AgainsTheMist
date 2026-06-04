@@ -319,6 +319,28 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: Inventory_select_10
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 0
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: eeb03ebc83dd80d408ef5aad0f2aaa2e
+      internalID: 80089902
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     customData: 
     physicsShape: []
@@ -337,6 +359,7 @@ TextureImporter:
     nameFileIdTable:
       Inventory_select_0: -8337784903205208846
       Inventory_select_1: 968145671
+      Inventory_select_10: 80089902
       Inventory_select_2: -361677762
       Inventory_select_3: 861009866
       Inventory_select_4: 1146394397

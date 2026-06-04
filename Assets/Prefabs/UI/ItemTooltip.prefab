@@ -523,9 +523,9 @@ MonoBehaviour:
   nameText: {fileID: 5365509993754323581}
   descriptionText: {fileID: 7727970006341152543}
   extraText: {fileID: 6594461882207443338}
-  offset: {x: 20, y: 20}
+  offset: {x: 1, y: 1}
   leftBottomOffset: {x: -12, y: -12}
-  maxContentWidth: 260
+  maxContentWidth: 300
 --- !u!114 &3014401148532141751
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -565,7 +565,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.99607843, g: 0.827451, b: 0.49411765, a: 0.9019608}
+  m_Color: {r: 0.34901962, g: 0.32941177, b: 0.27450982, a: 0.9019608}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1

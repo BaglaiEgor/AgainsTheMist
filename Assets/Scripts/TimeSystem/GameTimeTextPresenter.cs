@@ -52,7 +52,7 @@ public class GameTimeTextPresenter : MonoBehaviour
 
         if (showDay)
         {
-            timeText.text = $"{dayPrefix} {day} {hour:00}:{minute:00}";
+            timeText.text = $"{dayPrefix} {day} \n {hour:00}:{minute:00}";
             return;
         }
 

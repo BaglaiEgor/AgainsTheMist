@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Tilemaps;
@@ -22,6 +23,9 @@ public class PlacementPreviewController : MonoBehaviour
     [SerializeField] private string sortingLayerName = "Default";
     [SerializeField] private float zOffset = -0.01f;
     [SerializeField] private bool enableRotation = true;
+    [SerializeField] private float invalidFeedbackCooldown = 0.15f;
+    [SerializeField] private float invalidFeedbackDuration = 0.12f;
+    [SerializeField] private float invalidFeedbackStrength = 0.06f;
 
     private readonly List<Vector3Int> previewCells = new();
     private readonly List<PreviewMarker> markerPool = new();
@@ -35,6 +39,10 @@ public class PlacementPreviewController : MonoBehaviour
 
     private SpriteRenderer structurePreviewRenderer;
     private GameObject activeMarkerPrefab;
+    private Tween invalidFeedbackTween;
+    private float invalidFeedbackIntensity;
+    private float nextInvalidFeedbackTime;
+    private Vector2 invalidFeedbackDirection = Vector2.right;
 
     public int CurrentRotationSteps => rotationSteps;
 
@@ -45,6 +53,8 @@ public class PlacementPreviewController : MonoBehaviour
 
     void OnDisable()
     {
+        invalidFeedbackTween?.Kill();
+        invalidFeedbackIntensity = 0f;
         SetVisibleMarkerCount(0);
         SetStructurePreviewVisible(false);
     }
@@ -77,6 +87,24 @@ public class PlacementPreviewController : MonoBehaviour
 
         if (playerRef != null)
             player = playerRef;
+    }
+
+    public void PlayInvalidFeedback()
+    {
+        if (!previewActive || Time.time < nextInvalidFeedbackTime)
+            return;
+
+        nextInvalidFeedbackTime = Time.time + Mathf.Max(0.01f, invalidFeedbackCooldown);
+        invalidFeedbackTween?.Kill();
+
+        invalidFeedbackDirection = Random.insideUnitCircle.normalized;
+        if (invalidFeedbackDirection.sqrMagnitude <= 0.0001f)
+            invalidFeedbackDirection = Vector2.right;
+
+        invalidFeedbackIntensity = 1f;
+        invalidFeedbackTween = DOTween
+            .To(() => invalidFeedbackIntensity, value => invalidFeedbackIntensity = value, 0f, Mathf.Max(0.01f, invalidFeedbackDuration))
+            .SetEase(Ease.OutQuad);
     }
 
     void ResolveReferences()
@@ -310,7 +338,7 @@ public class PlacementPreviewController : MonoBehaviour
             Vector3 worldPos = groundTilemap.GetCellCenterWorld(previewCells[i]);
             worldPos.z += zOffset;
 
-            marker.SetPosition(worldPos);
+            marker.SetPosition(worldPos + GetInvalidFeedbackOffset(i));
             marker.SetScale(markerScale);
             marker.ApplyVisual(color, sortingOrder, sortingLayerName);
         }
@@ -364,6 +392,7 @@ public class PlacementPreviewController : MonoBehaviour
             : new Color(invalidColor.r, invalidColor.g, invalidColor.b, 0.5f);
 
         Vector3 worldPos = groundTilemap.GetCellCenterWorld(currentAnchorCell);
+        worldPos += GetInvalidFeedbackOffset(0);
         worldPos.z += zOffset * 2f;
 
         Transform previewTransform = structurePreviewRenderer.transform;
@@ -399,6 +428,16 @@ public class PlacementPreviewController : MonoBehaviour
         float scaleX = Mathf.Max(0.01f, Mathf.Abs(baseSize.x * lossyScale.x) * markerCellFill);
         float scaleY = Mathf.Max(0.01f, Mathf.Abs(baseSize.y * lossyScale.y) * markerCellFill);
         return new Vector3(scaleX, scaleY, 1f);
+    }
+
+    Vector3 GetInvalidFeedbackOffset(int index)
+    {
+        if (invalidFeedbackIntensity <= 0.001f)
+            return Vector3.zero;
+
+        float phase = index % 2 == 0 ? 1f : -1f;
+        Vector2 offset = invalidFeedbackDirection * (invalidFeedbackStrength * invalidFeedbackIntensity * phase);
+        return new Vector3(offset.x, offset.y, 0f);
     }
 
     void EnsureMarkerPool(int requiredCount)

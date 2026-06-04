@@ -23,6 +23,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float maxWeaponSwingRadius = 1.8f;
     [SerializeField] private float holdInitialDelay = 0.2f;
     [SerializeField] private float holdRepeatInterval = 0.2f;
+    [Tooltip("Optional point on player where weapon/tool attack prefab starts. If empty, player position is used.")]
+    [SerializeField] private Transform attackSpawnPoint;
 
     [Header("Refs")]
     [SerializeField] private Inventory inventory;
@@ -565,7 +567,8 @@ public class PlayerController : MonoBehaviour
 
         UpdateFacing(facingDirection.x);
 
-        GameObject attack = Instantiate(item.attackPrefab, transform.position, Quaternion.identity);
+        Vector3 attackOrigin = GetAttackOrigin();
+        GameObject attack = Instantiate(item.attackPrefab, attackOrigin, Quaternion.identity);
 
         AttackHitbox hitbox = attack.GetComponent<AttackHitbox>();
         if (hitbox == null)
@@ -577,7 +580,7 @@ public class PlayerController : MonoBehaviour
         hitbox.SetOwner(playerHealth);
         hitbox.ConfigureSwing(
             attackDirection,
-            transform.position,
+            attackOrigin,
             swingRadius,
             weaponSwingArc,
             weaponSwingDuration
@@ -1219,7 +1222,8 @@ public class PlayerController : MonoBehaviour
         Vector2 attackDirection = GetHorizontalAttackDirection(GetAimDirection());
         UpdateFacing(attackDirection.x);
 
-        GameObject attack = Instantiate(item.attackPrefab, transform.position, Quaternion.identity);
+        Vector3 attackOrigin = GetAttackOrigin();
+        GameObject attack = Instantiate(item.attackPrefab, attackOrigin, Quaternion.identity);
         AttackHitbox hitbox = attack.GetComponent<AttackHitbox>();
         if (hitbox == null)
             return false;
@@ -1230,12 +1234,17 @@ public class PlayerController : MonoBehaviour
         hitbox.SetOwner(playerHealth);
         hitbox.ConfigureSwing(
             attackDirection,
-            transform.position,
+            attackOrigin,
             swingRadius,
             weaponSwingArc,
             weaponSwingDuration
         );
         return true;
+    }
+
+    Vector3 GetAttackOrigin()
+    {
+        return attackSpawnPoint != null ? attackSpawnPoint.position : transform.position;
     }
 
     void UseConsumable(ItemData item)
@@ -1329,7 +1338,7 @@ public class PlayerController : MonoBehaviour
     bool PlaceStructure(ItemData item, bool consumeFromCursor)
     {
         if (!TryGetPlacementCell(item, out Vector3Int anchorCell))
-            return false;
+            return FailPlacement();
 
         switch (item.placementMode)
         {
@@ -1340,7 +1349,7 @@ public class PlayerController : MonoBehaviour
                 return PlaceStructureTile(item, anchorCell, consumeFromCursor);
         }
 
-        return false;
+        return FailPlacement();
     }
     
     bool TryGetPlacementCell(ItemData item, out Vector3Int anchorCell)
@@ -1351,11 +1360,17 @@ public class PlayerController : MonoBehaviour
         mouseWorld.z = 0f;
 
         if (Vector2.Distance(transform.position, mouseWorld) > item.actionRadius)
+        {
+            placementPreview?.PlayInvalidFeedback();
             return false;
+        }
 
         EnsurePlacementTilemaps();
         if (groundTilemap == null)
+        {
+            placementPreview?.PlayInvalidFeedback();
             return false;
+        }
 
         anchorCell = groundTilemap.WorldToCell(mouseWorld);
         return true;
@@ -1364,7 +1379,7 @@ public class PlayerController : MonoBehaviour
     bool PlaceStructurePrefab(ItemData item, Vector3Int anchorCell, bool consumeFromCursor)
     {
         if (item.prefab == null)
-            return false;
+            return FailPlacement();
 
         if (item.isDoor)
             return PlaceDoor(item, anchorCell, consumeFromCursor);
@@ -1372,10 +1387,10 @@ public class PlayerController : MonoBehaviour
         int rotationSteps = placementPreview != null ? placementPreview.CurrentRotationSteps : 0;
         BuildPlacementCells(item.prefab, anchorCell, rotationSteps);
         if (!WorldGrid.CanPlaceObject(placementCells))
-            return false;
+            return FailPlacement();
 
         if (!TryConsumePlacedItem(item, consumeFromCursor))
-            return false;
+            return FailPlacement();
 
         Vector3 spawnPos = groundTilemap.GetCellCenterWorld(anchorCell);
         Quaternion rotation = Quaternion.Euler(0f, 0f, rotationSteps * 90f);
@@ -1402,13 +1417,13 @@ public class PlayerController : MonoBehaviour
     {
         Tilemap targetTilemap = buildTilemap;
         if (targetTilemap == null || item.doorWallMarkerTile == null)
-            return false;
+            return FailPlacement();
 
         if (!DoorPlacementUtility.CanPlaceDoor(targetTilemap, buildTilemap, decorTilemap, anchorCell, item.doorWallMarkerTile, out Vector3Int firstDirection, out Vector3Int secondDirection))
-            return false;
+            return FailPlacement();
 
         if (!TryConsumePlacedItem(item, consumeFromCursor))
-            return false;
+            return FailPlacement();
 
         targetTilemap.SetTile(anchorCell, item.doorWallMarkerTile);
         RefreshDoorWallNeighbors(targetTilemap, anchorCell);
@@ -1459,21 +1474,21 @@ public class PlayerController : MonoBehaviour
             return PlaceWaterBridgeTile(item, anchorCell, consumeFromCursor);
 
         if (item.tileToPlace == null)
-            return false;
+            return FailPlacement();
 
         Tilemap targetTilemap = item.occupiesBuildCell ? buildTilemap : decorTilemap;
         if (targetTilemap == null)
-            return false;
+            return FailPlacement();
 
         // Prevent stacking multiple decor/build tiles into the same cell.
         if (targetTilemap.HasTile(anchorCell))
-            return false;
+            return FailPlacement();
 
         if (!WorldGrid.CanPlaceBuildTile(anchorCell))
-            return false;
+            return FailPlacement();
 
         if (!TryConsumePlacedItem(item, consumeFromCursor))
-            return false;
+            return FailPlacement();
 
         targetTilemap.SetTile(anchorCell, item.tileToPlace);
 
@@ -1490,13 +1505,13 @@ public class PlayerController : MonoBehaviour
     {
         Tilemap targetBridgeTilemap = GetBridgePlacementTilemap();
         if (targetBridgeTilemap == null || item.waterTileToPlace == null)
-            return false;
+            return FailPlacement();
 
         if (!WorldGrid.CanPlaceBridgeTile(anchorCell))
-            return false;
+            return FailPlacement();
 
         if (!TryConsumePlacedItem(item, consumeFromCursor))
-            return false;
+            return FailPlacement();
 
         targetBridgeTilemap.SetTile(anchorCell, item.waterTileToPlace);
         WorldGrid.RegisterPlacedBridge(anchorCell);
@@ -1510,6 +1525,12 @@ public class PlayerController : MonoBehaviour
     Tilemap GetBridgePlacementTilemap()
     {
         return bridgeTilemap != null ? bridgeTilemap : snowBridgeTilemap;
+    }
+
+    bool FailPlacement()
+    {
+        placementPreview?.PlayInvalidFeedback();
+        return false;
     }
 
     bool TryConsumePlacedItem(ItemData item, bool consumeFromCursor)

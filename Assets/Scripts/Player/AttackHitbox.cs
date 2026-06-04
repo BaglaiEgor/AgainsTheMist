@@ -73,6 +73,8 @@ public class AttackHitbox : MonoBehaviour
 
             damagedObjects.Add(damageable);
             damageable.TakeDamage(damage);
+            if (damage > 0)
+                CameraShakeController.ShakeMain(0.08f, 0.035f);
         }
     }
 

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using TMPro;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
@@ -50,6 +51,9 @@ public class LighthouseKeeperUI : MonoBehaviour
     [SerializeField] private RectTransform recipesContentRoot;
     [SerializeField] private GameObject recipeRowPrefab;
     [SerializeField] private Image dragIcon;
+    [SerializeField] private float queryHoverScale = 1.04f;
+    [SerializeField] private float queryHoverDuration = 0.1f;
+    [SerializeField] private float queryClickPunchScale = 0.08f;
 
     [Header("Items")]
     [SerializeField] private RectTransform itemsContentRoot;
@@ -78,6 +82,9 @@ public class LighthouseKeeperUI : MonoBehaviour
     private int questIndex;
     private int selectedTipIndex = -1;
     private GuidanceEntry selectedUnlockedTip;
+    private Tween querySlotTween;
+    private Vector3 querySlotBaseScale = Vector3.one;
+    private bool isPointerOverQuerySlot;
 
     private readonly List<LighthouseKeeperRecipeCell> spawnedRecipeRows = new();
     private readonly List<LighthouseKeeperRecipeCell> spawnedItemRows = new();
@@ -88,11 +95,15 @@ public class LighthouseKeeperUI : MonoBehaviour
 
     private void Awake()
     {
+        if (querySlotRect != null)
+            querySlotBaseScale = querySlotRect.localScale;
+
         HideDragIcon();
     }
 
     private void Update()
     {
+        UpdateRecipeQueryHover();
         UpdateRecipeQueryDrag();
     }
 
@@ -191,6 +202,7 @@ public class LighthouseKeeperUI : MonoBehaviour
     public void Close()
     {
         CancelRecipeQueryDrag();
+        ResetRecipeQueryFeedback();
         SetVisible(false);
         currentKeeper = null;
         itemTooltip?.Hide();
@@ -267,7 +279,8 @@ public class LighthouseKeeperUI : MonoBehaviour
         if (queryIcon != null)
         {
             queryIcon.sprite = recipeQueryItem != null ? recipeQueryItem.icon : null;
-            queryIcon.enabled = queryIcon.sprite != null;
+            queryIcon.enabled = true;
+            SetImageAlpha(queryIcon, recipeQueryItem != null ? 1f : 0f);
         }
 
         if (queryText != null)
@@ -652,6 +665,9 @@ public class LighthouseKeeperUI : MonoBehaviour
     {
         TryPickItemFromRecipeQuerySlot();
 
+        if (TryDropInventoryCursorToRecipeQuery())
+            return;
+
         if (draggedQueryItem == null)
             return;
 
@@ -661,9 +677,27 @@ public class LighthouseKeeperUI : MonoBehaviour
             return;
 
         if (IsPointerOverQuerySlot())
+        {
+            PlayRecipeQueryClickFeedback();
             SetRecipeQuery(draggedQueryItem);
+        }
 
         CancelRecipeQueryDrag();
+    }
+
+    private bool TryDropInventoryCursorToRecipeQuery()
+    {
+        if (!IsRecipeQueryActive || inventoryUI == null || Mouse.current == null)
+            return false;
+
+        if (!Mouse.current.leftButton.wasReleasedThisFrame)
+            return false;
+
+        if (!IsPointerOverQuerySlot())
+            return false;
+
+        PlayRecipeQueryClickFeedback();
+        return inventoryUI.TrySetKeeperRecipeQueryFromCursor();
     }
 
     private void TryPickItemFromRecipeQuerySlot()
@@ -677,6 +711,7 @@ public class LighthouseKeeperUI : MonoBehaviour
         if (!IsPointerOverQuerySlot())
             return;
 
+        PlayRecipeQueryClickFeedback();
         draggedQueryItem = recipeQueryItem;
         recipeQueryItem = null;
         RefreshRecipeQuery();
@@ -701,6 +736,58 @@ public class LighthouseKeeperUI : MonoBehaviour
             : null;
 
         return RectTransformUtility.RectangleContainsScreenPoint(querySlotRect, Mouse.current.position.ReadValue(), uiCamera);
+    }
+
+    private void UpdateRecipeQueryHover()
+    {
+        bool isOver = IsPointerOverQuerySlot();
+        if (isPointerOverQuerySlot == isOver)
+            return;
+
+        isPointerOverQuerySlot = isOver;
+        AnimateRecipeQueryScale(isOver ? queryHoverScale : 1f);
+    }
+
+    private void AnimateRecipeQueryScale(float targetScale)
+    {
+        if (querySlotRect == null)
+            return;
+
+        KillRecipeQueryTween();
+        querySlotTween = querySlotRect
+            .DOScale(querySlotBaseScale * Mathf.Max(0.01f, targetScale), Mathf.Max(0.01f, queryHoverDuration))
+            .SetEase(Ease.OutQuad);
+    }
+
+    private void PlayRecipeQueryClickFeedback()
+    {
+        if (querySlotRect == null)
+            return;
+
+        KillRecipeQueryTween();
+        querySlotRect.localScale = querySlotBaseScale * (isPointerOverQuerySlot ? Mathf.Max(0.01f, queryHoverScale) : 1f);
+        querySlotTween = querySlotRect
+            .DOPunchScale(querySlotBaseScale * Mathf.Max(0f, queryClickPunchScale), 0.12f, 6, 0.45f)
+            .SetEase(Ease.OutQuad)
+            .OnComplete(() => querySlotRect.localScale = querySlotBaseScale * (isPointerOverQuerySlot ? Mathf.Max(0.01f, queryHoverScale) : 1f));
+    }
+
+    private void ResetRecipeQueryFeedback()
+    {
+        isPointerOverQuerySlot = false;
+        KillRecipeQueryTween();
+
+        if (querySlotRect != null)
+            querySlotRect.localScale = querySlotBaseScale;
+    }
+
+    private void KillRecipeQueryTween()
+    {
+        if (querySlotTween == null)
+            return;
+
+        querySlotTween.Kill();
+        querySlotTween = null;
     }
 
     private void UpdateDragIconPosition()
@@ -736,7 +823,7 @@ public class LighthouseKeeperUI : MonoBehaviour
         if (rootPanel == null)
             return;
 
-        rootPanel.gameObject.SetActive(visible);
+        UIPanelJuice.SetVisible(rootPanel.gameObject, visible);
 
         if (panelCanvasGroup == null)
             return;
@@ -845,6 +932,16 @@ public class LighthouseKeeperUI : MonoBehaviour
 
         iconTarget.sprite = item != null ? item.icon : null;
         iconTarget.enabled = iconTarget.sprite != null;
+    }
+
+    private static void SetImageAlpha(Image image, float alpha)
+    {
+        if (image == null)
+            return;
+
+        Color color = image.color;
+        color.a = Mathf.Clamp01(alpha);
+        image.color = color;
     }
 
     private static ItemData ResolveRewardItem(LighthouseKeeperQuest quest)

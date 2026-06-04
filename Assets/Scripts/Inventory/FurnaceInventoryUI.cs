@@ -298,8 +298,8 @@ public class FurnaceInventoryUI : MonoBehaviour
         GameObject panelObject = rootPanel.gameObject;
         if (panelObject != gameObject)
         {
-            if (panelObject.activeSelf != visible)
-                panelObject.SetActive(visible);
+            if (panelObject.activeSelf != visible || visible)
+                UIPanelJuice.SetVisible(panelObject, visible);
             return;
         }
 

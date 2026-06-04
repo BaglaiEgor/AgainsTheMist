@@ -185,8 +185,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4291292149
-  m_fontColor: {r: 0.96, g: 0.92, b: 0.78, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -220,7 +220,7 @@ MonoBehaviour:
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
-  m_TextWrappingMode: 1
+  m_TextWrappingMode: 0
   m_wordWrappingRatios: 0.4
   m_overflowMode: 0
   m_linkedTextComponent: {fileID: 0}
@@ -393,6 +393,7 @@ GameObject:
   - component: {fileID: 303377780}
   - component: {fileID: 303377779}
   - component: {fileID: 303377778}
+  - component: {fileID: 303377782}
   m_Layer: 0
   m_Name: SettingsButton
   m_TagString: Untagged
@@ -461,11 +462,11 @@ MonoBehaviour:
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
   m_Colors:
-    m_NormalColor: {r: 0.12, g: 0.1, b: 0.14, a: 0.96}
-    m_HighlightedColor: {r: 0.28, g: 0.2, b: 0.2, a: 1}
-    m_PressedColor: {r: 0.45, g: 0.28, b: 0.2, a: 1}
-    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_DisabledColor: {r: 0.08, g: 0.08, b: 0.09, a: 0.65}
+    m_NormalColor: {r: 0.735849, g: 0.735849, b: 0.735849, a: 1}
+    m_HighlightedColor: {r: 0.3, g: 0.42, b: 0.4, a: 1}
+    m_PressedColor: {r: 0.18, g: 0.25, b: 0.25, a: 1}
+    m_SelectedColor: {r: 0.3, g: 0.42, b: 0.4, a: 1}
+    m_DisabledColor: {r: 0.18, g: 0.2, b: 0.17, a: 1}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
@@ -479,7 +480,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 0
+  m_Interactable: 1
   m_TargetGraphic: {fileID: 303377780}
   m_OnClick:
     m_PersistentCalls:
@@ -497,15 +498,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.12, g: 0.1, b: 0.14, a: 0.96}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 0
+  m_Sprite: {fileID: 10917, guid: 0000000000000000f000000000000000, type: 0}
+  m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -522,6 +523,23 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 303377776}
   m_CullTransparentMesh: 1
+--- !u!114 &303377782
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 303377776}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d4af3df6d2f4d14ab35dd7f4f0db9d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIButtonJuice
+  hoverScale: 1.04
+  hoverDuration: 0.1
+  clickPunchScale: 0.08
+  clickPunchDuration: 0.12
+  ignoreNonInteractable: 1
 --- !u!1 &309408550
 GameObject:
   m_ObjectHideFlags: 0
@@ -579,7 +597,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: AGAINST THE MIST
+  m_text: "\u041F\u0440\u043E\u0442\u0438\u0432 \u0442\u0443\u043C\u0430\u043D\u0430"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 1f7a57ffec3388549b8caf863d4b1bf0, type: 2}
   m_sharedMaterial: {fileID: -3638296446855609064, guid: 1f7a57ffec3388549b8caf863d4b1bf0, type: 2}
@@ -588,8 +606,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4289256432
-  m_fontColor: {r: 0.94, g: 0.86, b: 0.66, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -672,6 +690,7 @@ GameObject:
   - component: {fileID: 343243985}
   - component: {fileID: 343243984}
   - component: {fileID: 343243983}
+  - component: {fileID: 343243987}
   m_Layer: 0
   m_Name: ContinueButton
   m_TagString: Untagged
@@ -740,11 +759,11 @@ MonoBehaviour:
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
   m_Colors:
-    m_NormalColor: {r: 0.12, g: 0.1, b: 0.14, a: 0.96}
-    m_HighlightedColor: {r: 0.28, g: 0.2, b: 0.2, a: 1}
-    m_PressedColor: {r: 0.45, g: 0.28, b: 0.2, a: 1}
-    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_DisabledColor: {r: 0.08, g: 0.08, b: 0.09, a: 0.65}
+    m_NormalColor: {r: 0.735849, g: 0.735849, b: 0.735849, a: 1}
+    m_HighlightedColor: {r: 0.3, g: 0.42, b: 0.4, a: 1}
+    m_PressedColor: {r: 0.18, g: 0.25, b: 0.25, a: 1}
+    m_SelectedColor: {r: 0.3, g: 0.42, b: 0.4, a: 1}
+    m_DisabledColor: {r: 0.18, g: 0.2, b: 0.17, a: 1}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
@@ -758,7 +777,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 0
+  m_Interactable: 1
   m_TargetGraphic: {fileID: 343243985}
   m_OnClick:
     m_PersistentCalls:
@@ -776,15 +795,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.12, g: 0.1, b: 0.14, a: 0.96}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 0
+  m_Sprite: {fileID: 10917, guid: 0000000000000000f000000000000000, type: 0}
+  m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -801,6 +820,23 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 343243981}
   m_CullTransparentMesh: 1
+--- !u!114 &343243987
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 343243981}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d4af3df6d2f4d14ab35dd7f4f0db9d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIButtonJuice
+  hoverScale: 1.04
+  hoverDuration: 0.1
+  clickPunchScale: 0.08
+  clickPunchDuration: 0.12
+  ignoreNonInteractable: 1
 --- !u!1 &761112241
 GameObject:
   m_ObjectHideFlags: 0
@@ -905,8 +941,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4291292149
-  m_fontColor: {r: 0.96, g: 0.92, b: 0.78, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -940,7 +976,7 @@ MonoBehaviour:
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
-  m_TextWrappingMode: 1
+  m_TextWrappingMode: 0
   m_wordWrappingRatios: 0.4
   m_overflowMode: 0
   m_linkedTextComponent: {fileID: 0}
@@ -1042,8 +1078,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4291292149
-  m_fontColor: {r: 0.96, g: 0.92, b: 0.78, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -1077,7 +1113,7 @@ MonoBehaviour:
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
-  m_TextWrappingMode: 1
+  m_TextWrappingMode: 0
   m_wordWrappingRatios: 0.4
   m_overflowMode: 0
   m_linkedTextComponent: {fileID: 0}
@@ -1126,6 +1162,7 @@ GameObject:
   - component: {fileID: 844746241}
   - component: {fileID: 844746240}
   - component: {fileID: 844746239}
+  - component: {fileID: 844746243}
   m_Layer: 0
   m_Name: ExitButton
   m_TagString: Untagged
@@ -1194,11 +1231,11 @@ MonoBehaviour:
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
   m_Colors:
-    m_NormalColor: {r: 0.12, g: 0.1, b: 0.14, a: 0.96}
-    m_HighlightedColor: {r: 0.28, g: 0.2, b: 0.2, a: 1}
-    m_PressedColor: {r: 0.45, g: 0.28, b: 0.2, a: 1}
-    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_DisabledColor: {r: 0.08, g: 0.08, b: 0.09, a: 0.65}
+    m_NormalColor: {r: 0.735849, g: 0.735849, b: 0.735849, a: 1}
+    m_HighlightedColor: {r: 0.3, g: 0.42, b: 0.4, a: 1}
+    m_PressedColor: {r: 0.18, g: 0.25, b: 0.25, a: 1}
+    m_SelectedColor: {r: 0.3, g: 0.42, b: 0.4, a: 1}
+    m_DisabledColor: {r: 0.18, g: 0.2, b: 0.17, a: 1}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
@@ -1230,15 +1267,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.12, g: 0.1, b: 0.14, a: 0.96}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 0
+  m_Sprite: {fileID: 10917, guid: 0000000000000000f000000000000000, type: 0}
+  m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -1255,6 +1292,23 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 844746237}
   m_CullTransparentMesh: 1
+--- !u!114 &844746243
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 844746237}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d4af3df6d2f4d14ab35dd7f4f0db9d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIButtonJuice
+  hoverScale: 1.04
+  hoverDuration: 0.1
+  clickPunchScale: 0.08
+  clickPunchDuration: 0.12
+  ignoreNonInteractable: 1
 --- !u!1 &951863773
 GameObject:
   m_ObjectHideFlags: 0
@@ -1322,8 +1376,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4291938206
-  m_fontColor: {r: 0.62, g: 0.78, b: 0.82, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -1493,8 +1547,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0.36, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: -11.425903, y: 0}
+  m_SizeDelta: {x: -22.8519, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1249396767
 MonoBehaviour:
@@ -1509,7 +1563,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.08, g: 0.18, b: 0.2, a: 0.42}
+  m_Color: {r: 0, g: 0, b: 0, a: 0.42}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -1626,6 +1680,7 @@ GameObject:
   - component: {fileID: 1297681771}
   - component: {fileID: 1297681770}
   - component: {fileID: 1297681769}
+  - component: {fileID: 1297681773}
   m_Layer: 0
   m_Name: NewGameButton
   m_TagString: Untagged
@@ -1694,11 +1749,11 @@ MonoBehaviour:
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
   m_Colors:
-    m_NormalColor: {r: 0.12, g: 0.1, b: 0.14, a: 0.96}
-    m_HighlightedColor: {r: 0.28, g: 0.2, b: 0.2, a: 1}
-    m_PressedColor: {r: 0.45, g: 0.28, b: 0.2, a: 1}
-    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_DisabledColor: {r: 0.08, g: 0.08, b: 0.09, a: 0.65}
+    m_NormalColor: {r: 0.735849, g: 0.735849, b: 0.735849, a: 1}
+    m_HighlightedColor: {r: 0.3, g: 0.42, b: 0.4, a: 1}
+    m_PressedColor: {r: 0.18, g: 0.25, b: 0.25, a: 1}
+    m_SelectedColor: {r: 0.3, g: 0.42, b: 0.4, a: 1}
+    m_DisabledColor: {r: 0.18, g: 0.2, b: 0.17, a: 1}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
@@ -1730,15 +1785,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.12, g: 0.1, b: 0.14, a: 0.96}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 0
+  m_Sprite: {fileID: 10917, guid: 0000000000000000f000000000000000, type: 0}
+  m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -1755,6 +1810,23 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1297681767}
   m_CullTransparentMesh: 1
+--- !u!114 &1297681773
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1297681767}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d4af3df6d2f4d14ab35dd7f4f0db9d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIButtonJuice
+  hoverScale: 1.04
+  hoverDuration: 0.1
+  clickPunchScale: 0.08
+  clickPunchDuration: 0.12
+  ignoreNonInteractable: 1
 --- !u!1 &1491557791
 GameObject:
   m_ObjectHideFlags: 0
@@ -1821,8 +1893,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4291292149
-  m_fontColor: {r: 0.96, g: 0.92, b: 0.78, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -1856,7 +1928,7 @@ MonoBehaviour:
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
-  m_TextWrappingMode: 1
+  m_TextWrappingMode: 0
   m_wordWrappingRatios: 0.4
   m_overflowMode: 0
   m_linkedTextComponent: {fileID: 0}

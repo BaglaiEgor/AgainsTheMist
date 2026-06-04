@@ -1,5 +1,6 @@
 ﻿using System;
 using TMPro;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -8,6 +9,9 @@ public class LighthouseKeeperRecipeCell : MonoBehaviour, IPointerEnterHandler, I
 {
     [SerializeField] private Image icon;
     [SerializeField] private TextMeshProUGUI titleText;
+    [SerializeField] private float hoverScale = 1.04f;
+    [SerializeField] private float hoverDuration = 0.1f;
+    [SerializeField] private float clickPunchScale = 0.08f;
 
     private CraftingRecipe recipe;
     private ItemData item;
@@ -15,6 +19,14 @@ public class LighthouseKeeperRecipeCell : MonoBehaviour, IPointerEnterHandler, I
     private CraftRecipeTooltipPresenter tooltipPresenter;
     private ItemTooltip itemTooltip;
     private Action<ItemData> itemClickCallback;
+    private Tween scaleTween;
+    private Vector3 baseScale = Vector3.one;
+    private bool isHovered;
+
+    private void Awake()
+    {
+        baseScale = transform.localScale;
+    }
 
     public void BindViews(Image icon, TextMeshProUGUI titleText)
     {
@@ -74,6 +86,9 @@ public class LighthouseKeeperRecipeCell : MonoBehaviour, IPointerEnterHandler, I
         if (!gameObject.activeInHierarchy)
             return;
 
+        isHovered = true;
+        AnimateScale(hoverScale);
+
         if (tooltipPresenter != null && recipe != null)
             tooltipPresenter.Show(recipe, craftingManager);
 
@@ -83,6 +98,9 @@ public class LighthouseKeeperRecipeCell : MonoBehaviour, IPointerEnterHandler, I
 
     public void OnPointerExit(PointerEventData eventData)
     {
+        isHovered = false;
+        AnimateScale(1f);
+
         if (tooltipPresenter != null)
             tooltipPresenter.Hide();
 
@@ -95,7 +113,43 @@ public class LighthouseKeeperRecipeCell : MonoBehaviour, IPointerEnterHandler, I
         if (eventData == null || eventData.button != PointerEventData.InputButton.Left)
             return;
 
+        PlayClickFeedback();
+
         if (item != null)
             itemClickCallback?.Invoke(item);
+    }
+
+    private void OnDisable()
+    {
+        isHovered = false;
+        KillScaleTween();
+        transform.localScale = baseScale;
+    }
+
+    private void AnimateScale(float targetScale)
+    {
+        KillScaleTween();
+        scaleTween = transform
+            .DOScale(baseScale * Mathf.Max(0.01f, targetScale), Mathf.Max(0.01f, hoverDuration))
+            .SetEase(Ease.OutQuad);
+    }
+
+    private void PlayClickFeedback()
+    {
+        KillScaleTween();
+        transform.localScale = baseScale * (isHovered ? Mathf.Max(0.01f, hoverScale) : 1f);
+        scaleTween = transform
+            .DOPunchScale(baseScale * Mathf.Max(0f, clickPunchScale), 0.12f, 6, 0.45f)
+            .SetEase(Ease.OutQuad)
+            .OnComplete(() => transform.localScale = baseScale * (isHovered ? Mathf.Max(0.01f, hoverScale) : 1f));
+    }
+
+    private void KillScaleTween()
+    {
+        if (scaleTween == null)
+            return;
+
+        scaleTween.Kill();
+        scaleTween = null;
     }
 }

@@ -163,6 +163,7 @@ public class FogEnemy : MonoBehaviour, IDamageable
             return;
 
         currentHealth = Mathf.Max(0, currentHealth - damage);
+        HitFlashFeedback.PlayOn(gameObject, new Color(1f, 0.55f, 0.5f, 1f), 0.12f);
         if (currentHealth > 0)
         {
             if (enableGoblinMoves)

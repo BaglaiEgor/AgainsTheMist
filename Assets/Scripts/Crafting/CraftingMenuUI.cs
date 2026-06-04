@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 
 public class CraftingMenuUI : MonoBehaviour
 {
@@ -23,13 +25,16 @@ public class CraftingMenuUI : MonoBehaviour
 
     private readonly List<CraftRecipeButton> buttons = new();
     private readonly List<CraftingCategoryGroupUI> categoryGroups = new();
+    private readonly List<RaycastResult> pointerRaycastResults = new();
     private CraftStationType activeStationType = CraftStationType.None;
+    private Coroutine showHoveredTooltipRoutine;
 
     void OnEnable()
     {
         UpdatePanelMode();
         BuildRecipes();
         RefreshButtons();
+        ScheduleShowHoveredTooltip();
 
         if (inventory != null)
             inventory.OnInventoryChanged += RefreshButtons;
@@ -39,6 +44,14 @@ public class CraftingMenuUI : MonoBehaviour
     {
         if (inventory != null)
             inventory.OnInventoryChanged -= RefreshButtons;
+
+        HideTooltip();
+
+        if (showHoveredTooltipRoutine != null)
+        {
+            StopCoroutine(showHoveredTooltipRoutine);
+            showHoveredTooltipRoutine = null;
+        }
     }
 
     public void Open(CraftStationType stationType)
@@ -48,20 +61,27 @@ public class CraftingMenuUI : MonoBehaviour
 
         if (!gameObject.activeSelf)
         {
-            gameObject.SetActive(true);
+            UIPanelJuice.SetVisible(gameObject, true);
             return;
         }
 
         BuildRecipes();
         RefreshButtons();
+        ScheduleShowHoveredTooltip();
     }
 
     public void Close()
     {
         activeStationType = CraftStationType.None;
+        HideTooltip();
         UpdatePanelMode();
         BuildRecipes();
         RefreshButtons();
+    }
+
+    public void HideTooltip()
+    {
+        tooltipPresenter?.Hide();
     }
 
     public void SetCategory(CraftingCategory category)
@@ -98,6 +118,7 @@ public class CraftingMenuUI : MonoBehaviour
                 return;
 
             BuildFlatRecipes(basicRecipes, targetRecipesParent);
+            ScheduleShowHoveredTooltip();
             return;
         }
 
@@ -120,10 +141,12 @@ public class CraftingMenuUI : MonoBehaviour
         {
             Debug.LogWarning("CraftingMenuUI: categoryGroupPrefab is not assigned for station crafting.");
             BuildFlatRecipes(availableStationRecipes, stationParent);
+            ScheduleShowHoveredTooltip();
             return;
         }
 
         BuildGroupedRecipes(availableStationRecipes, stationParent);
+        ScheduleShowHoveredTooltip();
     }
 
     private void BuildFlatRecipes(List<CraftingRecipe> recipes, Transform parent)
@@ -309,5 +332,51 @@ public class CraftingMenuUI : MonoBehaviour
 
         categoryGroups.Clear();
         buttons.Clear();
+    }
+
+    private void ScheduleShowHoveredTooltip()
+    {
+        if (!isActiveAndEnabled)
+            return;
+
+        if (showHoveredTooltipRoutine != null)
+            StopCoroutine(showHoveredTooltipRoutine);
+
+        showHoveredTooltipRoutine = StartCoroutine(ShowHoveredTooltipNextFrame());
+    }
+
+    private System.Collections.IEnumerator ShowHoveredTooltipNextFrame()
+    {
+        yield return null;
+        showHoveredTooltipRoutine = null;
+        ShowHoveredTooltipUnderCursor();
+    }
+
+    private void ShowHoveredTooltipUnderCursor()
+    {
+        if (tooltipPresenter == null || EventSystem.current == null)
+            return;
+
+        Vector2 pointerPosition = Mouse.current != null
+            ? Mouse.current.position.ReadValue()
+            : (Vector2)Input.mousePosition;
+
+        PointerEventData eventData = new PointerEventData(EventSystem.current)
+        {
+            position = pointerPosition
+        };
+
+        pointerRaycastResults.Clear();
+        EventSystem.current.RaycastAll(eventData, pointerRaycastResults);
+
+        for (int i = 0; i < pointerRaycastResults.Count; i++)
+        {
+            CraftRecipeButton button = pointerRaycastResults[i].gameObject.GetComponentInParent<CraftRecipeButton>();
+            if (button == null || !buttons.Contains(button))
+                continue;
+
+            button.ShowTooltip();
+            return;
+        }
     }
 }

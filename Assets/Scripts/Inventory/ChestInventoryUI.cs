@@ -22,7 +22,7 @@ public class ChestInventoryUI : MonoBehaviour
     void Awake()
     {
         if (rootPanel != null)
-            rootPanel.gameObject.SetActive(false);
+            UIPanelJuice.SetVisible(rootPanel.gameObject, false, false);
     }
 
     void OnEnable()
@@ -64,7 +64,7 @@ public class ChestInventoryUI : MonoBehaviour
             return;
 
         if (rootPanel != null)
-            rootPanel.gameObject.SetActive(false);
+            UIPanelJuice.SetVisible(rootPanel.gameObject, false, false);
     }
 
     public void TryTakeFromSlot(int index)
@@ -166,7 +166,7 @@ public class ChestInventoryUI : MonoBehaviour
             currentChest.OnChestChanged += Refresh;
         }
 
-        rootPanel.gameObject.SetActive(true);
+        UIPanelJuice.SetVisible(rootPanel.gameObject, true);
         if (titleText != null)
             titleText.text = "Сундук";
 
@@ -178,7 +178,7 @@ public class ChestInventoryUI : MonoBehaviour
     {
         UnbindCurrentChest();
         if (rootPanel != null)
-            rootPanel.gameObject.SetActive(false);
+            UIPanelJuice.SetVisible(rootPanel.gameObject, false);
     }
 
     void UnbindCurrentChest()

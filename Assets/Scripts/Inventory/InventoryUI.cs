@@ -144,7 +144,10 @@ public class InventoryUI : MonoBehaviour
 
         opened = !opened;
         if (!opened)
+        {
             cursorInputController?.ResolveOnUiClose();
+            HideAllTooltips();
+        }
 
         UpdateVisibility();
 
@@ -328,6 +331,23 @@ public class InventoryUI : MonoBehaviour
         return targetKeeperUi.TryBeginRecipeQueryDrag(slot.item);
     }
 
+    public bool TrySetKeeperRecipeQueryFromCursor()
+    {
+        LighthouseKeeperUI targetKeeperUi = GetActiveKeeperUi();
+        if (targetKeeperUi == null || !targetKeeperUi.IsRecipeQueryActive)
+            return false;
+
+        if (!TryGetCursorStack(out ItemData item, out _) || item == null)
+            return false;
+
+        if (!targetKeeperUi.TrySetRecipeQuery(item))
+            return false;
+
+        cursorInputController?.ResolveOnUiClose();
+        NotifySlotVisualRefresh();
+        return true;
+    }
+
     public void SetHoveredSlot(IItemContainer container, int slotIndex)
     {
         cursorInputController?.SetHoveredSlot(container, slotIndex);
@@ -364,6 +384,14 @@ public class InventoryUI : MonoBehaviour
     public void HideTooltip()
     {
         tooltip?.Hide();
+    }
+
+    private void HideAllTooltips()
+    {
+        tooltip?.Hide();
+        craftingMenuUI?.HideTooltip();
+        chestInventoryUI?.HideTooltip();
+        furnaceInventoryUI?.HideTooltip();
     }
 
     public void NotifySlotVisualRefresh()
@@ -436,16 +464,16 @@ public class InventoryUI : MonoBehaviour
     {
         Transform slotVisibilityRoot = ResolveSlotVisibilityRoot();
         if (slotVisibilityRoot != null)
-            slotVisibilityRoot.gameObject.SetActive(opened);
+            UIPanelJuice.SetVisible(slotVisibilityRoot.gameObject, opened);
 
         for (int i = hotbarSize; i < slots.Count; i++)
             slots[i].gameObject.SetActive(opened);
 
         if (equipmentPanel != null)
-            equipmentPanel.SetActive(opened);
+            UIPanelJuice.SetVisible(equipmentPanel, opened);
 
         if (craftingPanel != null)
-            craftingPanel.SetActive(opened);
+            UIPanelJuice.SetVisible(craftingPanel, opened);
     }
 
     private Transform ResolveSlotVisibilityRoot()
@@ -605,12 +633,14 @@ public class InventoryUI : MonoBehaviour
 
         opened = false;
         inventoryOpenedByModal = false;
+        HideAllTooltips();
         UpdateVisibility();
     }
 
     private void CloseModalUi()
     {
         cursorInputController?.ResolveOnUiClose();
+        HideAllTooltips();
 
         if (currentOpenedChest != null && currentOpenedChest.IsOpen)
             currentOpenedChest.Close();
@@ -633,6 +663,7 @@ public class InventoryUI : MonoBehaviour
     private void CloseStationModal()
     {
         cursorInputController?.ResolveOnUiClose();
+        HideAllTooltips();
         stationCraftingModalOpen = false;
         currentOpenedStation = null;
         craftingMenuUI?.Close();
@@ -646,6 +677,7 @@ public class InventoryUI : MonoBehaviour
     private void CloseBeaconModal()
     {
         cursorInputController?.ResolveOnUiClose();
+        HideAllTooltips();
         beaconUpgradeUI?.HideBeacon();
         currentOpenedBeacon = null;
     }
@@ -653,6 +685,7 @@ public class InventoryUI : MonoBehaviour
     private void CloseKeeperModal()
     {
         cursorInputController?.ResolveOnUiClose();
+        HideAllTooltips();
         activeKeeperUI?.Close();
         if (activeKeeperUI == null)
             keeperUI?.Close();

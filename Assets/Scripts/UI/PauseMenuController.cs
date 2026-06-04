@@ -83,7 +83,7 @@ public class PauseMenuController : MonoBehaviour
         Time.timeScale = paused ? 0f : Mathf.Max(0.0001f, previousTimeScale);
 
         if (pausePanel != null)
-            pausePanel.SetActive(paused);
+            UIPanelJuice.SetVisible(pausePanel, paused);
 
         if (playerController != null)
             playerController.SetMovementLocked(paused);

@@ -18,7 +18,7 @@ public class GameTimeSystem : MonoBehaviour
     [SerializeField] private bool runOnStart = true;
     [SerializeField] private bool useUnscaledTime;
 
-    [Header("Day/Night")]
+    [Header("День/Ночь")]
     [Range(0, 23)] [SerializeField] private int dayStartHour = 6;
     [Range(0, 23)] [SerializeField] private int nightStartHour = 20;
 

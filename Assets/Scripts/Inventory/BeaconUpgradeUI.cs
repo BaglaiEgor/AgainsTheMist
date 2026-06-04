@@ -221,6 +221,7 @@ public class BeaconUpgradeUI : MonoBehaviour
             {
                 row.text.text = $"{requirement.item.itemName} {current}/{need}";
                 row.text.color = enough ? enoughColor : missingColor;
+                EnsurePixelOutline(row.text);
             }
 
             rowIndex++;
@@ -243,6 +244,15 @@ public class BeaconUpgradeUI : MonoBehaviour
             if (row != null && row.root != null)
                 row.root.gameObject.SetActive(false);
         }
+    }
+
+    private void EnsurePixelOutline(TextMeshProUGUI text)
+    {
+        if (text == null)
+            return;
+
+        if (!Application.isPlaying)
+            return;
     }
 
     private int CountInInventory(ItemData item)
@@ -349,8 +359,8 @@ public class BeaconUpgradeUI : MonoBehaviour
 
         if (rootPanel.gameObject != gameObject)
         {
-            if (rootPanel.gameObject.activeSelf != visible)
-                rootPanel.gameObject.SetActive(visible);
+            if (rootPanel.gameObject.activeSelf != visible || visible)
+                UIPanelJuice.SetVisible(rootPanel.gameObject, visible);
             return;
         }
 
@@ -561,6 +571,7 @@ public class BeaconUpgradeUI : MonoBehaviour
                 row.text.fontSize = 12f;
                 row.text.alignment = TextAlignmentOptions.Left;
                 row.text.raycastTarget = false;
+                EnsurePixelOutline(row.text);
             }
         }
     }

@@ -50,6 +50,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
 
         currentHealth = nextHealth;
         RefreshHealthPresentation(true);
+        CameraShakeController.ShakeMain(0.1f, 0.055f);
 
         if (currentHealth <= 0 && !isDead)
         {

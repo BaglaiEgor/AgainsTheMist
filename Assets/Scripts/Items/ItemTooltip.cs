@@ -1,6 +1,7 @@
 ﻿using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using DG.Tweening;
 using UnityEngine.UI;
 
 public class ItemTooltip : MonoBehaviour
@@ -12,11 +13,16 @@ public class ItemTooltip : MonoBehaviour
     [SerializeField] private Vector2 offset = new Vector2(20, 20);
     [SerializeField] private Vector2 leftBottomOffset = new Vector2(-12, -12);
     [SerializeField] private float maxContentWidth = 260f;
+    [SerializeField] private float tooltipFadeDuration = 0.12f;
+    [SerializeField] private float tooltipShowScale = 0.96f;
 
     private RectTransform rect;
     private Canvas canvas;
+    private CanvasGroup canvasGroup;
     private VerticalLayoutGroup verticalLayout;
     private readonly TextMeshProUGUI[] layoutTexts = new TextMeshProUGUI[3];
+    private Sequence showTween;
+    private Vector3 baseScale = Vector3.one;
     private ItemData displayedItem;
     private bool isCustomMode;
     private bool useLeftBottomPosition;
@@ -25,7 +31,12 @@ public class ItemTooltip : MonoBehaviour
     {
         rect = GetComponent<RectTransform>();
         canvas = GetComponentInParent<Canvas>();
+        canvasGroup = GetComponent<CanvasGroup>();
+        if (canvasGroup == null)
+            canvasGroup = gameObject.AddComponent<CanvasGroup>();
+
         verticalLayout = GetComponent<VerticalLayoutGroup>();
+        baseScale = transform.localScale;
 
         layoutTexts[0] = nameText;
         layoutTexts[1] = descriptionText;
@@ -78,7 +89,7 @@ public class ItemTooltip : MonoBehaviour
         displayedItem = item;
 
         nameText.text = TextMarkupParser.Parse(item.itemName);
-        nameText.color = Color.black;
+        nameText.color = Color.white;
 
         descriptionText.text = TextMarkupParser.Parse(item.description);
         descriptionText.gameObject.SetActive(!string.IsNullOrEmpty(item.description));
@@ -89,6 +100,7 @@ public class ItemTooltip : MonoBehaviour
         gameObject.SetActive(true);
         RebuildLayoutNow();
         FollowCursor();
+        PlayShowAnimation();
     }
 
     public void ShowCustom(string header, string description, string extra)
@@ -108,7 +120,7 @@ public class ItemTooltip : MonoBehaviour
         displayedItem = null;
 
         nameText.text = TextMarkupParser.Parse(string.IsNullOrEmpty(header) ? "Эффект" : header);
-        nameText.color = Color.black;
+        nameText.color = Color.white;
 
         descriptionText.text = TextMarkupParser.Parse(description);
         descriptionText.gameObject.SetActive(!string.IsNullOrEmpty(descriptionText.text));
@@ -119,14 +131,49 @@ public class ItemTooltip : MonoBehaviour
         gameObject.SetActive(true);
         RebuildLayoutNow();
         FollowCursor();
+        PlayShowAnimation();
     }
 
     public void Hide()
     {
+        KillShowAnimation();
         displayedItem = null;
         isCustomMode = false;
         useLeftBottomPosition = false;
+        if (canvasGroup != null)
+            canvasGroup.alpha = 1f;
+        transform.localScale = baseScale;
         gameObject.SetActive(false);
+    }
+
+    private void OnDisable()
+    {
+        KillShowAnimation();
+    }
+
+    private void PlayShowAnimation()
+    {
+        KillShowAnimation();
+
+        if (canvasGroup == null)
+            return;
+
+        canvasGroup.alpha = 0f;
+        transform.localScale = baseScale * Mathf.Clamp(tooltipShowScale, 0.8f, 1f);
+
+        float duration = Mathf.Max(0.01f, tooltipFadeDuration);
+        showTween = DOTween.Sequence()
+            .Join(canvasGroup.DOFade(1f, duration))
+            .Join(transform.DOScale(baseScale, duration).SetEase(Ease.OutQuad));
+    }
+
+    private void KillShowAnimation()
+    {
+        if (showTween == null)
+            return;
+
+        showTween.Kill();
+        showTween = null;
     }
 
     string BuildExtra(ItemData item)

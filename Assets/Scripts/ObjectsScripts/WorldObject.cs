@@ -55,7 +55,11 @@ public class WorldObject : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
+        if (damage <= 0)
+            return;
+
         currentHealth -= damage;
+        HitFlashFeedback.PlayOn(gameObject, new Color(1f, 0.95f, 0.75f, 1f), 0.1f);
 
         if (healthUI != null)
             healthUI.SetHealth(currentHealth, maxHealth);

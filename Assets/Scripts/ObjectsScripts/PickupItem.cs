@@ -1,3 +1,4 @@
+using DG.Tweening;
 using UnityEngine;
 
 public class PickupItem : MonoBehaviour
@@ -16,6 +17,10 @@ public class PickupItem : MonoBehaviour
     [SerializeField] private LayerMask obstacleLayers;
 
     private Rigidbody2D rb;
+    private SpriteRenderer[] spriteRenderers;
+    private Tween popTween;
+    private Tween collectTween;
+    private Vector3 baseScale = Vector3.one;
     private Inventory targetInventory;
     private bool collected;
     private float spawnTime;
@@ -26,6 +31,8 @@ public class PickupItem : MonoBehaviour
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        spriteRenderers = GetComponentsInChildren<SpriteRenderer>(true);
+        baseScale = transform.localScale;
     }
 
     private void Start()
@@ -34,6 +41,8 @@ public class PickupItem : MonoBehaviour
         Vector2 force = Random.insideUnitCircle.normalized * Mathf.Max(0f, spawnImpulse);
         if (rb != null)
             rb.AddForce(force, ForceMode2D.Impulse);
+
+        PlaySpawnPop();
     }
 
     private void FixedUpdate()
@@ -146,7 +155,54 @@ public class PickupItem : MonoBehaviour
             return;
 
         collected = true;
-        Destroy(gameObject);
+        PlayCollectPop();
+    }
+
+    private void PlaySpawnPop()
+    {
+        KillTween(popTween);
+        transform.localScale = baseScale * 0.75f;
+        popTween = transform
+            .DOScale(baseScale, 0.14f)
+            .SetEase(Ease.OutBack, 1.4f);
+    }
+
+    private void PlayCollectPop()
+    {
+        if (rb != null)
+            rb.simulated = false;
+
+        Collider2D[] colliders = GetComponents<Collider2D>();
+        for (int i = 0; i < colliders.Length; i++)
+            colliders[i].enabled = false;
+
+        KillTween(collectTween);
+        Sequence sequence = DOTween.Sequence();
+        sequence.Join(transform.DOScale(Vector3.zero, 0.1f).SetEase(Ease.InQuad));
+
+        if (spriteRenderers != null)
+        {
+            for (int i = 0; i < spriteRenderers.Length; i++)
+            {
+                SpriteRenderer spriteRenderer = spriteRenderers[i];
+                if (spriteRenderer != null)
+                    sequence.Join(spriteRenderer.DOFade(0f, 0.1f));
+            }
+        }
+
+        collectTween = sequence.OnComplete(() => Destroy(gameObject));
+    }
+
+    private void OnDisable()
+    {
+        KillTween(popTween);
+        KillTween(collectTween);
+    }
+
+    private static void KillTween(Tween tween)
+    {
+        if (tween != null)
+            tween.Kill();
     }
 
     private bool CanPickupNow()
