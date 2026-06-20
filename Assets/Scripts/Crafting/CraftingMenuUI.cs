@@ -3,6 +3,7 @@ using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class CraftingMenuUI : MonoBehaviour
 {
@@ -23,6 +24,10 @@ public class CraftingMenuUI : MonoBehaviour
     [Header("Legacy Category Controls (Optional)")]
     [SerializeField] private CraftingCategory currentCategory = CraftingCategory.All;
 
+    [Header("Scroll")]
+    [SerializeField] private ScrollRect[] craftScrollRects;
+    [Min(1f)] [SerializeField] private float scrollSensitivity = 28f;
+
     private readonly List<CraftRecipeButton> buttons = new();
     private readonly List<CraftingCategoryGroupUI> categoryGroups = new();
     private readonly List<RaycastResult> pointerRaycastResults = new();
@@ -31,6 +36,7 @@ public class CraftingMenuUI : MonoBehaviour
 
     void OnEnable()
     {
+        ConfigureScrollRects();
         UpdatePanelMode();
         BuildRecipes();
         RefreshButtons();
@@ -57,6 +63,7 @@ public class CraftingMenuUI : MonoBehaviour
     public void Open(CraftStationType stationType)
     {
         activeStationType = stationType;
+        ConfigureScrollRects();
         UpdatePanelMode();
 
         if (!gameObject.activeSelf)
@@ -151,6 +158,8 @@ public class CraftingMenuUI : MonoBehaviour
 
     private void BuildFlatRecipes(List<CraftingRecipe> recipes, Transform parent)
     {
+        ConfigureContentWidth(parent);
+
         for (int i = 0; i < recipes.Count; i++)
         {
             CraftingRecipe recipe = recipes[i];
@@ -173,6 +182,8 @@ public class CraftingMenuUI : MonoBehaviour
 
     private void BuildGroupedRecipes(List<CraftingRecipe> recipes, Transform parent)
     {
+        ConfigureContentWidth(parent);
+
         Dictionary<CraftingCategory, List<CraftingRecipe>> groupedRecipes = GroupRecipesByCategory(recipes);
 
         Array orderedCategories = Enum.GetValues(typeof(CraftingCategory));
@@ -314,6 +325,48 @@ public class CraftingMenuUI : MonoBehaviour
         group.Setup(category);
         categoryGroups.Add(group);
         return group;
+    }
+
+    private void ConfigureScrollRects()
+    {
+        if (craftScrollRects == null || craftScrollRects.Length == 0)
+            craftScrollRects = GetComponentsInChildren<ScrollRect>(true);
+
+        if (craftScrollRects == null)
+            return;
+
+        for (int i = 0; i < craftScrollRects.Length; i++)
+        {
+            ScrollRect scrollRect = craftScrollRects[i];
+            if (scrollRect == null)
+                continue;
+
+            scrollRect.horizontal = false;
+            scrollRect.vertical = true;
+            scrollRect.movementType = ScrollRect.MovementType.Clamped;
+            scrollRect.scrollSensitivity = scrollSensitivity;
+
+            ConfigureContentWidth(scrollRect.content);
+        }
+    }
+
+    private static void ConfigureContentWidth(Transform parent)
+    {
+        RectTransform rect = parent as RectTransform;
+        if (rect == null)
+            return;
+
+        rect.anchorMin = new Vector2(0f, rect.anchorMin.y);
+        rect.anchorMax = new Vector2(1f, rect.anchorMax.y);
+        rect.offsetMin = new Vector2(0f, rect.offsetMin.y);
+        rect.offsetMax = new Vector2(0f, rect.offsetMax.y);
+
+        VerticalLayoutGroup verticalLayout = rect.GetComponent<VerticalLayoutGroup>();
+        if (verticalLayout != null)
+        {
+            verticalLayout.childControlWidth = true;
+            verticalLayout.childForceExpandWidth = true;
+        }
     }
 
     private void ClearBuiltUI()

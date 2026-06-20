@@ -118,12 +118,12 @@ TextureImporter:
       name: Little Eyes 2 Sheet_0
       rect:
         serializedVersion: 2
-        x: 4
-        y: 4
-        width: 37
-        height: 7
+        x: 0
+        y: 0
+        width: 16
+        height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -140,12 +140,12 @@ TextureImporter:
       name: Little Eyes 2 Sheet_1
       rect:
         serializedVersion: 2
-        x: 41
-        y: 5
-        width: 7
-        height: 7
+        x: 16
+        y: 0
+        width: 16
+        height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -162,12 +162,12 @@ TextureImporter:
       name: Little Eyes 2 Sheet_2
       rect:
         serializedVersion: 2
-        x: 50
-        y: 4
-        width: 7
-        height: 7
+        x: 32
+        y: 0
+        width: 16
+        height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -184,12 +184,12 @@ TextureImporter:
       name: Little Eyes 2 Sheet_3
       rect:
         serializedVersion: 2
-        x: 57
-        y: 5
-        width: 7
-        height: 7
+        x: 48
+        y: 0
+        width: 16
+        height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -206,12 +206,12 @@ TextureImporter:
       name: Little Eyes 2 Sheet_4
       rect:
         serializedVersion: 2
-        x: 66
-        y: 4
-        width: 7
-        height: 7
+        x: 64
+        y: 0
+        width: 16
+        height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -228,12 +228,12 @@ TextureImporter:
       name: Little Eyes 2 Sheet_5
       rect:
         serializedVersion: 2
-        x: 73
-        y: 5
-        width: 37
-        height: 7
+        x: 80
+        y: 0
+        width: 16
+        height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -246,11 +246,33 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: Little Eyes 2 Sheet_6
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 0
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1c1644c4ee89245489680714abef49de
+      internalID: -1658176535
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 1369c9f4097634b4e968d73e6e883286
     internalID: 0
     vertices: []
     indices: 
@@ -258,7 +280,9 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":16.0,"y":16.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":1,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
       Little Eyes 2 Sheet_0: -7426337461586886966
       Little Eyes 2 Sheet_1: 6021744965253471908
@@ -266,6 +290,7 @@ TextureImporter:
       Little Eyes 2 Sheet_3: -8099300633548424426
       Little Eyes 2 Sheet_4: -3069938051372792191
       Little Eyes 2 Sheet_5: 6471461969803986277
+      Little Eyes 2 Sheet_6: -1658176535
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -34,7 +34,7 @@ MonoBehaviour:
   toolType: 0
   toolPower: 1
   damage: 8
-  attackSpeed: 1
+  attackSpeed: 5
   isLantern: 0
   lanternLightRadius: 2.5
   lanternDrainPerSecond: 1
@@ -49,6 +49,13 @@ MonoBehaviour:
   defense: 0
   frostDamageMultiplier: 1
   pressureGrowthMultiplier: 1
+  dashDistance: 3
+  dashDuration: 0.12
+  sprintSpeedMultiplier: 1.5
+  maxStamina: 100
+  staminaDrainPerSecond: 25
+  staminaRegenPerSecond: 18
+  shieldDamageMultiplier: 0.25
   furnaceFuelSeconds: 0
   furnaceSmeltResult: {fileID: 0}
   furnaceSmeltResultAmount: 1

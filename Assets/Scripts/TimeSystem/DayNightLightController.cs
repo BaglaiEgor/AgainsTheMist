@@ -24,6 +24,8 @@ public class DayNightLightController : MonoBehaviour
 
     private bool forceIntensity;
     private float forcedIntensity;
+    private bool forceColor;
+    private Color forcedColor = Color.white;
 
     private void Reset()
     {
@@ -57,6 +59,8 @@ public class DayNightLightController : MonoBehaviour
         if (forceIntensity)
         {
             globalLight.intensity = forcedIntensity;
+            if (forceColor)
+                globalLight.color = forcedColor;
             return;
         }
 
@@ -77,14 +81,30 @@ public class DayNightLightController : MonoBehaviour
     {
         forcedIntensity = Mathf.Max(0f, intensity);
         forceIntensity = true;
+        forceColor = false;
 
         if (globalLight != null)
             globalLight.intensity = forcedIntensity;
     }
 
+    public void ForceLight(float intensity, Color color)
+    {
+        forcedIntensity = Mathf.Max(0f, intensity);
+        forcedColor = color;
+        forceIntensity = true;
+        forceColor = true;
+
+        if (globalLight != null)
+        {
+            globalLight.intensity = forcedIntensity;
+            globalLight.color = forcedColor;
+        }
+    }
+
     public void ClearForcedIntensity()
     {
         forceIntensity = false;
+        forceColor = false;
         ApplyLightNow();
     }
 

@@ -1,0 +1,63 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 188ade1f98f86c34c82dc18d33a34f7d, type: 3}
+  m_Name: Medkit
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  itemID: Medkit
+  itemName: "\u0410\u043F\u0442\u0435\u0447\u043A\u0430"
+  description: "\u041F\u0440\u043E\u0431\u0435\u043B: \u0432\u043E\u0441\u0441\u0442\u0430\u043D\u043E\u0432\u0438\u0442\u044C
+    \u0437\u0434\u043E\u0440\u043E\u0432\u044C\u0435. \u041D\u0435 \u0442\u0440\u0430\u0442\u0438\u0442\u0441\u044F,
+    \u043D\u043E \u0438\u043C\u0435\u0435\u0442 \u043A\u0434."
+  icon: {fileID: -3257926746188643252, guid: d1d5f127405fb5241aa72431b4185cb0, type: 3}
+  maxStack: 1
+  pickupPrefab: {fileID: 5996793340830461179, guid: 28b964f5175744bd86f87cc34a2b4189, type: 3}
+  type: 7
+  placementMode: 0
+  prefab: {fileID: 0}
+  isDoor: 0
+  doorWallMarkerTile: {fileID: 0}
+  tileToPlace: {fileID: 0}
+  occupiesBuildCell: 1
+  canPlaceOnWater: 0
+  waterTileToPlace: {fileID: 0}
+  seedCrop: {fileID: 0}
+  attackPrefab: {fileID: 0}
+  actionRadius: 1
+  toolType: 0
+  toolPower: 1
+  damage: 1
+  attackSpeed: 1
+  isLantern: 0
+  lanternLightRadius: 2.5
+  lanternDrainPerSecond: 1
+  lanternMaxCharge: 100
+  consumableEffectType: 0
+  effectDuration: 0
+  healAmount: 35
+  cooldown: 25
+  foodRestore: 0
+  equipmentType: 0
+  activeEquipmentEffect: 4
+  defense: 0
+  frostDamageMultiplier: 1
+  pressureGrowthMultiplier: 1
+  dashDistance: 3
+  dashDuration: 0.12
+  sprintSpeedMultiplier: 1.5
+  maxStamina: 100
+  staminaDrainPerSecond: 25
+  staminaRegenPerSecond: 18
+  shieldDamageMultiplier: 0.25
+  furnaceFuelSeconds: 0
+  furnaceSmeltResult: {fileID: 0}
+  furnaceSmeltResultAmount: 1
+  furnaceSmeltDuration: 0

@@ -149,7 +149,7 @@ public class FrostFogZone : MonoBehaviour
 
             int appliedDamage = ResolveFrostDamageForPlayer(damage, playerTransform);
             if (appliedDamage > 0)
-                playerHealth.TakeDamage(appliedDamage);
+                playerHealth.TakeFogDamage(appliedDamage);
 
             nextDamageTimeByPlayer[playerTransform] = Time.time + interval;
 

@@ -1663,28 +1663,6 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Garden-1_67
-      rect:
-        serializedVersion: 2
-        x: 64
-        y: 30
-        width: 16
-        height: 16
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: bb2c4d2fbe82e0f30800000000000000
-      internalID: 4543614067919864507
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
       name: Garden-1_68
       rect:
         serializedVersion: 2
@@ -1966,6 +1944,72 @@ TextureImporter:
       bones: []
       spriteID: 4f48b226e111455469a181756b9b8799
       internalID: -8943790498650748977
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Garden-1_61
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 3
+        width: 16
+        height: 16
+      alignment: 9
+      pivot: {x: 0.50388527, y: 0.14889446}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cad4bc16b4c20d94aa60897f34b75c9e
+      internalID: 2241011251173496442
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Garden-1_62
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 2
+        width: 16
+        height: 16
+      alignment: 9
+      pivot: {x: 0.5, y: 0.20714617}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 880b707437da9a847beafd91b52d0185
+      internalID: 3481867090164630220
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Garden-1_63
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 30
+        width: 16
+        height: 16
+      alignment: 9
+      pivot: {x: 0.5, y: 0.37811637}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e0791d58c8262bf43bec7d5bdf6943d8
+      internalID: -5780759089164795902
       vertices: []
       indices: 
       edges: []

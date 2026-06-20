@@ -7,20 +7,27 @@ public class CraftingCategoryGroupUI : MonoBehaviour
     [SerializeField] private Button headerButton;
     [SerializeField] private TextMeshProUGUI headerText;
     [SerializeField] private RectTransform recipesContainer;
+    [SerializeField] private string expandedPrefix = "v ";
+    [SerializeField] private string collapsedPrefix = "> ";
 
     private CraftingCategory category;
+    private bool isExpanded = true;
 
     public Transform RecipesParent => recipesContainer != null ? recipesContainer : transform;
 
     public void Setup(CraftingCategory category)
     {
         this.category = category;
+        isExpanded = true;
 
         if (headerButton != null)
+        {
             headerButton.onClick.RemoveListener(ToggleExpanded);
+            headerButton.onClick.AddListener(ToggleExpanded);
+        }
 
         if (recipesContainer != null)
-            recipesContainer.gameObject.SetActive(true);
+            recipesContainer.gameObject.SetActive(isExpanded);
 
         UpdateHeaderText();
     }
@@ -62,6 +69,13 @@ public class CraftingCategoryGroupUI : MonoBehaviour
 
     private void ToggleExpanded()
     {
+        isExpanded = !isExpanded;
+
+        if (recipesContainer != null)
+            recipesContainer.gameObject.SetActive(isExpanded);
+
+        UpdateHeaderText();
+        LayoutRebuilder.ForceRebuildLayoutImmediate(transform as RectTransform);
     }
 
     private void UpdateHeaderText()
@@ -69,6 +83,6 @@ public class CraftingCategoryGroupUI : MonoBehaviour
         if (headerText == null)
             return;
 
-        headerText.text = GetCategoryDisplayName(category);
+        headerText.text = (isExpanded ? expandedPrefix : collapsedPrefix) + GetCategoryDisplayName(category);
     }
 }

@@ -172,6 +172,7 @@ MonoBehaviour:
   height: 1
   centerOnTransform: 0
   groundTilemap: {fileID: 0}
+  placementRotationSteps: 0
 --- !u!1 &5343533449048690306
 GameObject:
   m_ObjectHideFlags: 0
@@ -302,7 +303,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7613426674150933035}
@@ -357,7 +358,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 2531912841731457222, guid: 22fdd1f2912303c4a81a3e49361b476c, type: 3}
+  m_Sprite: {fileID: -555332556724356479, guid: 0b8b0f90e4efc614faac39c9f7df4f00, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0

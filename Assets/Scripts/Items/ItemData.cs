@@ -20,7 +20,11 @@ public enum EquipmentType
 public enum ActiveEquipmentEffectType
 {
     None = 0,
-    SnowClimb = 1
+    SnowClimb = 1,
+    Dash = 2,
+    SprintBoots = 3,
+    Medkit = 4,
+    Shield = 5
 }
 
 [CreateAssetMenu(fileName = "NewItem", menuName = "Farm/Item")]
@@ -85,6 +89,15 @@ public class ItemData : ScriptableObject
     [Min(0)] public int defense = 0;
     [Min(0f)] public float frostDamageMultiplier = 1f;
     [Min(0f)] public float pressureGrowthMultiplier = 1f;
+
+    [Header("Active Equipment Ability")]
+    [Min(0f)] public float dashDistance = 3f;
+    [Min(0.02f)] public float dashDuration = 0.12f;
+    [Min(0f)] public float sprintSpeedMultiplier = 1.5f;
+    [Min(0f)] public float maxStamina = 100f;
+    [Min(0f)] public float staminaDrainPerSecond = 25f;
+    [Min(0f)] public float staminaRegenPerSecond = 18f;
+    [Range(0f, 1f)] public float shieldDamageMultiplier = 0.25f;
 
     [Header("Furnace")]
     [Tooltip("How many seconds this item burns in furnace fuel slot. 0 = not a fuel.")]

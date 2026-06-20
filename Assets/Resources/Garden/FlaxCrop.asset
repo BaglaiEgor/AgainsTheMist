@@ -19,5 +19,23 @@ MonoBehaviour:
   growthMultiplierOutsideFog: 1
   growthStages:
   - growth01: 0
-    sprite: {fileID: 0}
-  harvestDrops: []
+    sprite: {fileID: -5144405509491325992, guid: 40d88cd93e5b1bd468fd19e3427de8bb, type: 3}
+  - growth01: 0.25
+    sprite: {fileID: 9212239975810632065, guid: 40d88cd93e5b1bd468fd19e3427de8bb, type: 3}
+  - growth01: 0.5
+    sprite: {fileID: -5144405509491325992, guid: 40d88cd93e5b1bd468fd19e3427de8bb, type: 3}
+  - growth01: 0.75
+    sprite: {fileID: -5780759089164795902, guid: 40d88cd93e5b1bd468fd19e3427de8bb, type: 3}
+  - growth01: 1
+    sprite: {fileID: 3481867090164630220, guid: 40d88cd93e5b1bd468fd19e3427de8bb, type: 3}
+  harvestDrops:
+  - prefab: {fileID: 8266306878654680791, guid: 9731528fe1729ea46ba4f2c069fdc8ad, type: 3}
+    minAmount: 0
+    maxAmount: 0
+    chance: 0
+    dropOnlyInFrostZone: 0
+  - prefab: {fileID: 0}
+    minAmount: 0
+    maxAmount: 0
+    chance: 0
+    dropOnlyInFrostZone: 0

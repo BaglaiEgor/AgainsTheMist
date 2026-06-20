@@ -113,6 +113,24 @@ public class ItemTooltip : MonoBehaviour
         ShowCustomInternal(header, description, extra, true);
     }
 
+    public void SetCustomContent(string header, string description, string extra)
+    {
+        isCustomMode = true;
+        displayedItem = null;
+
+        nameText.text = TextMarkupParser.Parse(string.IsNullOrEmpty(header) ? "Эффект" : header);
+        nameText.color = Color.white;
+
+        descriptionText.text = TextMarkupParser.Parse(description);
+        descriptionText.gameObject.SetActive(!string.IsNullOrEmpty(descriptionText.text));
+
+        extraText.text = TextMarkupParser.Parse(extra);
+        extraText.gameObject.SetActive(!string.IsNullOrEmpty(extraText.text));
+
+        RebuildLayoutNow();
+        FollowCursor();
+    }
+
     private void ShowCustomInternal(string header, string description, string extra, bool leftBottomPosition)
     {
         isCustomMode = true;

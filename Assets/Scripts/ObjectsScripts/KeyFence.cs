@@ -64,7 +64,7 @@ public class KeyFence : MonoBehaviour
 
         isOpen = true;
         RefreshVisual();
-        AudioController.Instance?.PlayInteract();
+        AudioController.Instance?.PlayInteract(transform.position);
         return true;
     }
 

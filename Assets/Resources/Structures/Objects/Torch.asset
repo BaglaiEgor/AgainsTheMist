@@ -1,0 +1,54 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 188ade1f98f86c34c82dc18d33a34f7d, type: 3}
+  m_Name: Torch
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  itemID: Torch
+  itemName: "\u0424\u0430\u043A\u0435\u043B"
+  description: "\u041F\u0440\u043E\u0441\u0442\u043E\u0439 \u0441\u0442\u0430\u0432\u0438\u043C\u044B\u0439 \u0444\u0430\u043A\u0435\u043B."
+  icon: {fileID: 934877148867342981, guid: fff856bf47ac70049b44abb5f12b60bc, type: 3}
+  maxStack: 99
+  pickupPrefab: {fileID: 5996793340830461179, guid: d1b2c3d4e5f6478890abcdef12345678, type: 3}
+  type: 4
+  placementMode: 0
+  prefab: {fileID: 8620644453793441372, guid: c1b2c3d4e5f6478890abcdef12345678, type: 3}
+  isDoor: 0
+  doorWallMarkerTile: {fileID: 0}
+  tileToPlace: {fileID: 0}
+  occupiesBuildCell: 1
+  canPlaceOnWater: 0
+  waterTileToPlace: {fileID: 0}
+  seedCrop: {fileID: 0}
+  attackPrefab: {fileID: 0}
+  actionRadius: 3
+  toolType: 0
+  toolPower: 1
+  damage: 1
+  attackSpeed: 1
+  isLantern: 0
+  lanternLightRadius: 2.5
+  lanternDrainPerSecond: 1
+  lanternMaxCharge: 100
+  consumableEffectType: 0
+  effectDuration: 0
+  healAmount: 0
+  cooldown: 0
+  foodRestore: 0
+  equipmentType: 0
+  activeEquipmentEffect: 0
+  defense: 0
+  frostDamageMultiplier: 1
+  pressureGrowthMultiplier: 1
+  furnaceFuelSeconds: 0
+  furnaceSmeltResult: {fileID: 0}
+  furnaceSmeltResultAmount: 1
+  furnaceSmeltDuration: 0

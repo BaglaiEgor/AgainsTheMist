@@ -94,7 +94,7 @@ public class DungeonSpikeTrap : MonoBehaviour
 
             SetSprite(activeFrame4);
             isActive = true;
-            AudioController.Instance?.PlayDungeonTrap();
+            AudioController.Instance?.PlayDungeonTrap(transform.position);
             ApplyDamageToPlayersInside();
             yield return new WaitForSeconds(activeTime);
 

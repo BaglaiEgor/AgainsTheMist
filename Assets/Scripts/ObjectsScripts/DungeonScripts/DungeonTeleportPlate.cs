@@ -118,7 +118,7 @@ public class DungeonTeleportPlate : MonoBehaviour
 
         if (isPressed)
         {
-            AudioController.Instance?.PlayDungeonPlate();
+            AudioController.Instance?.PlayDungeonPlate(transform.position);
             TryTeleportTargets();
         }
     }

@@ -124,7 +124,7 @@ public class DungeonLightDoor : MonoBehaviour
         if (visualRoot != null)
             visualRoot.transform.localPosition = isOpen ? closedVisualLocalPosition + openOffset : closedVisualLocalPosition;
 
-        AudioController.Instance?.PlayDungeonDoor();
+        AudioController.Instance?.PlayDungeonDoor(transform.position);
     }
 
     private void EnsureCounterText()

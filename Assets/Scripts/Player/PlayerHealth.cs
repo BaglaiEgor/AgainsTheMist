@@ -14,7 +14,12 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     [SerializeField] private TextMeshProUGUI healthText;
     [SerializeField] private string healthTextFormat = "Здоровье: {0}/{1}";
 
+    [Header("Refs")]
+    [SerializeField] private Inventory inventory;
+
     private bool isDead;
+    private float incomingDamageMultiplier = 1f;
+    private float incomingDamageMultiplierTime;
 
     public event Action<int, int> HealthChanged;
     public event Action Died;
@@ -29,6 +34,11 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         if (currentHealth <= 0 || currentHealth > maxHealth)
             currentHealth = maxHealth;
 
+        ResolveReferences();
+
+        if (GetComponent<PlayerDeathRecovery>() == null)
+            gameObject.AddComponent<PlayerDeathRecovery>();
+
         EnsureHealthText();
         RefreshHealthPresentation(false);
     }
@@ -39,25 +49,60 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
     }
 
+    void Update()
+    {
+        if (incomingDamageMultiplierTime <= 0f)
+            return;
+
+        incomingDamageMultiplierTime = Mathf.Max(0f, incomingDamageMultiplierTime - Time.deltaTime);
+        if (incomingDamageMultiplierTime <= 0f)
+            incomingDamageMultiplier = 1f;
+    }
+
     public void TakeDamage(int amount)
+    {
+        TakeDamageInternal(amount, true);
+    }
+
+    public void TakeFogDamage(int amount)
+    {
+        TakeDamageInternal(amount, false);
+    }
+
+    private void TakeDamageInternal(int amount, bool applyArmor)
     {
         if (amount <= 0 || isDead)
             return;
 
-        int nextHealth = Mathf.Max(0, currentHealth - amount);
+        int finalAmount = Mathf.CeilToInt(amount * Mathf.Clamp01(incomingDamageMultiplier));
+        if (applyArmor)
+            finalAmount = Mathf.Max(1, finalAmount - GetArmorDefense());
+
+        if (finalAmount <= 0)
+            return;
+
+        int nextHealth = Mathf.Max(0, currentHealth - finalAmount);
         if (nextHealth == currentHealth)
             return;
 
         currentHealth = nextHealth;
         RefreshHealthPresentation(true);
-        CameraShakeController.ShakeMain(0.1f, 0.055f);
+
+        if (currentHealth > 0)
+            CameraShakeController.ShakeMain(0.1f, 0.055f);
 
         if (currentHealth <= 0 && !isDead)
         {
             isDead = true;
-            Debug.Log("Player died");
             Died?.Invoke();
         }
+    }
+
+    public void Revive()
+    {
+        isDead = false;
+        currentHealth = maxHealth;
+        RefreshHealthPresentation(true);
     }
 
     public void Heal(int amount)
@@ -79,6 +124,33 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         currentHealth = Mathf.Clamp(health <= 0 ? maxHealth : health, 0, maxHealth);
         isDead = currentHealth <= 0;
         RefreshHealthPresentation(true);
+    }
+
+    public void ApplyIncomingDamageMultiplier(float multiplier, float duration)
+    {
+        incomingDamageMultiplier = Mathf.Clamp01(multiplier);
+        incomingDamageMultiplierTime = Mathf.Max(0f, duration);
+        if (incomingDamageMultiplierTime <= 0f)
+            incomingDamageMultiplier = 1f;
+    }
+
+    private int GetArmorDefense()
+    {
+        if (inventory == null)
+            ResolveReferences();
+
+        EquipmentInventory equipment = inventory != null ? inventory.Equipment : null;
+        return equipment != null ? equipment.GetTotalDefense() : 0;
+    }
+
+    private void ResolveReferences()
+    {
+        if (inventory != null)
+            return;
+
+        inventory = GetComponent<Inventory>();
+        if (inventory == null)
+            inventory = FindFirstObjectByType<Inventory>();
     }
 
     void EnsureHealthText()

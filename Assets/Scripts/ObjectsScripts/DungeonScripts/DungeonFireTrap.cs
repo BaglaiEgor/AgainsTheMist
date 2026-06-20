@@ -128,7 +128,7 @@ public class DungeonFireTrap : MonoBehaviour
             SetSprite(activeFrame4);
             SetLightActive(true);
             isActive = true;
-            AudioController.Instance?.PlayDungeonFire();
+            AudioController.Instance?.PlayDungeonFire(transform.position);
             ApplyDamageToPlayersInside();
             yield return new WaitForSeconds(activeTime);
         }

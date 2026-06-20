@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class FogObjectTint : MonoBehaviour
 {
-    [SerializeField] private Color fogColor = new Color32(0x6F, 0x7F, 0x72, 0xFF);
+    [SerializeField] private Color fogColor = new Color32(0x9A, 0xA8, 0x9D, 0xFF);
     [SerializeField] private float updateInterval = 0.15f;
 
     private SpriteRenderer[] renderers;

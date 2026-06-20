@@ -121,7 +121,7 @@ public class DonationFountain : MonoBehaviour
 
         ClampState();
         RefreshCounter();
-        AudioController.Instance?.PlayInteract();
+        AudioController.Instance?.PlayInteract(transform.position);
         return true;
     }
 

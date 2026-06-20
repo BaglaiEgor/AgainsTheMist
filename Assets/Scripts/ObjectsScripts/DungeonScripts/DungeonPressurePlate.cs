@@ -88,7 +88,7 @@ public class DungeonPressurePlate : MonoBehaviour
         RefreshVisual();
 
         if (isPressed)
-            AudioController.Instance?.PlayDungeonPlate();
+            AudioController.Instance?.PlayDungeonPlate(transform.position);
 
         StateChanged?.Invoke(this);
     }

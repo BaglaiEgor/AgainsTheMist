@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 2175139802920922675}
   - component: {fileID: 1732330223065534325}
   - component: {fileID: 4866699884456474544}
+  - component: {fileID: 4922191621408144622}
   m_Layer: 5
   m_Name: TipButton
   m_TagString: Untagged
@@ -136,6 +137,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LighthouseKeeperTipButton
   titleText: {fileID: 0}
   button: {fileID: 0}
+--- !u!114 &4922191621408144622
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1793588780572061226}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d4af3df6d2f4d14ab35dd7f4f0db9d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIButtonJuice
+  hoverScale: 1.04
+  hoverDuration: 0.1
+  clickPunchScale: 0.08
+  clickPunchDuration: 0.12
+  ignoreNonInteractable: 1
 --- !u!1 &4072147537405937161
 GameObject:
   m_ObjectHideFlags: 0
@@ -211,7 +229,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:

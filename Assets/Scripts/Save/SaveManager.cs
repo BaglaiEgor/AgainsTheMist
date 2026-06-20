@@ -374,7 +374,7 @@ public class SaveManager : MonoBehaviour
             Door door = go.GetComponent<Door>();
             if (door != null)
             {
-                if (data.rotationSteps == 1)
+                if (data.rotationSteps == 0)
                     door.Initialize(Vector3Int.left, Vector3Int.right);
                 else
                     door.Initialize(Vector3Int.up, Vector3Int.down);

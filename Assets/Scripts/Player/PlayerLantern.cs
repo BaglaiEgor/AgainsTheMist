@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 [DisallowMultipleComponent]
 public class PlayerLantern : MonoBehaviour
@@ -10,6 +11,14 @@ public class PlayerLantern : MonoBehaviour
     [SerializeField] private Inventory inventory;
     [SerializeField] private FogRepeller lanternRepeller;
     [SerializeField] private Transform lanternDrawPoint;
+    [SerializeField] private Light2D heldLanternLight;
+
+    [Header("Held Light2D")]
+    [SerializeField] private bool autoCreateHeldLight = true;
+    [SerializeField] private Color heldLightColor = new Color(0.89019614f, 0.5176471f, 0.34509805f, 1f);
+    [Min(0f)] [SerializeField] private float heldLightIntensity = 0.7f;
+    [Min(0.01f)] [SerializeField] private float heldLightInnerRadius = 0.15f;
+    [Min(0.1f)] [SerializeField] private float heldLightOuterRadius = 17f;
 
     [Header("Debug")]
     [SerializeField] private bool logCharge;
@@ -29,6 +38,7 @@ public class PlayerLantern : MonoBehaviour
             inventory = GetComponent<Inventory>();
 
         EnsureRepeller();
+        EnsureHeldLight();
         SetLanternVisualActive(false);
     }
 
@@ -71,6 +81,7 @@ public class PlayerLantern : MonoBehaviour
         }
 
         EnsureRepeller();
+        EnsureHeldLight();
 
         float maxCharge = Mathf.Max(1f, currentItem.lanternMaxCharge);
         if (!chargeByItem.TryGetValue(currentItem, out float charge))
@@ -90,6 +101,7 @@ public class PlayerLantern : MonoBehaviour
         lanternRepeller.clearRadius = Mathf.Max(0.1f, currentItem.lanternLightRadius);
         lanternRepeller.drawPoint = lanternDrawPoint != null ? lanternDrawPoint : transform;
         lanternRepeller.createsSafeZone = false;
+        ConfigureHeldLight(currentItem);
 
         TryLogCharge(currentItem, charge, maxCharge);
     }
@@ -112,13 +124,47 @@ public class PlayerLantern : MonoBehaviour
 
     void SetLanternVisualActive(bool active)
     {
-        if (lanternRepeller == null)
+        if (lanternRepeller != null && lanternRepeller.enabled != active)
+            lanternRepeller.enabled = active;
+
+        if (heldLanternLight != null && heldLanternLight.enabled != active)
+            heldLanternLight.enabled = active;
+    }
+
+    void EnsureHeldLight()
+    {
+        if (heldLanternLight != null || !autoCreateHeldLight)
             return;
 
-        if (lanternRepeller.enabled == active)
+        Transform parent = lanternDrawPoint != null ? lanternDrawPoint : transform;
+        Transform existing = parent.Find("HeldLanternLight2D");
+        if (existing != null)
+            heldLanternLight = existing.GetComponent<Light2D>();
+
+        if (heldLanternLight == null)
+        {
+            GameObject lightObject = new GameObject("HeldLanternLight2D");
+            lightObject.transform.SetParent(parent, false);
+            lightObject.transform.localPosition = Vector3.zero;
+            heldLanternLight = lightObject.AddComponent<Light2D>();
+        }
+
+        ConfigureHeldLight(null);
+        heldLanternLight.enabled = false;
+    }
+
+    void ConfigureHeldLight(ItemData item)
+    {
+        if (heldLanternLight == null)
             return;
 
-        lanternRepeller.enabled = active;
+        heldLanternLight.lightType = Light2D.LightType.Point;
+        heldLanternLight.color = heldLightColor;
+        heldLanternLight.intensity = heldLightIntensity;
+        heldLanternLight.pointLightInnerRadius = heldLightInnerRadius;
+        heldLanternLight.pointLightOuterRadius = item != null && item.lanternLightRadius > 0f
+            ? item.lanternLightRadius
+            : heldLightOuterRadius;
     }
 
     void TryLogCharge(ItemData item, float charge, float maxCharge)

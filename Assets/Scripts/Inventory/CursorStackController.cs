@@ -230,7 +230,7 @@ public class CursorStackController : MonoBehaviour, IItemContainer
 
         background = rootObject.GetComponent<Image>();
         background.raycastTarget = false;
-        background.color = new Color(1f, 1f, 1f, 0.45f);
+        background.enabled = false;
 
         GameObject iconObject = new GameObject("Icon", typeof(RectTransform), typeof(Image), typeof(Outline));
         iconObject.transform.SetParent(rootObject.transform, false);
@@ -261,7 +261,7 @@ public class CursorStackController : MonoBehaviour, IItemContainer
         amountText.raycastTarget = false;
         amountText.fontSize = 16f;
         amountText.alignment = TextAlignmentOptions.BottomRight;
-        amountText.color = Color.black;
+        amountText.color = Color.white;
     }
 
     private void UpdateVisual(ItemData item, int visualAmount)

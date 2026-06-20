@@ -19,19 +19,23 @@ MonoBehaviour:
   growthMultiplierOutsideFog: 0
   growthStages:
   - growth01: 0
-    sprite: {fileID: 2887052079867753463, guid: 40d88cd93e5b1bd468fd19e3427de8bb, type: 3}
+    sprite: {fileID: -2129163520867235680, guid: 40d88cd93e5b1bd468fd19e3427de8bb, type: 3}
   - growth01: 0.25
-    sprite: {fileID: 7482125597455152996, guid: 40d88cd93e5b1bd468fd19e3427de8bb, type: 3}
+    sprite: {fileID: -3567642306667176507, guid: 40d88cd93e5b1bd468fd19e3427de8bb, type: 3}
   - growth01: 0.5
-    sprite: {fileID: -8083108251035073420, guid: 40d88cd93e5b1bd468fd19e3427de8bb, type: 3}
+    sprite: {fileID: 8998466956692986993, guid: 40d88cd93e5b1bd468fd19e3427de8bb, type: 3}
+  - growth01: 0.75
+    sprite: {fileID: 8998466956692986993, guid: 40d88cd93e5b1bd468fd19e3427de8bb, type: 3}
   - growth01: 1
-    sprite: {fileID: 2760430672323235792, guid: 40d88cd93e5b1bd468fd19e3427de8bb, type: 3}
+    sprite: {fileID: 2241011251173496442, guid: 40d88cd93e5b1bd468fd19e3427de8bb, type: 3}
   harvestDrops:
   - prefab: {fileID: 8266306878654680791, guid: 54e73688d6d64b3e8c86eaa68bba8f37, type: 3}
     minAmount: 1
-    maxAmount: 1
+    maxAmount: 2
     chance: 1
+    dropOnlyInFrostZone: 0
   - prefab: {fileID: 8266306878654680791, guid: cfe398f760374fb5a7cc9d4a1ef6e5e0, type: 3}
     minAmount: 1
     maxAmount: 2
     chance: 1
+    dropOnlyInFrostZone: 0

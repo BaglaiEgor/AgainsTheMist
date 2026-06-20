@@ -6,6 +6,15 @@ using UnityEngine.Tilemaps;
 
 public class PlacementPreviewController : MonoBehaviour
 {
+    private const string ToolHitColliderName = "HitBox";
+
+    private enum PreviewMode
+    {
+        None,
+        Placement,
+        ToolTarget
+    }
+
     [Header("Refs")]
     [SerializeField] private Inventory inventory;
     [SerializeField] private InventoryUI inventoryUI;
@@ -18,6 +27,8 @@ public class PlacementPreviewController : MonoBehaviour
     [SerializeField] private GameObject markerPrefab;
     [SerializeField] private Color validColor = new Color(1f, 1f, 1f, 0.8f);
     [SerializeField] private Color invalidColor = new Color(1f, 0.2f, 0.2f, 0.8f);
+    [SerializeField] private Color toolTargetColor = new Color(1f, 1f, 1f, 0.65f);
+    [SerializeField] private Color weakToolTargetColor = new Color(1f, 1f, 1f, 0.25f);
     [SerializeField, Range(0.4f, 1f)] private float markerCellFill = 0.92f;
     [SerializeField] private int sortingOrder = 500;
     [SerializeField] private string sortingLayerName = "Default";
@@ -35,6 +46,7 @@ public class PlacementPreviewController : MonoBehaviour
     private ItemData currentPreviewItem;
     private Vector3Int currentAnchorCell;
     private bool previewActive;
+    private PreviewMode previewMode;
     private int rotationSteps;
 
     private SpriteRenderer structurePreviewRenderer;
@@ -74,7 +86,7 @@ public class PlacementPreviewController : MonoBehaviour
         RenderPreview(GetPreviewColor(currentPreviewItem, allValid), allValid);
     }
 
-    public void Configure(Inventory inventoryRef, Tilemap groundRef, Transform playerRef, InventoryUI inventoryUiRef = null)
+    public void Configure(Inventory inventoryRef, Tilemap groundRef, Transform playerRef, InventoryUI inventoryUiRef = null, Tilemap buildRef = null, Tilemap decorRef = null)
     {
         if (inventoryRef != null)
             inventory = inventoryRef;
@@ -84,6 +96,12 @@ public class PlacementPreviewController : MonoBehaviour
 
         if (groundRef != null)
             groundTilemap = groundRef;
+
+        if (buildRef != null)
+            buildTilemap = buildRef;
+
+        if (decorRef != null)
+            decorTilemap = decorRef;
 
         if (playerRef != null)
             player = playerRef;
@@ -160,7 +178,7 @@ public class PlacementPreviewController : MonoBehaviour
         {
             Tilemap tm = tilemaps[i];
 
-            if (tm.gameObject.layer == buildLayer || tm.gameObject.name == "Build")
+            if (tm.gameObject.layer == buildLayer || tm.gameObject.name == "Build" || tm.gameObject.name == "BuildTilemap")
             {
                 buildTilemap = tm;
                 break;
@@ -177,7 +195,7 @@ public class PlacementPreviewController : MonoBehaviour
         {
             Tilemap tm = tilemaps[i];
 
-            if (tm.gameObject.layer == decorLayer || tm.gameObject.name == "Decor")
+            if (tm.gameObject.layer == decorLayer || tm.gameObject.name == "Decor" || tm.gameObject.name == "DecorTilemap")
             {
                 decorTilemap = tm;
                 break;
@@ -189,15 +207,25 @@ public class PlacementPreviewController : MonoBehaviour
     {
         allValid = false;
         previewActive = false;
+        previewMode = PreviewMode.None;
         currentPreviewItem = null;
 
-        if (inventory == null || groundTilemap == null || Camera.main == null || Mouse.current == null)
+        if ((inventory == null && inventoryUI == null) || groundTilemap == null || Camera.main == null || Mouse.current == null)
             return false;
 
         ItemData item = GetPreviewItem();
-        if (!CanPreviewItem(item))
-            return false;
+        if (CanPreviewPlacementItem(item))
+            return TryBuildPlacementPreview(item, out allValid);
 
+        if (CanPreviewToolTarget(item))
+            return TryBuildToolTargetPreview(item, out allValid);
+
+        return false;
+    }
+
+    bool TryBuildPlacementPreview(ItemData item, out bool allValid)
+    {
+        allValid = false;
         Vector3 mouseWorld = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
         mouseWorld.z = 0f;
 
@@ -216,11 +244,51 @@ public class PlacementPreviewController : MonoBehaviour
         currentPreviewItem = item;
         currentAnchorCell = anchorCell;
         previewActive = true;
+        previewMode = PreviewMode.Placement;
         allValid = AreAllPreviewCellsValid(item, previewCells);
         return true;
     }
 
-    static bool CanPreviewItem(ItemData item)
+    bool TryBuildToolTargetPreview(ItemData item, out bool allValid)
+    {
+        allValid = false;
+
+        Vector3 mouseWorld = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
+        mouseWorld.z = 0f;
+
+        if (player != null && item.actionRadius > 0f)
+        {
+            if (Vector2.Distance(player.position, mouseWorld) > item.actionRadius)
+                return false;
+        }
+
+        Collider2D[] hits = Physics2D.OverlapPointAll(mouseWorld);
+        for (int i = 0; i < hits.Length; i++)
+        {
+            Collider2D hit = hits[i];
+            if (!IsValidToolHitCollider(hit))
+                continue;
+
+            WorldObject target = hit.GetComponentInParent<WorldObject>();
+            if (target == null)
+                continue;
+
+            BuildToolTargetCells(target, previewCells);
+            if (previewCells.Count == 0)
+                return false;
+
+            currentPreviewItem = item;
+            currentAnchorCell = groundTilemap.WorldToCell(target.transform.position);
+            previewActive = true;
+            previewMode = PreviewMode.ToolTarget;
+            allValid = CanToolMineObject(item, target);
+            return true;
+        }
+
+        return false;
+    }
+
+    static bool CanPreviewPlacementItem(ItemData item)
     {
         if (item == null || item.type != ItemType.Structure)
             return false;
@@ -232,6 +300,11 @@ public class PlacementPreviewController : MonoBehaviour
             return item.canPlaceOnWater ? item.waterTileToPlace != null : item.tileToPlace != null;
 
         return false;
+    }
+
+    static bool CanPreviewToolTarget(ItemData item)
+    {
+        return item != null && item.type == ItemType.Tool;
     }
 
     ItemData GetPreviewItem()
@@ -280,6 +353,32 @@ public class PlacementPreviewController : MonoBehaviour
         result.Add(anchorCell);
     }
 
+    void BuildToolTargetCells(WorldObject target, List<Vector3Int> result)
+    {
+        result.Clear();
+
+        if (target == null || groundTilemap == null)
+            return;
+
+        Vector3Int anchorCell = groundTilemap.WorldToCell(target.transform.position);
+        WorldObjectOccupier occupier = target.GetComponent<WorldObjectOccupier>();
+        if (occupier != null)
+        {
+            WorldObjectOccupier.BuildFootprintCells(
+                anchorCell,
+                occupier.width,
+                occupier.height,
+                occupier.CenterOnTransform,
+                occupier.PlacementRotationSteps,
+                result
+            );
+
+            return;
+        }
+
+        result.Add(anchorCell);
+    }
+
     bool AreAllPreviewCellsValid(ItemData item, List<Vector3Int> cells)
     {
         if (item == null)
@@ -317,6 +416,9 @@ public class PlacementPreviewController : MonoBehaviour
 
     Color GetPreviewColor(ItemData item, bool isValid)
     {
+        if (previewMode == PreviewMode.ToolTarget)
+            return isValid ? toolTargetColor : weakToolTargetColor;
+
         if (!isValid)
             return invalidColor;
 
@@ -351,13 +453,35 @@ public class PlacementPreviewController : MonoBehaviour
         if (!enableRotation || Keyboard.current == null)
             return;
 
+        if (previewMode != PreviewMode.Placement)
+            return;
+
         if (!previewActive && currentPreviewItem == null)
             return;
 
         if (!Keyboard.current.rKey.wasPressedThisFrame)
             return;
 
+        if (currentPreviewItem != null && currentPreviewItem.isDoor)
+            return;
+
         rotationSteps = (rotationSteps + 1) % 4;
+    }
+
+    static bool CanToolMineObject(ItemData item, WorldObject target)
+    {
+        if (item == null || target == null)
+            return false;
+
+        if (target.requiredTool == ToolType.None)
+            return true;
+
+        return target.requiredTool == item.toolType && item.toolPower >= target.minToolPower;
+    }
+
+    static bool IsValidToolHitCollider(Collider2D collider)
+    {
+        return collider != null && collider.gameObject.name == ToolHitColliderName;
     }
 
     void RenderStructureSpritePreview(Color color, bool isValid)
@@ -397,8 +521,25 @@ public class PlacementPreviewController : MonoBehaviour
 
         Transform previewTransform = structurePreviewRenderer.transform;
         previewTransform.position = worldPos;
-        previewTransform.rotation = Quaternion.Euler(0f, 0f, rotationSteps * 90f);
+        previewTransform.rotation = Quaternion.Euler(0f, 0f, GetStructurePreviewRotationZ(currentPreviewItem, currentAnchorCell));
         previewTransform.localScale = sourceRenderer.transform.localScale;
+    }
+
+    float GetStructurePreviewRotationZ(ItemData item, Vector3Int anchorCell)
+    {
+        if (item != null && item.isDoor &&
+            DoorPlacementUtility.CanPlaceDoor(buildTilemap, buildTilemap, decorTilemap, anchorCell, item.doorWallMarkerTile, out Vector3Int firstDirection, out Vector3Int secondDirection))
+        {
+            return IsHorizontalDoor(firstDirection, secondDirection) ? 0f : 90f;
+        }
+
+        return rotationSteps * 90f;
+    }
+
+    static bool IsHorizontalDoor(Vector3Int firstDirection, Vector3Int secondDirection)
+    {
+        return (firstDirection == Vector3Int.left && secondDirection == Vector3Int.right) ||
+               (firstDirection == Vector3Int.right && secondDirection == Vector3Int.left);
     }
 
     void EnsureStructurePreviewRenderer()

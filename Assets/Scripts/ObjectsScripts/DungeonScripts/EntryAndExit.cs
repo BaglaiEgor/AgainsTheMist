@@ -14,7 +14,8 @@ public class EntryAndExit : MonoBehaviour
     [SerializeField] private Tilemap dungeonTilemap;
     [SerializeField] private GameObject dungeonObjectsRoot;
     [SerializeField] private DayNightLightController dayNightLightController;
-    [SerializeField] private float dungeonGlobalLightIntensity = 0.3f;
+    [SerializeField] private float dungeonGlobalLightIntensity = 0.7f;
+    [SerializeField] private Color dungeonGlobalLightColor = new Color(1f, 0.94f, 0.82f, 1f);
 
     [Header("Camera")]
     [SerializeField] private CinemachineConfiner2D cameraConfiner;
@@ -79,7 +80,7 @@ public class EntryAndExit : MonoBehaviour
         if (dayNightLightController != null)
         {
             if (isEntry)
-                dayNightLightController.ForceIntensity(dungeonGlobalLightIntensity);
+                dayNightLightController.ForceLight(dungeonGlobalLightIntensity, dungeonGlobalLightColor);
             else
                 dayNightLightController.ClearForcedIntensity();
         }
@@ -89,6 +90,14 @@ public class EntryAndExit : MonoBehaviour
 
         if (dungeonObjectsRoot != null)
             dungeonObjectsRoot.SetActive(isEntry);
+
+        ApplyCameraConfiner();
+    }
+
+    private void ApplyCameraConfiner()
+    {
+        if (cameraConfiner == null)
+            cameraConfiner = FindFirstObjectByType<CinemachineConfiner2D>(FindObjectsInactive.Include);
 
         if (cameraConfiner == null)
             return;

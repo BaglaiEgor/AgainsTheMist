@@ -225,7 +225,7 @@ public class EquipmentInventory : MonoBehaviour, IItemContainer
             EquipmentSlotType.Boots => item.equipmentType == EquipmentType.Boots,
             EquipmentSlotType.Accessory1 => item.equipmentType == EquipmentType.Accessory && item.activeEquipmentEffect == ActiveEquipmentEffectType.None,
             EquipmentSlotType.Accessory2 => item.equipmentType == EquipmentType.Accessory && item.activeEquipmentEffect == ActiveEquipmentEffectType.None,
-            EquipmentSlotType.ActiveSlot => item.activeEquipmentEffect == ActiveEquipmentEffectType.SnowClimb,
+            EquipmentSlotType.ActiveSlot => item.activeEquipmentEffect != ActiveEquipmentEffectType.None,
             _ => false
         };
     }

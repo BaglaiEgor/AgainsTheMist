@@ -46,7 +46,7 @@ MonoBehaviour:
   foodRestore: 0
   equipmentType: 3
   activeEquipmentEffect: 0
-  defense: 0
+  defense: 1
   frostDamageMultiplier: 0.9
   pressureGrowthMultiplier: 0.9
   furnaceFuelSeconds: 0

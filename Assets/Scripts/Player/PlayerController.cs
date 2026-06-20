@@ -76,10 +76,30 @@ public class PlayerController : MonoBehaviour
     [Min(0.05f)] [SerializeField] private float climbTransitionSeconds = 1f;
     [SerializeField] private float climbColliderCheckDistance = 0.18f;
 
+    [Header("Active Equipment Feedback")]
+    [SerializeField] private Color dashGhostColor = new Color(0.6f, 0.9f, 1f, 0.45f);
+    [SerializeField] private Color medkitFlashColor = new Color(0.35f, 1f, 0.45f, 0.35f);
+    [SerializeField] private Color shieldColor = new Color(0.35f, 0.75f, 1f, 0.35f);
+
     private bool isClimbing;
+    private bool isDashing;
+    private bool sprintRecoveryLocked;
+    private bool wasActiveEquipmentButtonHeld;
     private bool isEntryExitTeleporting;
     private Collider2D playerCollider;
     private readonly RaycastHit2D[] climbColliderHits = new RaycastHit2D[8];
+    private float dashCooldownRemaining;
+    private float medkitCooldownRemaining;
+    private float shieldCooldownRemaining;
+    private float shieldRemaining;
+    private float currentStamina;
+    private ItemData dashCooldownItem;
+    private ItemData medkitCooldownItem;
+    private ItemData shieldCooldownItem;
+    private ItemData activeShieldItem;
+    private ItemData lastActiveEquipmentItem;
+    private SpriteRenderer cachedVisualRenderer;
+    private GameObject shieldVisual;
 
     #endregion
 
@@ -113,15 +133,16 @@ public class PlayerController : MonoBehaviour
     #region move
     void FixedUpdate()
     {
-        if (movementLocked)
+        if (movementLocked || isDashing)
             return;
 
-        rb.MovePosition(rb.position + moveSpeed * Time.fixedDeltaTime * moveInput);
+        rb.MovePosition(rb.position + GetCurrentMoveSpeed() * Time.fixedDeltaTime * moveInput);
     }
 
     void Update()
     {
         EnsurePlacementPreviewController();
+        UpdateActiveEquipmentState();
         UpdateAnimationState();
         TryUpgradeBeacon();
         UpdateHeldAttack();
@@ -390,6 +411,41 @@ public class PlayerController : MonoBehaviour
             if (hit == null)
                 continue;
 
+            CreepyFinalAltarController finalAltar = hit.GetComponentInParent<CreepyFinalAltarController>();
+            if (finalAltar != null && finalAltar.TryUseAltar())
+            {
+                AudioController.Instance?.PlayInteract();
+                return;
+            }
+
+            CreepySealEncounter sealEncounter = hit.GetComponentInParent<CreepySealEncounter>();
+            if (sealEncounter != null && sealEncounter.TryActivate())
+            {
+                AudioController.Instance?.PlayInteract();
+                return;
+            }
+
+            CreepyClickableActivator clickableActivator = hit.GetComponentInParent<CreepyClickableActivator>();
+            if (clickableActivator != null && clickableActivator.TryActivate())
+            {
+                AudioController.Instance?.PlayInteract();
+                return;
+            }
+
+            CreepySequencePuzzleButton puzzleButton = hit.GetComponentInParent<CreepySequencePuzzleButton>();
+            if (puzzleButton != null && puzzleButton.TryPress())
+            {
+                AudioController.Instance?.PlayInteract();
+                return;
+            }
+        }
+
+        for (int i = 0; i < hits.Length; i++)
+        {
+            Collider2D hit = hits[i];
+            if (hit == null)
+                continue;
+
             Door door = hit.GetComponentInParent<Door>();
             if (door != null && door.CanInteract(transform))
             {
@@ -639,9 +695,26 @@ public class PlayerController : MonoBehaviour
         return new Vector2(Mathf.Sign(facingX == 0f ? 1f : facingX), 0f);
     }
 
+    public float CurrentStamina => currentStamina;
+    public float MaxStamina => GetSprintBootsItem() != null ? Mathf.Max(1f, GetSprintBootsItem().maxStamina) : 0f;
+    public bool HasSprintBootsEquipped => GetSprintBootsItem() != null;
+    public float RemainingDashCooldown => dashCooldownRemaining;
+    public float RemainingMedkitCooldown => medkitCooldownRemaining;
+    public float RemainingShieldCooldown => shieldCooldownRemaining;
+    public float RemainingShieldTime => shieldRemaining;
+    public ItemData ActiveDashCooldownItem => dashCooldownRemaining > 0f ? dashCooldownItem : null;
+    public ItemData ActiveMedkitCooldownItem => medkitCooldownRemaining > 0f ? medkitCooldownItem : null;
+    public ItemData ActiveShieldCooldownItem => shieldCooldownRemaining > 0f ? shieldCooldownItem : null;
+    public ItemData ActiveShieldItem => shieldRemaining > 0f ? activeShieldItem : null;
+
     void OnJump()
     {
         TryUseActiveEquipment();
+    }
+
+    void OnSprint(InputValue value)
+    {
+        // Sprint is intentionally handled through Space by active SprintBoots.
     }
 
     void TryUseActiveEquipment()
@@ -651,10 +724,323 @@ public class PlayerController : MonoBehaviour
 
         EquipmentInventory equipment = inventory != null ? inventory.Equipment : null;
         ItemData activeItem = equipment != null ? equipment.GetEquippedItem(EquipmentSlotType.ActiveSlot) : null;
-        if (activeItem == null || activeItem.activeEquipmentEffect != ActiveEquipmentEffectType.SnowClimb)
+        if (activeItem == null)
             return;
 
-        TryStartSnowClimb();
+        switch (activeItem.activeEquipmentEffect)
+        {
+            case ActiveEquipmentEffectType.SnowClimb:
+                TryStartSnowClimb();
+                break;
+            case ActiveEquipmentEffectType.Dash:
+                TryStartDash(activeItem);
+                break;
+            case ActiveEquipmentEffectType.Medkit:
+                TryUseMedkit(activeItem);
+                break;
+            case ActiveEquipmentEffectType.Shield:
+                TryUseShield(activeItem);
+                break;
+        }
+    }
+
+    void UpdateActiveEquipmentState()
+    {
+        float delta = Time.deltaTime;
+
+        if (dashCooldownRemaining > 0f)
+            dashCooldownRemaining = Mathf.Max(0f, dashCooldownRemaining - delta);
+        if (dashCooldownRemaining <= 0f)
+            dashCooldownItem = null;
+
+        if (medkitCooldownRemaining > 0f)
+            medkitCooldownRemaining = Mathf.Max(0f, medkitCooldownRemaining - delta);
+        if (medkitCooldownRemaining <= 0f)
+            medkitCooldownItem = null;
+
+        if (shieldCooldownRemaining > 0f)
+            shieldCooldownRemaining = Mathf.Max(0f, shieldCooldownRemaining - delta);
+        if (shieldCooldownRemaining <= 0f)
+            shieldCooldownItem = null;
+
+        if (shieldRemaining > 0f)
+            shieldRemaining = Mathf.Max(0f, shieldRemaining - delta);
+        if (shieldRemaining <= 0f)
+            activeShieldItem = null;
+
+        SetShieldVisualVisible(shieldRemaining > 0f);
+        UpdateSprintStamina(delta);
+    }
+
+    void UpdateSprintStamina(float delta)
+    {
+        ItemData sprintBoots = GetSprintBootsItem();
+        if (sprintBoots != lastActiveEquipmentItem)
+        {
+            lastActiveEquipmentItem = sprintBoots;
+            currentStamina = sprintBoots != null ? Mathf.Max(1f, sprintBoots.maxStamina) : 0f;
+            sprintRecoveryLocked = false;
+            wasActiveEquipmentButtonHeld = false;
+        }
+
+        if (sprintBoots == null)
+        {
+            currentStamina = 0f;
+            sprintRecoveryLocked = false;
+            wasActiveEquipmentButtonHeld = false;
+            return;
+        }
+
+        float maxStamina = Mathf.Max(1f, sprintBoots.maxStamina);
+        currentStamina = Mathf.Clamp(currentStamina, 0f, maxStamina);
+        bool activeButtonHeld = IsActiveEquipmentButtonHeld();
+
+        if (wasActiveEquipmentButtonHeld && !activeButtonHeld && currentStamina < maxStamina)
+            sprintRecoveryLocked = true;
+
+        if (IsSprintActive())
+        {
+            currentStamina = Mathf.Max(0f, currentStamina - Mathf.Max(0f, sprintBoots.staminaDrainPerSecond) * delta);
+            if (currentStamina <= 0f)
+                sprintRecoveryLocked = true;
+
+            wasActiveEquipmentButtonHeld = activeButtonHeld;
+            return;
+        }
+
+        currentStamina = Mathf.Min(maxStamina, currentStamina + Mathf.Max(0f, sprintBoots.staminaRegenPerSecond) * delta);
+        if (currentStamina >= maxStamina)
+            sprintRecoveryLocked = false;
+
+        wasActiveEquipmentButtonHeld = activeButtonHeld;
+    }
+
+    float GetCurrentMoveSpeed()
+    {
+        ItemData sprintBoots = GetSprintBootsItem();
+        if (sprintBoots == null || !IsSprintActive())
+            return moveSpeed;
+
+        return moveSpeed * Mathf.Max(1f, sprintBoots.sprintSpeedMultiplier);
+    }
+
+    bool IsSprintActive()
+    {
+        return IsActiveEquipmentButtonHeld() &&
+               !sprintRecoveryLocked &&
+               moveInput.sqrMagnitude > 0.0001f &&
+               currentStamina > 0f &&
+               GetSprintBootsItem() != null;
+    }
+
+    bool IsActiveEquipmentButtonHeld()
+    {
+        Keyboard keyboard = Keyboard.current;
+        if (keyboard != null && keyboard.spaceKey.isPressed)
+            return true;
+
+        Gamepad gamepad = Gamepad.current;
+        return gamepad != null && gamepad.buttonSouth.isPressed;
+    }
+
+    ItemData GetSprintBootsItem()
+    {
+        EquipmentInventory equipment = inventory != null ? inventory.Equipment : null;
+        ItemData activeItem = equipment != null ? equipment.GetEquippedItem(EquipmentSlotType.ActiveSlot) : null;
+        if (activeItem == null || activeItem.activeEquipmentEffect != ActiveEquipmentEffectType.SprintBoots)
+            return null;
+
+        return activeItem;
+    }
+
+    bool TryStartDash(ItemData item)
+    {
+        if (item == null || isDashing || dashCooldownRemaining > 0f)
+            return false;
+
+        Vector2 direction = moveInput.sqrMagnitude > 0.0001f ? moveInput : lastMoveDirection;
+        if (direction.sqrMagnitude <= 0.0001f)
+            direction = new Vector2(facingX, 0f);
+
+        dashCooldownRemaining = Mathf.Max(0f, item.cooldown);
+        dashCooldownItem = item;
+        StartCoroutine(DashRoutine(direction.normalized, item));
+        return true;
+    }
+
+    IEnumerator DashRoutine(Vector2 direction, ItemData item)
+    {
+        isDashing = true;
+        SpawnDashGhost();
+
+        Vector2 start = rb != null ? rb.position : (Vector2)transform.position;
+        Vector2 target = start + direction * Mathf.Max(0f, item.dashDistance);
+        float duration = Mathf.Max(0.02f, item.dashDuration);
+        float elapsed = 0f;
+        float nextGhostTime = 0.04f;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsed / duration);
+            Vector2 nextPosition = Vector2.Lerp(start, target, t);
+
+            if (rb != null)
+                rb.MovePosition(nextPosition);
+            else
+                transform.position = nextPosition;
+
+            if (elapsed >= nextGhostTime)
+            {
+                SpawnDashGhost();
+                nextGhostTime += 0.04f;
+            }
+
+            yield return null;
+        }
+
+        isDashing = false;
+    }
+
+    bool TryUseMedkit(ItemData item)
+    {
+        if (item == null || medkitCooldownRemaining > 0f || playerHealth == null)
+            return false;
+
+        if (playerHealth.CurrentHealth >= playerHealth.MaxHealth)
+            return false;
+
+        playerHealth.Heal(Mathf.Max(1, item.healAmount));
+        medkitCooldownRemaining = Mathf.Max(0f, item.cooldown);
+        medkitCooldownItem = item;
+        StartCoroutine(FlashPlayerVisual(medkitFlashColor, 0.18f));
+        AudioController.Instance?.PlayPotion();
+        return true;
+    }
+
+    bool TryUseShield(ItemData item)
+    {
+        if (item == null || shieldCooldownRemaining > 0f || shieldRemaining > 0f || playerHealth == null)
+            return false;
+
+        float duration = Mathf.Max(0.1f, item.effectDuration);
+        shieldRemaining = duration;
+        shieldCooldownRemaining = Mathf.Max(0f, item.cooldown);
+        activeShieldItem = item;
+        shieldCooldownItem = item;
+        playerHealth.ApplyIncomingDamageMultiplier(item.shieldDamageMultiplier, duration);
+        SetShieldVisualVisible(true);
+        return true;
+    }
+
+    void SpawnDashGhost()
+    {
+        SpriteRenderer source = GetPlayerVisualRenderer();
+        if (source == null || source.sprite == null)
+            return;
+
+        GameObject ghost = new GameObject("DashGhost");
+        ghost.transform.position = source.transform.position;
+        ghost.transform.rotation = source.transform.rotation;
+        ghost.transform.localScale = source.transform.lossyScale;
+
+        SpriteRenderer renderer = ghost.AddComponent<SpriteRenderer>();
+        renderer.sprite = source.sprite;
+        renderer.flipX = source.flipX;
+        renderer.flipY = source.flipY;
+        renderer.sortingLayerID = source.sortingLayerID;
+        renderer.sortingOrder = source.sortingOrder - 1;
+        renderer.color = dashGhostColor;
+
+        StartCoroutine(FadeAndDestroy(ghost, renderer, 0.22f));
+    }
+
+    IEnumerator FadeAndDestroy(GameObject target, SpriteRenderer renderer, float duration)
+    {
+        Color startColor = renderer != null ? renderer.color : Color.white;
+        float elapsed = 0f;
+
+        while (elapsed < duration && target != null && renderer != null)
+        {
+            elapsed += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsed / Mathf.Max(0.01f, duration));
+            Color color = startColor;
+            color.a = Mathf.Lerp(startColor.a, 0f, t);
+            renderer.color = color;
+            yield return null;
+        }
+
+        if (target != null)
+            Destroy(target);
+    }
+
+    IEnumerator FlashPlayerVisual(Color flashColor, float duration)
+    {
+        SpriteRenderer renderer = GetPlayerVisualRenderer();
+        if (renderer == null)
+            yield break;
+
+        Color original = renderer.color;
+        renderer.color = Color.Lerp(original, flashColor, flashColor.a);
+        yield return new WaitForSeconds(duration);
+
+        if (renderer != null)
+            renderer.color = original;
+    }
+
+    SpriteRenderer GetPlayerVisualRenderer()
+    {
+        if (cachedVisualRenderer != null)
+            return cachedVisualRenderer;
+
+        if (animator != null)
+            cachedVisualRenderer = animator.GetComponentInChildren<SpriteRenderer>();
+
+        if (cachedVisualRenderer == null)
+            cachedVisualRenderer = GetComponentInChildren<SpriteRenderer>();
+
+        return cachedVisualRenderer;
+    }
+
+    void SetShieldVisualVisible(bool visible)
+    {
+        if (!visible)
+        {
+            if (shieldVisual != null)
+                shieldVisual.SetActive(false);
+            return;
+        }
+
+        EnsureShieldVisual();
+        if (shieldVisual != null)
+            shieldVisual.SetActive(true);
+    }
+
+    void EnsureShieldVisual()
+    {
+        if (shieldVisual != null)
+            return;
+
+        shieldVisual = new GameObject("ActiveShieldVisual");
+        shieldVisual.transform.SetParent(transform, false);
+        shieldVisual.transform.localPosition = Vector3.zero;
+
+        LineRenderer line = shieldVisual.AddComponent<LineRenderer>();
+        line.useWorldSpace = false;
+        line.loop = true;
+        line.positionCount = 40;
+        line.widthMultiplier = 0.04f;
+        line.sortingOrder = 20;
+        line.material = new Material(Shader.Find("Sprites/Default"));
+        line.startColor = shieldColor;
+        line.endColor = shieldColor;
+
+        float radius = 0.72f;
+        for (int i = 0; i < line.positionCount; i++)
+        {
+            float angle = i / (float)line.positionCount * Mathf.PI * 2f;
+            line.SetPosition(i, new Vector3(Mathf.Cos(angle) * radius, Mathf.Sin(angle) * radius, 0f));
+        }
     }
 
     bool TryStartSnowClimb()
@@ -1444,7 +1830,7 @@ public class PlayerController : MonoBehaviour
         if (saveable == null)
             saveable = placedObject.AddComponent<SaveablePlacedObject>();
 
-        saveable.Initialize(item, IsHorizontalDoor(firstDirection, secondDirection) ? 1 : 0);
+        saveable.Initialize(item, IsHorizontalDoor(firstDirection, secondDirection) ? 0 : 1);
 
         AudioController.Instance?.PlayPlace();
         return true;
@@ -1663,13 +2049,13 @@ public class PlayerController : MonoBehaviour
             }
 
             if (buildTilemap == null &&
-                (tm.gameObject.layer == buildLayer || tm.gameObject.name == "Build"))
+                (tm.gameObject.layer == buildLayer || tm.gameObject.name == "Build" || tm.gameObject.name == "BuildTilemap"))
             {
                 buildTilemap = tm;
             }
 
             if (decorTilemap == null &&
-                (tm.gameObject.layer == decorLayer || tm.gameObject.name == "Decor"))
+                (tm.gameObject.layer == decorLayer || tm.gameObject.name == "Decor" || tm.gameObject.name == "DecorTilemap"))
             {
                 decorTilemap = tm;
             }
@@ -1763,7 +2149,7 @@ public class PlayerController : MonoBehaviour
 
         foreach (var tm in tilemaps)
         {
-            if (tm.gameObject.layer == decorLayer || tm.gameObject.name == "Decor")
+            if (tm.gameObject.layer == decorLayer || tm.gameObject.name == "Decor" || tm.gameObject.name == "DecorTilemap")
             {
                 decorTilemap = tm;
                 return;
@@ -1832,7 +2218,9 @@ public class PlayerController : MonoBehaviour
                 inventory,
                 groundTilemap,
                 transform,
-                inventoryUI
+                inventoryUI,
+                buildTilemap,
+                decorTilemap
             );
         }
     }
@@ -1848,7 +2236,9 @@ public class PlayerController : MonoBehaviour
                 inventory,
                 groundTilemap,
                 transform,
-                inventoryUI
+                inventoryUI,
+                buildTilemap,
+                decorTilemap
             );
         }
     }

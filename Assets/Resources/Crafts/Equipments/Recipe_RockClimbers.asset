@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CraftingRecipe
   result: {fileID: 11400000, guid: 709da8ee596d2b942b42c002f70ecb55, type: 2}
   resultAmount: 1
-  station: 0
-  category: 0
+  station: 2
+  category: 3
   ingredients:
   - item: {fileID: 11400000, guid: efb99b999bea5bd4ea4c3a7520810ed1, type: 2}
     amount: 1

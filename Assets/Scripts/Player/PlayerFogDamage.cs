@@ -43,6 +43,6 @@ public class PlayerFogDamage : MonoBehaviour
             return;
 
         damageTimer = 0f;
-        playerHealth.TakeDamage(damageAmount);
+        playerHealth.TakeFogDamage(damageAmount);
     }
 }

@@ -8,7 +8,11 @@ public class PotionEffectsUI : MonoBehaviour
     {
         FogProtection,
         FrostProtection,
-        HealCooldown
+        HealCooldown,
+        DashCooldown,
+        MedkitCooldown,
+        ShieldCooldown,
+        ShieldActive
     }
 
     private sealed class EffectView
@@ -25,14 +29,17 @@ public class PotionEffectsUI : MonoBehaviour
 
     [Header("References")]
     [SerializeField] private PlayerPotionEffects playerPotionEffects;
+    [SerializeField] private PlayerController playerController;
     [SerializeField] private ItemTooltip sharedTooltip;
     [SerializeField] private Transform iconsRoot;
     [SerializeField] private GameObject iconPrefab;
     [SerializeField] private GameObject panelRoot;
     [SerializeField] private bool hidePanelWhenNoEffects = true;
 
-    private readonly EffectView[] views = new EffectView[3];
+    private readonly EffectView[] views = new EffectView[7];
     private EffectView hoveredView;
+    private int hoveredRemainingSeconds = -1;
+    private string hoveredExtraText = string.Empty;
 
     void Awake()
     {
@@ -57,6 +64,9 @@ public class PotionEffectsUI : MonoBehaviour
                 playerPotionEffects = FindFirstObjectByType<PlayerPotionEffects>();
         }
 
+        if (playerController == null)
+            playerController = FindFirstObjectByType<PlayerController>();
+
         if (sharedTooltip == null)
             sharedTooltip = FindFirstObjectByType<ItemTooltip>(FindObjectsInactive.Include);
 
@@ -69,6 +79,10 @@ public class PotionEffectsUI : MonoBehaviour
         EnsureView(0, EffectSlot.FogProtection, "FogProtectionEffect");
         EnsureView(1, EffectSlot.FrostProtection, "FrostProtectionEffect");
         EnsureView(2, EffectSlot.HealCooldown, "HealingCooldownEffect");
+        EnsureView(3, EffectSlot.DashCooldown, "DashCooldownEffect");
+        EnsureView(4, EffectSlot.MedkitCooldown, "MedkitCooldownEffect");
+        EnsureView(5, EffectSlot.ShieldCooldown, "ShieldCooldownEffect");
+        EnsureView(6, EffectSlot.ShieldActive, "ShieldActiveEffect");
     }
 
     void EnsureView(int index, EffectSlot slot, string fallbackName)
@@ -143,7 +157,60 @@ public class PotionEffectsUI : MonoBehaviour
             "Зелье лечения на перезарядке"
         );
 
-        bool anyActive = views[0].active || views[1].active || views[2].active;
+        if (playerController != null)
+        {
+            ItemData dashItem = playerController.ActiveDashCooldownItem;
+            ConfigureView(
+                views[3],
+                dashItem != null && playerController.RemainingDashCooldown > 0f,
+                dashItem,
+                playerController.RemainingDashCooldown,
+                "КД",
+                "Рывок на перезарядке"
+            );
+
+            ItemData medkitItem = playerController.ActiveMedkitCooldownItem;
+            ConfigureView(
+                views[4],
+                medkitItem != null && playerController.RemainingMedkitCooldown > 0f,
+                medkitItem,
+                playerController.RemainingMedkitCooldown,
+                "КД",
+                "Аптечка на перезарядке"
+            );
+
+            ItemData shieldItem = playerController.ActiveShieldItem;
+            bool shieldActive = shieldItem != null && playerController.RemainingShieldTime > 0f;
+
+            ItemData shieldCooldownItem = playerController.ActiveShieldCooldownItem;
+            ConfigureView(
+                views[5],
+                !shieldActive && shieldCooldownItem != null && playerController.RemainingShieldCooldown > 0f,
+                shieldCooldownItem,
+                playerController.RemainingShieldCooldown,
+                "КД",
+                "Щит на перезарядке"
+            );
+
+            ConfigureView(
+                views[6],
+                shieldActive,
+                shieldItem,
+                playerController.RemainingShieldTime,
+                "Осталось",
+                "Входящий урон снижен"
+            );
+        }
+        else
+        {
+            for (int i = 3; i < views.Length; i++)
+                ConfigureView(views[i], false, null, 0f, string.Empty, string.Empty);
+        }
+
+        bool anyActive = false;
+        for (int i = 0; i < views.Length; i++)
+            anyActive |= views[i] != null && views[i].active;
+
         if (hidePanelWhenNoEffects && panelRoot != null)
             panelRoot.SetActive(anyActive);
 
@@ -198,6 +265,8 @@ public class PotionEffectsUI : MonoBehaviour
         if (hoveredView == null || !hoveredView.active)
         {
             hoveredView = null;
+            hoveredRemainingSeconds = -1;
+            hoveredExtraText = string.Empty;
             HideTooltip();
             return;
         }
@@ -212,6 +281,8 @@ public class PotionEffectsUI : MonoBehaviour
             return;
 
         hoveredView = null;
+        hoveredRemainingSeconds = -1;
+        hoveredExtraText = string.Empty;
         HideTooltip();
     }
 
@@ -232,7 +303,7 @@ public class PotionEffectsUI : MonoBehaviour
         if (hoveredView == null || !hoveredView.active)
             return;
 
-        ShowTooltipForHovered();
+        RefreshTooltipForHovered();
     }
 
     void ShowTooltipForHovered()
@@ -240,12 +311,33 @@ public class PotionEffectsUI : MonoBehaviour
         if (sharedTooltip == null || hoveredView == null)
             return;
 
-        ItemData item = hoveredView.sourceItem;
-        string name = item != null ? item.itemName : "Эффект";
-        string description = item != null ? item.description : string.Empty;
-        int remainingSeconds = Mathf.CeilToInt(Mathf.Max(0f, hoveredView.remainingTime));
-        string extra = hoveredView.effectText + "\n" + hoveredView.timerLabel + ": " + remainingSeconds + " c";
+        BuildHoveredTooltip(out string name, out string description, out string extra, out int remainingSeconds);
+        hoveredRemainingSeconds = remainingSeconds;
+        hoveredExtraText = extra;
         sharedTooltip.ShowCustomLeftBottom(name, description, extra);
+    }
+
+    void RefreshTooltipForHovered()
+    {
+        if (sharedTooltip == null || hoveredView == null)
+            return;
+
+        BuildHoveredTooltip(out string name, out string description, out string extra, out int remainingSeconds);
+        if (remainingSeconds == hoveredRemainingSeconds && extra == hoveredExtraText)
+            return;
+
+        hoveredRemainingSeconds = remainingSeconds;
+        hoveredExtraText = extra;
+        sharedTooltip.SetCustomContent(name, description, extra);
+    }
+
+    void BuildHoveredTooltip(out string name, out string description, out string extra, out int remainingSeconds)
+    {
+        ItemData item = hoveredView.sourceItem;
+        name = item != null ? item.itemName : "Эффект";
+        description = item != null ? item.description : string.Empty;
+        remainingSeconds = Mathf.CeilToInt(Mathf.Max(0f, hoveredView.remainingTime));
+        extra = hoveredView.effectText + "\n" + hoveredView.timerLabel + ": " + remainingSeconds + " c";
     }
 
     void HideTooltip()

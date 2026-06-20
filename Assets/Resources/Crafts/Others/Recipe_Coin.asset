@@ -15,7 +15,7 @@ MonoBehaviour:
   result: {fileID: 11400000, guid: 7df12ceea2a0c3a41b479937cb3c9ea0, type: 2}
   resultAmount: 5
   station: 2
-  category: 0
+  category: 9
   ingredients:
   - item: {fileID: 11400000, guid: 0a3deaa1233e47ad97fbd822c8de74ac, type: 2}
     amount: 1

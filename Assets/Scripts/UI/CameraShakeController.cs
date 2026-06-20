@@ -17,6 +17,13 @@ public class CameraShakeController : MonoBehaviour
             controller.Shake(duration, strength);
     }
 
+    public static void StopShake()
+    {
+        CameraShakeController controller = Resolve();
+        if (controller != null)
+            controller.KillShake();
+    }
+
     public void Shake(float duration = 0.1f, float strength = 0.06f)
     {
         if (Time.time < nextShakeTime)

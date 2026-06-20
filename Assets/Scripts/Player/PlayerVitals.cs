@@ -107,6 +107,13 @@ public class PlayerVitals : MonoBehaviour
         RaiseVitalsChanged();
     }
 
+    public void RestoreFull()
+    {
+        currentHunger = maxHunger;
+        healthTickTimer = 0f;
+        RaiseVitalsChanged();
+    }
+
     private void ApplyHealthTick()
     {
         if (playerHealth == null || playerHealth.IsDead)

@@ -29,12 +29,18 @@ public class AudioController : MonoBehaviour
     [SerializeField] private AudioClip dungeonFireClip;
     [Range(0f, 1f)] [SerializeField] private float sfxVolume = 1f;
 
+    [Header("Object SFX Distance")]
+    [SerializeField] private string playerTag = "Player";
+    [Min(0f)] [SerializeField] private float maxObjectSfxDistance = 12f;
+
     [Header("SFX Randomization")]
     [SerializeField] private bool randomizeSfx = true;
     [Min(0.1f)] [SerializeField] private float pitchMin = 0.92f;
     [Min(0.1f)] [SerializeField] private float pitchMax = 1.08f;
     [Range(0f, 1f)] [SerializeField] private float volumeMin = 0.9f;
     [Range(0f, 1f)] [SerializeField] private float volumeMax = 1f;
+
+    private Transform playerTransform;
 
     private void Awake()
     {
@@ -70,6 +76,7 @@ public class AudioController : MonoBehaviour
         pitchMax = Mathf.Max(pitchMin, pitchMax);
         volumeMin = Mathf.Clamp01(volumeMin);
         volumeMax = Mathf.Max(volumeMin, Mathf.Clamp01(volumeMax));
+        maxObjectSfxDistance = Mathf.Max(0f, maxObjectSfxDistance);
 
         if (!Application.isPlaying)
             return;
@@ -90,6 +97,12 @@ public class AudioController : MonoBehaviour
     public void PlayDungeonDoor() => PlaySfx(dungeonDoorClip);
     public void PlayDungeonTrap() => PlaySfx(dungeonTrapClip);
     public void PlayDungeonFire() => PlaySfx(dungeonFireClip);
+
+    public void PlayInteract(Vector3 sourcePosition) => PlaySfxNearPlayer(interactClip, sourcePosition);
+    public void PlayDungeonPlate(Vector3 sourcePosition) => PlaySfxNearPlayer(dungeonPlateClip, sourcePosition);
+    public void PlayDungeonDoor(Vector3 sourcePosition) => PlaySfxNearPlayer(dungeonDoorClip, sourcePosition);
+    public void PlayDungeonTrap(Vector3 sourcePosition) => PlaySfxNearPlayer(dungeonTrapClip, sourcePosition);
+    public void PlayDungeonFire(Vector3 sourcePosition) => PlaySfxNearPlayer(dungeonFireClip, sourcePosition);
 
     public float GetMusicVolume() => musicVolume;
     public float GetSfxVolume() => sfxVolume;
@@ -131,6 +144,50 @@ public class AudioController : MonoBehaviour
 
         sfxSource.pitch = pitch;
         sfxSource.PlayOneShot(clip, sfxVolume * volume);
+    }
+
+    private void PlaySfxNearPlayer(AudioClip clip, Vector3 sourcePosition)
+    {
+        if (!IsSourceNearPlayer(sourcePosition))
+            return;
+
+        PlaySfx(clip);
+    }
+
+    private bool IsSourceNearPlayer(Vector3 sourcePosition)
+    {
+        if (maxObjectSfxDistance <= 0f)
+            return true;
+
+        if (!TryResolvePlayerTransform(out Transform player))
+            return true;
+
+        Vector2 source2D = sourcePosition;
+        Vector2 player2D = player.position;
+        float maxDistanceSqr = maxObjectSfxDistance * maxObjectSfxDistance;
+        return (source2D - player2D).sqrMagnitude <= maxDistanceSqr;
+    }
+
+    private bool TryResolvePlayerTransform(out Transform player)
+    {
+        if (playerTransform != null && playerTransform.gameObject.activeInHierarchy)
+        {
+            player = playerTransform;
+            return true;
+        }
+
+        playerTransform = null;
+
+        if (string.IsNullOrWhiteSpace(playerTag))
+        {
+            player = null;
+            return false;
+        }
+
+        GameObject playerObject = GameObject.FindGameObjectWithTag(playerTag);
+        playerTransform = playerObject != null ? playerObject.transform : null;
+        player = playerTransform;
+        return player != null;
     }
 
     private void EnsureSources()

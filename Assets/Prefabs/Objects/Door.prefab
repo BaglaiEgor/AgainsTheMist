@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 1000000000000000002}
   - component: {fileID: 1000000000000000003}
   - component: {fileID: 1000000000000000004}
+  - component: {fileID: 4346560064883665168}
   m_Layer: 0
   m_Name: Door
   m_TagString: Untagged
@@ -48,10 +49,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   visualRoot: {fileID: 1000000000000000006}
+  visualRenderer: {fileID: 1000000000000000007}
   blockingCollider: {fileID: 1000000000000000004}
   interactionCollider: {fileID: 1000000000000000010}
+  openSprite: {fileID: -1466401119, guid: 0aaf02f42f9329f4695f37905d0c1111, type: 3}
   interactRadius: 4
-  openSlideDistance: 0.5
+  horizontalClosedWorldOffset: {x: 0, y: -0.5, z: 0}
+  verticalClosedWorldOffset: {x: 0, y: -0.5, z: 0}
+  horizontalOpenWorldOffset: {x: 0, y: 0, z: 0}
+  verticalOpenWorldOffset: {x: 0, y: 0, z: 0}
 --- !u!61 &1000000000000000004
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -98,6 +104,23 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.83852875, y: 0.10293126}
   m_EdgeRadius: 0
+--- !u!114 &4346560064883665168
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000000000000000001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6afe24d8fb955748a28772fd5768e7f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WorldObjectOccupier
+  width: 1
+  height: 1
+  centerOnTransform: 0
+  groundTilemap: {fileID: 0}
+  placementRotationSteps: 0
 --- !u!1 &1000000000000000005
 GameObject:
   m_ObjectHideFlags: 0
