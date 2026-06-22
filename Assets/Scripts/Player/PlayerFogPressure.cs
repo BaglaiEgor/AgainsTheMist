@@ -27,6 +27,12 @@ public class PlayerFogPressure : MonoBehaviour
 
     void Update()
     {
+        if (EntryAndExit.IsPlayerInDungeon)
+        {
+            fogPressure = Mathf.MoveTowards(fogPressure, 0f, pressureDecreasePerSecond * Time.deltaTime);
+            return;
+        }
+
         FogSystem fogSystem = FogSystem.Instance;
         if (fogSystem == null)
             return;

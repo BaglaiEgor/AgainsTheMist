@@ -20,6 +20,7 @@ public class InventorySlotUI : MonoBehaviour, IPointerDownHandler, IPointerEnter
     private Tween scaleTween;
     private Vector3 baseScale = Vector3.one;
     private bool isHovered;
+    private bool isHighlighted;
 
     private void Awake()
     {
@@ -69,6 +70,11 @@ public class InventorySlotUI : MonoBehaviour, IPointerDownHandler, IPointerEnter
     {
         if (highlight != null)
             highlight.enabled = value;
+
+        if (value && !isHighlighted)
+            PlayHighlightFeedback();
+
+        isHighlighted = value;
     }
 
     public void OnPointerDown(PointerEventData eventData)
@@ -152,6 +158,16 @@ public class InventorySlotUI : MonoBehaviour, IPointerDownHandler, IPointerEnter
         transform.localScale = baseScale * (isHovered ? Mathf.Max(0.01f, hoverScale) : 1f);
         scaleTween = transform
             .DOPunchScale(baseScale * Mathf.Max(0f, clickPunchScale), 0.12f, 6, 0.45f)
+            .SetEase(Ease.OutQuad)
+            .OnComplete(() => transform.localScale = baseScale * (isHovered ? Mathf.Max(0.01f, hoverScale) : 1f));
+    }
+
+    private void PlayHighlightFeedback()
+    {
+        KillScaleTween();
+        transform.localScale = baseScale * (isHovered ? Mathf.Max(0.01f, hoverScale) : 1f);
+        scaleTween = transform
+            .DOPunchScale(baseScale * 0.06f, 0.14f, 6, 0.45f)
             .SetEase(Ease.OutQuad)
             .OnComplete(() => transform.localScale = baseScale * (isHovered ? Mathf.Max(0.01f, hoverScale) : 1f));
     }

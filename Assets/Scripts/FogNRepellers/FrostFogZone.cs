@@ -60,6 +60,12 @@ public class FrostFogZone : MonoBehaviour
 
     void Update()
     {
+        if (EntryAndExit.IsPlayerInDungeon)
+        {
+            SetParticlesPlaying(false, false);
+            return;
+        }
+
         SyncPlayerPresenceWithFallbackCheck();
 
         cleanupBuffer.Clear();
@@ -114,6 +120,9 @@ public class FrostFogZone : MonoBehaviour
 
     void ApplyFrostDamage()
     {
+        if (EntryAndExit.IsPlayerInDungeon)
+            return;
+
         if (playersInside.Count == 0)
             return;
 
@@ -390,6 +399,9 @@ public class FrostFogZone : MonoBehaviour
 
     public static bool IsAnyZoneActiveAtPosition(Vector3 worldPosition)
     {
+        if (EntryAndExit.IsPlayerInDungeon)
+            return false;
+
         foreach (FrostFogZone zone in activeZones)
         {
             if (zone == null || !zone.isActiveAndEnabled || !zone.gameObject.activeInHierarchy)

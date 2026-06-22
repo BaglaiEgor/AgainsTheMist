@@ -8,18 +8,28 @@ public class AttackHitbox : MonoBehaviour
     [SerializeField] private float lifetime = 0.15f;
     [SerializeField] private bool animateSwing = true;
     [SerializeField] private float rotationOffset = -45f;
+    [SerializeField] private float rotationYOffset;
+    [SerializeField] private bool preservePrefabRotation;
+    [SerializeField] private bool flipVisualOnLeft = true;
+    [SerializeField] private Transform visualTransform;
+    [SerializeField] private bool useLeftVisualRotation;
+    [SerializeField] private Vector3 leftVisualRotation;
 
     private int damage;
     private IDamageable ownerDamageable;
     private readonly HashSet<IDamageable> damagedObjects = new();
 
     private bool swingConfigured;
-    private Vector3 swingPivot;
+    private Transform swingPivot;
     private float swingRadius;
     private float swingStartAngle;
     private float swingEndAngle;
     private float swingDuration;
     private float swingElapsed;
+    private bool mirrorVisual;
+    private bool swingLeft;
+    private Quaternion prefabRotation;
+    private Quaternion defaultVisualRotation;
 
     void Awake()
     {
@@ -36,7 +46,7 @@ public class AttackHitbox : MonoBehaviour
         ownerDamageable = owner;
     }
 
-    public void ConfigureSwing(Vector2 direction, Vector3 pivot, float radius, float arcDegrees, float duration)
+    public void ConfigureSwing(Vector2 direction, Transform pivot, float radius, float arcDegrees, float duration)
     {
         if (direction.sqrMagnitude <= Mathf.Epsilon)
             direction = Vector2.right;
@@ -52,6 +62,29 @@ public class AttackHitbox : MonoBehaviour
         swingDuration = Mathf.Max(0.01f, duration);
         swingElapsed = 0f;
         swingConfigured = true;
+        swingLeft = direction.x < 0f;
+        mirrorVisual = flipVisualOnLeft && swingLeft;
+        prefabRotation = transform.rotation;
+
+        if (visualTransform != null)
+        {
+            defaultVisualRotation = visualTransform.localRotation;
+            visualTransform.localRotation = useLeftVisualRotation && swingLeft
+                ? Quaternion.Euler(leftVisualRotation)
+                : defaultVisualRotation;
+        }
+
+        SpriteRenderer visual = GetComponentInChildren<SpriteRenderer>();
+        if (visual != null)
+            visual.flipX = mirrorVisual;
+
+        if (transform.parent != null)
+        {
+            Vector3 scale = transform.localScale;
+            float parentScaleX = transform.parent.lossyScale.x;
+            scale.x = Mathf.Abs(scale.x) * (parentScaleX < 0f ? -1f : 1f);
+            transform.localScale = scale;
+        }
 
         lifetime = swingDuration;
         ApplySwingPose(0f);
@@ -85,7 +118,7 @@ public class AttackHitbox : MonoBehaviour
 
         swingElapsed += Time.deltaTime;
         float normalized = Mathf.Clamp01(swingElapsed / swingDuration);
-        float eased = 1f - Mathf.Pow(1f - normalized, 3f);
+        float eased = Mathf.SmoothStep(0f, 1f, normalized);
 
         ApplySwingPose(eased);
     }
@@ -94,11 +127,14 @@ public class AttackHitbox : MonoBehaviour
     {
         float angle = Mathf.Lerp(swingStartAngle, swingEndAngle, t);
         float rad = angle * Mathf.Deg2Rad;
-        float distance = Mathf.Lerp(0f, swingRadius, Mathf.Clamp01(t * 2f));
 
-        Vector3 offset = new Vector3(Mathf.Cos(rad), Mathf.Sin(rad), 0f) * distance;
-        transform.position = swingPivot + offset;
-        transform.rotation = Quaternion.Euler(0f, 0f, angle + rotationOffset);
+        Vector3 offset = new Vector3(Mathf.Cos(rad), Mathf.Sin(rad), 0f) * swingRadius;
+        float visualRotationOffset = swingLeft ? -180f - rotationOffset : rotationOffset;
+        Vector3 pivotPosition = swingPivot != null ? swingPivot.position : transform.position;
+        Quaternion swingRotation = Quaternion.Euler(0f, rotationYOffset, angle + visualRotationOffset);
+
+        transform.position = pivotPosition + offset;
+        transform.rotation = preservePrefabRotation ? swingRotation * prefabRotation : swingRotation;
     }
 
     void Start()

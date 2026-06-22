@@ -16,11 +16,13 @@ public class Door : MonoBehaviour
     [Header("Visual Offsets")]
     [SerializeField] private Vector3 horizontalClosedWorldOffset = new Vector3(0f, -0.5f, 0f);
     [SerializeField] private Vector3 verticalClosedWorldOffset = new Vector3(0f, -0.5f, 0f);
-    [SerializeField] private Vector3 horizontalOpenWorldOffset = Vector3.zero;
-    [SerializeField] private Vector3 verticalOpenWorldOffset = Vector3.zero;
+    [SerializeField] private Vector3 horizontalOpenWorldOffset = new Vector3(0f, -0.5f, 0f);
+    [SerializeField] private Vector3 verticalOpenWorldOffset = new Vector3(0f, -0.5f, 0f);
+    [SerializeField] private int openSortingOrder = 0;
 
     private Quaternion closedLocalRotation;
     private Sprite closedSprite;
+    private int closedSortingOrder;
     private Vector3Int firstWallDirection = Vector3Int.left;
     private Vector3Int secondWallDirection = Vector3Int.right;
     private bool isOpen;
@@ -53,7 +55,10 @@ public class Door : MonoBehaviour
 
         closedLocalRotation = visualRoot.localRotation;
         if (visualRenderer != null)
+        {
             closedSprite = visualRenderer.sprite;
+            closedSortingOrder = visualRenderer.sortingOrder;
+        }
 
         if (interactionCollider != null)
             interactionCollider.isTrigger = true;
@@ -125,6 +130,9 @@ public class Door : MonoBehaviour
 
         visualRoot.localRotation = closedLocalRotation;
         visualRoot.localPosition = transform.InverseTransformVector(GetCurrentWorldOffset());
+        if (visualRenderer != null)
+            visualRenderer.sortingOrder = isOpen ? openSortingOrder : closedSortingOrder;
+
         SetSprite(isOpen ? openSprite : closedSprite);
     }
 

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Tilemaps;
@@ -20,11 +21,15 @@ public class PlayerController : MonoBehaviour
     [Header("Weapon Attack")]
     [SerializeField] private float weaponSwingArc = 110f;
     [SerializeField] private float weaponSwingDuration = 0.15f;
-    [SerializeField] private float maxWeaponSwingRadius = 1.8f;
+    [Min(0.05f)] [SerializeField] private float weaponSwingRadius = 0.7f;
     [SerializeField] private float holdInitialDelay = 0.2f;
     [SerializeField] private float holdRepeatInterval = 0.2f;
     [Tooltip("Optional point on player where weapon/tool attack prefab starts. If empty, player position is used.")]
     [SerializeField] private Transform attackSpawnPoint;
+
+    [Header("Attack Feedback")]
+    [SerializeField] private Vector3 attackPunchScale = new Vector3(0.1f, -0.06f, 0f);
+    [Min(0.01f)] [SerializeField] private float attackPunchDuration = 0.1f;
 
     [Header("Refs")]
     [SerializeField] private Inventory inventory;
@@ -80,6 +85,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Color dashGhostColor = new Color(0.6f, 0.9f, 1f, 0.45f);
     [SerializeField] private Color medkitFlashColor = new Color(0.35f, 1f, 0.45f, 0.35f);
     [SerializeField] private Color shieldColor = new Color(0.35f, 0.75f, 1f, 0.35f);
+    [Tooltip("Optional point where the active shield visual is created. If empty, the player center is used.")]
+    [SerializeField] private Transform shieldVisualSpawnPoint;
 
     private bool isClimbing;
     private bool isDashing;
@@ -100,6 +107,7 @@ public class PlayerController : MonoBehaviour
     private ItemData lastActiveEquipmentItem;
     private SpriteRenderer cachedVisualRenderer;
     private GameObject shieldVisual;
+    private Tween attackPunchTween;
 
     #endregion
 
@@ -624,23 +632,25 @@ public class PlayerController : MonoBehaviour
         UpdateFacing(facingDirection.x);
 
         Vector3 attackOrigin = GetAttackOrigin();
-        GameObject attack = Instantiate(item.attackPrefab, attackOrigin, Quaternion.identity);
+        Transform swingPivot = attackSpawnPoint != null ? attackSpawnPoint : transform;
+        GameObject attack = Instantiate(item.attackPrefab, attackOrigin, Quaternion.identity, transform);
 
         AttackHitbox hitbox = attack.GetComponent<AttackHitbox>();
         if (hitbox == null)
             return;
 
-        float swingRadius = Mathf.Clamp(item.actionRadius, 0.5f, Mathf.Max(0.5f, maxWeaponSwingRadius));
+        float swingRadius = weaponSwingRadius;
 
         hitbox.SetDamage(item.damage);
         hitbox.SetOwner(playerHealth);
         hitbox.ConfigureSwing(
             attackDirection,
-            attackOrigin,
+            swingPivot,
             swingRadius,
             weaponSwingArc,
             weaponSwingDuration
         );
+        PlayAttackPunch();
         AudioController.Instance?.PlayWeaponSwing();
     }
 
@@ -1022,7 +1032,7 @@ public class PlayerController : MonoBehaviour
             return;
 
         shieldVisual = new GameObject("ActiveShieldVisual");
-        shieldVisual.transform.SetParent(transform, false);
+        shieldVisual.transform.SetParent(shieldVisualSpawnPoint != null ? shieldVisualSpawnPoint : transform, false);
         shieldVisual.transform.localPosition = Vector3.zero;
 
         LineRenderer line = shieldVisual.AddComponent<LineRenderer>();
@@ -1609,23 +1619,37 @@ public class PlayerController : MonoBehaviour
         UpdateFacing(attackDirection.x);
 
         Vector3 attackOrigin = GetAttackOrigin();
-        GameObject attack = Instantiate(item.attackPrefab, attackOrigin, Quaternion.identity);
+        Transform swingPivot = attackSpawnPoint != null ? attackSpawnPoint : transform;
+        GameObject attack = Instantiate(item.attackPrefab, attackOrigin, Quaternion.identity, transform);
         AttackHitbox hitbox = attack.GetComponent<AttackHitbox>();
         if (hitbox == null)
             return false;
 
-        float swingRadius = Mathf.Clamp(item.actionRadius, 0.5f, Mathf.Max(0.5f, maxWeaponSwingRadius));
+        float swingRadius = weaponSwingRadius;
 
         hitbox.SetDamage(0);
         hitbox.SetOwner(playerHealth);
         hitbox.ConfigureSwing(
             attackDirection,
-            attackOrigin,
+            swingPivot,
             swingRadius,
-            weaponSwingArc,
+            weaponSwingArc * 0.5f,
             weaponSwingDuration
         );
+        PlayAttackPunch();
         return true;
+    }
+
+    void PlayAttackPunch()
+    {
+        SpriteRenderer renderer = GetPlayerVisualRenderer();
+        if (renderer == null)
+            return;
+
+        attackPunchTween?.Kill();
+        attackPunchTween = renderer.transform
+            .DOPunchScale(attackPunchScale, attackPunchDuration, 4, 0.5f)
+            .SetEase(Ease.OutQuad);
     }
 
     Vector3 GetAttackOrigin()

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using DG.Tweening;
 using TMPro;
 using UnityEngine;
 
@@ -21,10 +22,20 @@ public class DungeonPlateDoor : MonoBehaviour
 
     [Header("Open State")]
     [SerializeField] private bool hideVisualWhenOpen;
-    [SerializeField] private Vector3 openOffset = new Vector3(0f, 0.5f, 0f);
+    [SerializeField] private bool autoDetectVerticalDoor = true;
+    [SerializeField] private bool isVerticalDoor;
+    [SerializeField] private Vector3 verticalClosedVisualOffset = new Vector3(0f, -0.5f, 0f);
+    [SerializeField] private Vector3 verticalOpenVisualOffset = new Vector3(0f, -0.5f, 0f);
+    [SerializeField] private Vector3 horizontalOpenVisualOffset = new Vector3(0f, -0.5f, 0f);
+    [Min(0.01f)] [SerializeField] private float doorTweenDuration = 0.18f;
+    [SerializeField] private Vector3 doorPunchScale = new Vector3(0.08f, 0.08f, 0f);
+    [SerializeField] private Vector3 doorShakeStrength = new Vector3(0.04f, 0.04f, 0f);
 
     private bool isOpen;
     private Vector3 closedVisualLocalPosition;
+    private Tween moveTween;
+    private Tween punchTween;
+    private Tween shakeTween;
 
     public bool IsOpen => isOpen;
 
@@ -48,12 +59,14 @@ public class DungeonPlateDoor : MonoBehaviour
     private void OnEnable()
     {
         SubscribeToPlates();
+        ApplyDoorVisualPositionInstant();
         RefreshDoor();
     }
 
     private void OnDisable()
     {
         UnsubscribeFromPlates();
+        ResetDoorTweens();
     }
 
     private void SubscribeToPlates()
@@ -119,12 +132,42 @@ public class DungeonPlateDoor : MonoBehaviour
         }
 
         if (visualRoot != null && hideVisualWhenOpen)
-            visualRoot.SetActive(!isOpen);
+            visualRoot.SetActive(true);
 
-        if (visualRoot != null)
-            visualRoot.transform.localPosition = isOpen ? closedVisualLocalPosition + openOffset : closedVisualLocalPosition;
+        PlayDoorFeedback();
 
         AudioController.Instance?.PlayDungeonDoor(transform.position);
+    }
+
+    private void PlayDoorFeedback()
+    {
+        if (visualRoot == null)
+            return;
+
+        Transform visualTransform = visualRoot.transform;
+        Vector3 targetPosition = GetDoorVisualTargetPosition(isOpen);
+
+        moveTween?.Kill();
+        punchTween?.Kill();
+        shakeTween?.Kill();
+
+        moveTween = visualTransform
+            .DOLocalMove(targetPosition, Mathf.Max(0.01f, doorTweenDuration))
+            .SetEase(Ease.OutQuad)
+            .OnComplete(() =>
+            {
+                moveTween = null;
+                if (hideVisualWhenOpen && isOpen && visualRoot != null)
+                    visualRoot.SetActive(false);
+            });
+
+        punchTween = visualTransform
+            .DOPunchScale(doorPunchScale, 0.16f, 6, 0.45f)
+            .SetEase(Ease.OutQuad);
+
+        shakeTween = visualTransform
+            .DOShakePosition(0.12f, doorShakeStrength, 8, 45f, false, true)
+            .SetEase(Ease.OutQuad);
     }
 
     private void EnsureCounterText()
@@ -141,5 +184,38 @@ public class DungeonPlateDoor : MonoBehaviour
         counterText.fontSize = 3f;
         counterText.color = Color.white;
         counterText.text = "0/0";
+    }
+
+    private void ResetDoorTweens()
+    {
+        moveTween?.Kill();
+        punchTween?.Kill();
+        shakeTween?.Kill();
+
+        if (visualRoot != null)
+            visualRoot.transform.localPosition = GetDoorVisualTargetPosition(isOpen);
+    }
+
+    private void ApplyDoorVisualPositionInstant()
+    {
+        if (visualRoot != null)
+            visualRoot.transform.localPosition = GetDoorVisualTargetPosition(isOpen);
+    }
+
+    private Vector3 GetDoorVisualTargetPosition(bool open)
+    {
+        if (IsVerticalDoor())
+            return closedVisualLocalPosition + (open ? verticalOpenVisualOffset : verticalClosedVisualOffset);
+
+        return open ? closedVisualLocalPosition + horizontalOpenVisualOffset : closedVisualLocalPosition;
+    }
+
+    private bool IsVerticalDoor()
+    {
+        if (!autoDetectVerticalDoor)
+            return isVerticalDoor;
+
+        float z = transform.eulerAngles.z;
+        return Mathf.Abs(Mathf.DeltaAngle(z, 90f)) < 10f || Mathf.Abs(Mathf.DeltaAngle(z, 270f)) < 10f;
     }
 }

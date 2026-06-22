@@ -55,9 +55,9 @@ MonoBehaviour:
   openSprite: {fileID: -1466401119, guid: 0aaf02f42f9329f4695f37905d0c1111, type: 3}
   interactRadius: 4
   horizontalClosedWorldOffset: {x: 0, y: -0.5, z: 0}
-  verticalClosedWorldOffset: {x: 0, y: -0.5, z: 0}
-  horizontalOpenWorldOffset: {x: 0, y: 0, z: 0}
-  verticalOpenWorldOffset: {x: 0, y: 0, z: 0}
+  verticalClosedWorldOffset: {x: 0.5, y: 0, z: 0}
+  horizontalOpenWorldOffset: {x: 0, y: -0.5, z: 0}
+  verticalOpenWorldOffset: {x: 0.5, y: 0, z: 0}
 --- !u!61 &1000000000000000004
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -200,7 +200,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 2
+  m_SortingOrder: 1
   m_MaskInteraction: 0
   m_Sprite: {fileID: 1937848296, guid: 0aaf02f42f9329f4695f37905d0c1111, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -211,7 +211,7 @@ SpriteRenderer:
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
-  m_SpriteSortPoint: 0
+  m_SpriteSortPoint: 1
 --- !u!1 &1000000000000000008
 GameObject:
   m_ObjectHideFlags: 0

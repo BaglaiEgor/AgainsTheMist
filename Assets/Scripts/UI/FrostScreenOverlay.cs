@@ -52,6 +52,9 @@ public class FrostScreenOverlay : MonoBehaviour
 
     float GetTargetIntensity()
     {
+        if (EntryAndExit.IsPlayerInDungeon)
+            return 0f;
+
         if (playerTransform == null)
         {
             WarnMissingPlayer();

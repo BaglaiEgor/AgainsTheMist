@@ -1,4 +1,5 @@
 using System;
+using DG.Tweening;
 using TMPro;
 using UnityEngine;
 
@@ -13,11 +14,14 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     [SerializeField] private bool autoCreateHealthText = true;
     [SerializeField] private TextMeshProUGUI healthText;
     [SerializeField] private string healthTextFormat = "Здоровье: {0}/{1}";
+    [SerializeField] private Vector3 healthTextPunchScale = new Vector3(0.08f, 0.08f, 0f);
 
     [Header("Refs")]
     [SerializeField] private Inventory inventory;
 
     private bool isDead;
+    private Tween healthTextTween;
+    private Vector3 healthTextBaseScale = Vector3.one;
     private float incomingDamageMultiplier = 1f;
     private float incomingDamageMultiplierTime;
 
@@ -40,6 +44,8 @@ public class PlayerHealth : MonoBehaviour, IDamageable
             gameObject.AddComponent<PlayerDeathRecovery>();
 
         EnsureHealthText();
+        if (healthText != null)
+            healthTextBaseScale = healthText.transform.localScale;
         RefreshHealthPresentation(false);
     }
 
@@ -195,10 +201,32 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         if (healthText != null)
         {
             healthText.text = string.Format(healthTextFormat, currentHealth, maxHealth);
+            if (logIfNoUi)
+                PlayHealthTextFeedback();
             return;
         }
 
         if (logIfNoUi)
             Debug.Log($"Player HP: {currentHealth}/{maxHealth}");
+    }
+
+    void PlayHealthTextFeedback()
+    {
+        if (healthText == null)
+            return;
+
+        healthTextTween?.Kill();
+        healthText.transform.localScale = healthTextBaseScale;
+        healthTextTween = healthText.transform
+            .DOPunchScale(healthTextPunchScale, 0.14f, 6, 0.45f)
+            .SetEase(Ease.OutQuad)
+            .OnComplete(() => healthText.transform.localScale = healthTextBaseScale);
+    }
+
+    void OnDisable()
+    {
+        healthTextTween?.Kill();
+        if (healthText != null)
+            healthText.transform.localScale = healthTextBaseScale;
     }
 }

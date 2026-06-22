@@ -29,6 +29,15 @@ public class DungeonLightSource : MonoBehaviour
     [SerializeField] private int beamBlendStyleIndex = 0;
     [SerializeField] private int beamLightOrder = 0;
 
+    [Header("Stylized Beam Visual")]
+    [SerializeField] private bool enableStylizedBeamVisual = true;
+    [Min(0.01f)] [SerializeField] private float beamVisualOuterWidth = 0.22f;
+    [Min(0.005f)] [SerializeField] private float beamVisualCoreWidth = 0.08f;
+    [Min(0.1f)] [SerializeField] private float beamVisualPulseSpeed = 8f;
+    [SerializeField] private Color beamVisualOuterColor = new Color(1f, 0.45f, 0.12f, 0.62f);
+    [SerializeField] private Color beamVisualCoreColor = new Color(1f, 0.88f, 0.58f, 0.82f);
+    [SerializeField] private int beamVisualSortingOrderOffset = 8;
+
     [Header("Interaction")]
     [SerializeField] private float interactDistance = 2f;
     [SerializeField] private bool configureRigidbodyOnAwake = true;
@@ -42,7 +51,9 @@ public class DungeonLightSource : MonoBehaviour
 
     private readonly List<BeamSegment> beamSegments = new();
     private readonly List<Light2D> beamLights = new();
+    private readonly List<DungeonStylizedLineVisual> beamVisuals = new();
     private readonly RaycastHit2D[] raycastHits = new RaycastHit2D[32];
+    private SpriteRenderer cachedSourceRenderer;
 
     public string InteractLabel => "\u041f\u043e\u0432\u0435\u0440\u043d\u0443\u0442\u044c";
 
@@ -51,6 +62,7 @@ public class DungeonLightSource : MonoBehaviour
         if (lightOrigin == null)
             lightOrigin = transform;
 
+        cachedSourceRenderer = GetComponentInChildren<SpriteRenderer>();
         EnsureBeamTemplate();
 
         if (configureRigidbodyOnAwake)
@@ -178,6 +190,7 @@ public class DungeonLightSource : MonoBehaviour
         if (beamSegments.Count == 0)
         {
             SetActiveBeamCount(0);
+            SetActiveBeamVisualCount(0);
             return;
         }
 
@@ -200,10 +213,18 @@ public class DungeonLightSource : MonoBehaviour
             ApplyBeamSettings(beamLight);
             beamLight.SetShapePath(CreateBeamShapePath(distance));
             beamLight.gameObject.SetActive(true);
+
+            if (enableStylizedBeamVisual)
+            {
+                DungeonStylizedLineVisual beamVisual = GetBeamVisual(usedCount);
+                beamVisual.Show(start, end, Mathf.PingPong(Time.time * 0.7f, 1f), false);
+            }
+
             usedCount++;
         }
 
         SetActiveBeamCount(usedCount);
+        SetActiveBeamVisualCount(enableStylizedBeamVisual ? usedCount : 0);
     }
 
     private Light2D GetBeamLight(int index)
@@ -219,6 +240,30 @@ public class DungeonLightSource : MonoBehaviour
         }
 
         return beamLights[index];
+    }
+
+    private DungeonStylizedLineVisual GetBeamVisual(int index)
+    {
+        while (beamVisuals.Count <= index)
+        {
+            GameObject visualObject = new GameObject($"BeamStylizedVisual_{beamVisuals.Count}");
+            visualObject.transform.SetParent(transform, true);
+
+            DungeonStylizedLineVisual beamVisual = visualObject.AddComponent<DungeonStylizedLineVisual>();
+            beamVisual.Configure(
+                beamVisualOuterWidth,
+                beamVisualCoreWidth,
+                beamVisualPulseSpeed,
+                beamVisualOuterColor,
+                beamVisualCoreColor,
+                beamVisualOuterColor,
+                beamVisualCoreColor
+            );
+            beamVisual.ApplySorting(cachedSourceRenderer, beamVisualSortingOrderOffset);
+            beamVisuals.Add(beamVisual);
+        }
+
+        return beamVisuals[index];
     }
 
     private void ApplyBeamSettings(Light2D beamLight)
@@ -272,6 +317,17 @@ public class DungeonLightSource : MonoBehaviour
     {
         for (int i = 0; i < beamLights.Count; i++)
             beamLights[i].gameObject.SetActive(i < activeCount);
+    }
+
+    private void SetActiveBeamVisualCount(int activeCount)
+    {
+        for (int i = 0; i < beamVisuals.Count; i++)
+        {
+            if (i < activeCount)
+                continue;
+
+            beamVisuals[i].Hide();
+        }
     }
 
     private RaycastHit2D GetFirstValidHit(Vector2 origin, Vector2 direction, Collider2D ignoredCollider)

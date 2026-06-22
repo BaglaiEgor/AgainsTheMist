@@ -22,6 +22,8 @@ public class AudioController : MonoBehaviour
     [SerializeField] private AudioClip potionClip;
     [SerializeField] private AudioClip interactClip;
     [SerializeField] private AudioClip snowClimbClip;
+    [SerializeField] private AudioClip normalFootstepClip;
+    [SerializeField] private AudioClip snowFootstepClip;
     [SerializeField] private AudioClip entryExitClip;
     [SerializeField] private AudioClip dungeonPlateClip;
     [SerializeField] private AudioClip dungeonDoorClip;
@@ -92,6 +94,7 @@ public class AudioController : MonoBehaviour
     public void PlayPotion() => PlaySfx(potionClip);
     public void PlayInteract() => PlaySfx(interactClip);
     public void PlaySnowClimb() => PlaySfx(snowClimbClip);
+    public void PlayFootstep(bool onSnow) => PlaySfx(onSnow ? snowFootstepClip : normalFootstepClip);
     public void PlayEntryExit() => PlaySfx(entryExitClip);
     public void PlayDungeonPlate() => PlaySfx(dungeonPlateClip);
     public void PlayDungeonDoor() => PlaySfx(dungeonDoorClip);

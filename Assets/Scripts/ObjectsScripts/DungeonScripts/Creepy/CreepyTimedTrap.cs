@@ -1,4 +1,5 @@
 using System.Collections;
+using DG.Tweening;
 using UnityEngine;
 
 public enum CreepyTimedTrapType
@@ -38,15 +39,18 @@ public class CreepyTimedTrap : MonoBehaviour
     [Min(0.1f)] [SerializeField] private float shakeSpeed = 35f;
     [SerializeField] private bool punchOnActive = true;
     [Min(1f)] [SerializeField] private float activePunchScale = 1.08f;
+    [SerializeField] private Vector3 activeZonePunchScale = new Vector3(0.18f, 0.18f, 0f);
 
     [Header("Generated Zone")]
     [SerializeField] private bool generateRoundZone;
     [Min(0.05f)] [SerializeField] private float roundZoneRadius = 1.1f;
-    [SerializeField] private Color roundWarningColor = new Color(0.95f, 0.2f, 0.15f, 0.35f);
-    [SerializeField] private Color roundActiveColor = new Color(1f, 0.05f, 0.02f, 0.55f);
+    [Min(1f)] [SerializeField] private float roundZoneRadiusMultiplier = 1.35f;
+    [SerializeField] private Color roundWarningColor = new Color(0.78f, 0.28f, 1f, 0.34f);
+    [SerializeField] private Color roundActiveColor = new Color(1f, 0.72f, 0.95f, 0.58f);
     [SerializeField] private int roundZoneSortingOrder = 11;
 
     private Coroutine trapRoutine;
+    private Tween activePunchTween;
     private Vector3 visualStartLocalPosition;
     private Vector3 visualStartLocalScale = Vector3.one;
 
@@ -85,6 +89,7 @@ public class CreepyTimedTrap : MonoBehaviour
             trapRoutine = null;
         }
 
+        activePunchTween?.Kill();
         SetIdleState();
     }
 
@@ -137,13 +142,6 @@ public class CreepyTimedTrap : MonoBehaviour
         while (timer < activeTime)
         {
             timer += Time.deltaTime;
-            float progress = Mathf.Clamp01(timer / activeTime);
-
-            if (punchOnActive && visualRoot != null)
-            {
-                float punch = 1f + (activePunchScale - 1f) * (1f - progress);
-                visualRoot.localScale = visualStartLocalScale * punch;
-            }
 
             yield return null;
         }
@@ -164,6 +162,7 @@ public class CreepyTimedTrap : MonoBehaviour
         SetSprite(warningSprite != null ? warningSprite : closedSprite);
         SetZoneWarning(true);
         SetZoneDamage(false);
+        warningZone?.PlayWarningAppear();
     }
 
     private void SetActiveState()
@@ -171,6 +170,16 @@ public class CreepyTimedTrap : MonoBehaviour
         SetSprite(activeSprite != null ? activeSprite : closedSprite);
         SetZoneWarning(false);
         SetZoneDamage(true);
+        damageZone?.PlayActivePunch();
+
+        if (punchOnActive && visualRoot != null)
+        {
+            activePunchTween?.Kill();
+            visualRoot.localScale = visualStartLocalScale;
+            activePunchTween = visualRoot
+                .DOPunchScale(Vector3.one * (activePunchScale - 1f), 0.16f, 6, 0.45f)
+                .SetEase(Ease.OutQuad);
+        }
     }
 
     private void ApplyDamageValue()
@@ -223,7 +232,7 @@ public class CreepyTimedTrap : MonoBehaviour
             return;
 
         warningZone.ConfigureGeneratedCircle(
-            roundZoneRadius,
+            roundZoneRadius * roundZoneRadiusMultiplier,
             roundWarningColor,
             roundActiveColor,
             roundZoneSortingOrder

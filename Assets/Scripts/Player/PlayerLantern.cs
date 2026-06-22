@@ -18,7 +18,11 @@ public class PlayerLantern : MonoBehaviour
     [SerializeField] private Color heldLightColor = new Color(0.89019614f, 0.5176471f, 0.34509805f, 1f);
     [Min(0f)] [SerializeField] private float heldLightIntensity = 0.7f;
     [Min(0.01f)] [SerializeField] private float heldLightInnerRadius = 0.15f;
-    [Min(0.1f)] [SerializeField] private float heldLightOuterRadius = 17f;
+    [Min(0.1f)] [SerializeField] private float heldLightVisualOuterRadius = 17f;
+    [Range(0f, 1f)] [SerializeField] private float heldLightFalloffIntensity = 0.7f;
+    [Min(0f)] [SerializeField] private float heldLightVolumeIntensity = 0.2f;
+    [SerializeField] private bool heldLightVolumetricEnabled = true;
+    [Range(0f, 1f)] [SerializeField] private float heldLightShadowIntensity = 0.001f;
 
     [Header("Debug")]
     [SerializeField] private bool logCharge;
@@ -162,9 +166,11 @@ public class PlayerLantern : MonoBehaviour
         heldLanternLight.color = heldLightColor;
         heldLanternLight.intensity = heldLightIntensity;
         heldLanternLight.pointLightInnerRadius = heldLightInnerRadius;
-        heldLanternLight.pointLightOuterRadius = item != null && item.lanternLightRadius > 0f
-            ? item.lanternLightRadius
-            : heldLightOuterRadius;
+        heldLanternLight.pointLightOuterRadius = heldLightVisualOuterRadius;
+        heldLanternLight.falloffIntensity = heldLightFalloffIntensity;
+        heldLanternLight.volumeIntensity = heldLightVolumeIntensity;
+        heldLanternLight.volumetricEnabled = heldLightVolumetricEnabled && heldLightVolumeIntensity > 0f;
+        heldLanternLight.shadowIntensity = heldLightShadowIntensity;
     }
 
     void TryLogCharge(ItemData item, float charge, float maxCharge)

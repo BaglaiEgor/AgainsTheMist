@@ -23,6 +23,8 @@ public class EntryAndExit : MonoBehaviour
 
     public bool isEntry;
 
+    public static bool IsPlayerInDungeon { get; private set; }
+
     public string InteractLabel => isEntry ? "Войти" : "Выйти";
 
     public bool CanInteract(Transform interactor)
@@ -71,6 +73,8 @@ public class EntryAndExit : MonoBehaviour
 
     public void ApplyDungeonState()
     {
+        IsPlayerInDungeon = isEntry;
+
         if (isEntry)
             DestroyFogEnemies();
 
@@ -90,6 +94,10 @@ public class EntryAndExit : MonoBehaviour
 
         if (dungeonObjectsRoot != null)
             dungeonObjectsRoot.SetActive(isEntry);
+
+        DungeonPostProcessController postProcessController = FindFirstObjectByType<DungeonPostProcessController>();
+        if (postProcessController != null)
+            postProcessController.SetDungeonMode(isEntry);
 
         ApplyCameraConfiner();
     }

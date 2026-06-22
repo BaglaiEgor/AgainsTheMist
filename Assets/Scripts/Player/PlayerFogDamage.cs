@@ -20,6 +20,12 @@ public class PlayerFogDamage : MonoBehaviour
 
     void Update()
     {
+        if (EntryAndExit.IsPlayerInDungeon)
+        {
+            damageTimer = 0f;
+            return;
+        }
+
         if (playerHealth == null || playerHealth.IsDead)
             return;
 

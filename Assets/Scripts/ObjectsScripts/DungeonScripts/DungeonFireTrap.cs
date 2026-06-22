@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 
@@ -37,6 +38,8 @@ public class DungeonFireTrap : MonoBehaviour
     [SerializeField] private bool shakeVisualOnActive = true;
     [Min(0f)] [SerializeField] private float shakeAmount = 0.025f;
     [Min(0.1f)] [SerializeField] private float shakeSpeed = 35f;
+    [SerializeField] private Vector3 activePunchScale = new Vector3(0.12f, 0.12f, 0f);
+    [SerializeField] private Vector3 activeShakeStrength = new Vector3(0.04f, 0.04f, 0f);
 
     private readonly List<PlayerHealth> playersInside = new();
     private readonly Dictionary<PlayerHealth, float> nextDamageTimeByPlayer = new();
@@ -44,6 +47,9 @@ public class DungeonFireTrap : MonoBehaviour
     private float lightNoiseOffset;
     private float shakeNoiseOffset;
     private Vector3 visualStartLocalPosition;
+    private Vector3 visualStartLocalScale = Vector3.one;
+    private Tween activePunchTween;
+    private Tween activeShakeTween;
 
     private void Awake()
     {
@@ -62,7 +68,10 @@ public class DungeonFireTrap : MonoBehaviour
         lightNoiseOffset = Random.Range(0f, 100f);
         shakeNoiseOffset = Random.Range(0f, 100f);
         if (visualRoot != null)
+        {
             visualStartLocalPosition = visualRoot.localPosition;
+            visualStartLocalScale = visualRoot.localScale;
+        }
 
         SetSprite(prepareFrame1);
         SetLightActive(false);
@@ -77,6 +86,7 @@ public class DungeonFireTrap : MonoBehaviour
     {
         isActive = false;
         SetLightActive(false);
+        KillActiveTweens();
         ResetVisualPosition();
     }
 
@@ -127,6 +137,7 @@ public class DungeonFireTrap : MonoBehaviour
 
             SetSprite(activeFrame4);
             SetLightActive(true);
+            PlayActiveFeedback();
             isActive = true;
             AudioController.Instance?.PlayDungeonFire(transform.position);
             ApplyDamageToPlayersInside();
@@ -200,5 +211,34 @@ public class DungeonFireTrap : MonoBehaviour
     {
         if (visualRoot != null)
             visualRoot.localPosition = visualStartLocalPosition;
+    }
+
+    private void PlayActiveFeedback()
+    {
+        if (visualRoot == null)
+            return;
+
+        KillActiveTweens();
+        visualRoot.localScale = visualStartLocalScale;
+        activePunchTween = visualRoot
+            .DOPunchScale(activePunchScale, 0.16f, 6, 0.45f)
+            .SetEase(Ease.OutQuad)
+            .OnComplete(() => visualRoot.localScale = visualStartLocalScale);
+
+        activeShakeTween = visualRoot
+            .DOShakePosition(0.14f, activeShakeStrength, 10, 55f, false, true)
+            .SetEase(Ease.OutQuad)
+            .OnComplete(() => visualRoot.localPosition = visualStartLocalPosition);
+    }
+
+    private void KillActiveTweens()
+    {
+        activePunchTween?.Kill();
+        activeShakeTween?.Kill();
+        activePunchTween = null;
+        activeShakeTween = null;
+
+        if (visualRoot != null)
+            visualRoot.localScale = visualStartLocalScale;
     }
 }

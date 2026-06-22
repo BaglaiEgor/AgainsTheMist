@@ -1,3 +1,4 @@
+using DG.Tweening;
 using UnityEngine;
 
 public enum DungeonLightMirrorType
@@ -16,6 +17,7 @@ public class DungeonLightMirror : MonoBehaviour
     [SerializeField] private bool configureRigidbodyOnAwake = true;
     [SerializeField] private float interactDistance = 2f;
     [SerializeField] private Transform rotationCenterOverride;
+    [Min(0.01f)] [SerializeField] private float rotateTweenDuration = 0.16f;
 
     [Header("Reflection Trigger")]
     [SerializeField] private Collider2D reflectionTriggerCollider;
@@ -34,6 +36,8 @@ public class DungeonLightMirror : MonoBehaviour
         EnsureReflectionTrigger();
         ApplyVisualDirection();
     }
+
+    private Tween rotateTween;
 
     private void Reset()
     {
@@ -79,30 +83,57 @@ public class DungeonLightMirror : MonoBehaviour
             ? DungeonLightMirrorType.Backslash
             : DungeonLightMirrorType.Slash;
 
-        ApplyVisualDirection();
+        ApplyVisualDirection(true);
         return true;
     }
 
-    private void ApplyVisualDirection()
+    private void ApplyVisualDirection(bool animated = false)
     {
         Vector3 centerBeforeRotation = GetRotationCenterWorld();
         float targetAngle = mirrorType == DungeonLightMirrorType.Slash ? 0f : 90f;
+
+        rotateTween?.Kill();
+        if (animated && Application.isPlaying)
+        {
+            rotateTween = transform
+                .DORotate(new Vector3(0f, 0f, targetAngle), Mathf.Max(0.01f, rotateTweenDuration), RotateMode.Fast)
+                .SetEase(Ease.OutBack)
+                .OnUpdate(SyncRigidbodyToTransform)
+                .OnComplete(() =>
+                {
+                    rotateTween = null;
+                    ApplyVisualDirection(false);
+                });
+            return;
+        }
+
         transform.rotation = Quaternion.Euler(0f, 0f, targetAngle);
 
         Vector3 centerAfterRotation = GetRotationCenterWorld();
         transform.position += centerBeforeRotation - centerAfterRotation;
 
+        SyncRigidbodyToTransform();
+    }
+
+    private void SyncRigidbodyToTransform()
+    {
         Rigidbody2D rb = GetComponent<Rigidbody2D>();
-        if (rb != null)
+        if (rb == null)
+            return;
+
+        rb.position = transform.position;
+        rb.rotation = transform.eulerAngles.z;
+        if (rb.bodyType != RigidbodyType2D.Static)
         {
-            rb.position = transform.position;
-            rb.rotation = targetAngle;
-            if (rb.bodyType != RigidbodyType2D.Static)
-            {
-                rb.linearVelocity = Vector2.zero;
-                rb.angularVelocity = 0f;
-            }
+            rb.linearVelocity = Vector2.zero;
+            rb.angularVelocity = 0f;
         }
+    }
+
+    private void OnDisable()
+    {
+        rotateTween?.Kill();
+        rotateTween = null;
     }
 
     private Vector3 GetRotationCenterWorld()

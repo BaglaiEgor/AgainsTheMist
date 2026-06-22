@@ -34,6 +34,13 @@ public class FogEnemySpawner : MonoBehaviour
 
     void Update()
     {
+        if (EntryAndExit.IsPlayerInDungeon)
+        {
+            spawnCheckTimer = 0f;
+            CleanupDeadEnemies();
+            return;
+        }
+
         FogSystem fogSystem = FogSystem.Instance;
         if (fogSystem == null)
             return;

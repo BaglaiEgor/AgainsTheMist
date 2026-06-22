@@ -1,3 +1,4 @@
+using DG.Tweening;
 using UnityEngine;
 
 public enum FogEnemyBehaviorType
@@ -46,6 +47,18 @@ public class FogEnemy : MonoBehaviour, IDamageable
     [SerializeField] private float attackDashDuration = 0.18f;
     [SerializeField] private float attackLineWidth = 0.08f;
     [SerializeField] private Color attackLineColor = new Color(1f, 0.12f, 0.08f, 0.9f);
+
+    [Header("Goblin Attack Visual")]
+    [SerializeField] private bool enableStylizedAttackLine = true;
+    [Min(0.01f)] [SerializeField] private float attackLineOuterWidth = 0.22f;
+    [Min(0.005f)] [SerializeField] private float attackLineCoreWidth = 0.08f;
+    [Min(0.1f)] [SerializeField] private float attackLinePulseSpeed = 10f;
+    [SerializeField] private Color attackWarningOuterColor = new Color(0.55f, 0.12f, 0.82f, 0.55f);
+    [SerializeField] private Color attackWarningCoreColor = new Color(0.95f, 0.55f, 1f, 0.75f);
+    [SerializeField] private Color attackActiveOuterColor = new Color(1f, 0.2f, 0.95f, 0.95f);
+    [SerializeField] private Color attackActiveCoreColor = new Color(1f, 0.85f, 1f, 1f);
+    [Min(0f)] [SerializeField] private float attackActiveFlashTime = 0.1f;
+
     [SerializeField] private float approachRollChance = 0.25f;
     [SerializeField] private float approachRollCooldown = 2.2f;
     [SerializeField] private float rollDodgeChance = 0.45f;
@@ -56,6 +69,8 @@ public class FogEnemy : MonoBehaviour, IDamageable
     [SerializeField] private float hitKnockbackDuration = 0.16f;
     [SerializeField] private float hitAnimationDuration = 0.22f;
     [SerializeField] private float deathAnimationDuration = 0.75f;
+    [Min(0.05f)] [SerializeField] private float simpleDeathTweenDuration = 0.18f;
+    [SerializeField] private Vector3 deathPunchScale = new Vector3(0.12f, 0.12f, 0f);
 
     [Header("Goblin Animation")]
     [SerializeField] private bool enableSpriteAnimation;
@@ -95,6 +110,9 @@ public class FogEnemy : MonoBehaviour, IDamageable
     private bool stateMovementThisFrame;
     private LineRenderer attackLine;
     private Material attackLineMaterial;
+    private DungeonStylizedLineVisual stylizedAttackLine;
+    private float attackActiveFlashTimer;
+    private Tween deathTween;
     private Sprite[] currentAnimation;
     private float currentFrameTime;
     private int animationFrame;
@@ -182,8 +200,11 @@ public class FogEnemy : MonoBehaviour, IDamageable
 
         if (!enableGoblinMoves)
         {
+            if (ownCollider != null)
+                ownCollider.enabled = false;
+
             DropResources();
-            Destroy(gameObject);
+            PlaySimpleDeathFeedback();
             return;
         }
 
@@ -194,6 +215,28 @@ public class FogEnemy : MonoBehaviour, IDamageable
         stateTimer = 0f;
         stateDuration = Mathf.Max(0.05f, deathAnimationDuration);
         PlayAnimation(deathSprites, deathFrameTime);
+        transform.DOPunchScale(deathPunchScale, 0.18f, 6, 0.45f).SetEase(Ease.OutQuad);
+    }
+
+    void PlaySimpleDeathFeedback()
+    {
+        if (deathTween != null)
+            deathTween.Kill();
+
+        float duration = Mathf.Max(0.05f, simpleDeathTweenDuration);
+        Sequence sequence = DOTween.Sequence();
+        sequence.Join(transform.DOScale(Vector3.zero, duration).SetEase(Ease.InBack));
+
+        SpriteRenderer renderer = spriteRenderer != null ? spriteRenderer : GetComponentInChildren<SpriteRenderer>();
+        if (renderer != null)
+            sequence.Join(renderer.DOFade(0f, duration));
+
+        deathTween = sequence.OnComplete(() =>
+        {
+            deathTween = null;
+            if (gameObject != null)
+                Destroy(gameObject);
+        });
     }
 
     public void ConfigureBehavior(FogEnemyBehaviorType newBehavior)
@@ -518,6 +561,7 @@ public class FogEnemy : MonoBehaviour, IDamageable
 
             transform.position = nextPosition;
             stateMovementThisFrame = true;
+            UpdateActiveAttackLine();
             TryApplyLineAttackDamage();
 
             if (normalized >= 1f)
@@ -556,7 +600,8 @@ public class FogEnemy : MonoBehaviour, IDamageable
         stateDuration = Mathf.Max(0.03f, attackDashDuration);
         stateStartPosition = transform.position;
         stateEndPosition = stateStartPosition + stateDirection * GetAttackLineDistance();
-        HideAttackLine();
+        attackActiveFlashTimer = Mathf.Max(0f, attackActiveFlashTime);
+        ShowAttackLine(true);
         FaceDirection(stateDirection);
         PlayAnimation(rollSprites, rollFrameTime);
     }
@@ -604,32 +649,73 @@ public class FogEnemy : MonoBehaviour, IDamageable
 
     void ShowAttackLine()
     {
+        ShowAttackLine(false);
+    }
+
+    void ShowAttackLine(bool active)
+    {
         EnsureAttackLine();
-        if (attackLine == null)
+        if (!HasAttackLine())
             return;
 
-        attackLine.enabled = true;
-        UpdateAttackLine();
+        if (attackLine != null)
+            attackLine.enabled = !enableStylizedAttackLine;
+
+        UpdateAttackLine(active);
     }
 
     void UpdateAttackLine()
     {
+        UpdateAttackLine(false);
+    }
+
+    void UpdateAttackLine(bool active)
+    {
         EnsureAttackLine();
-        if (attackLine == null)
+        if (!HasAttackLine())
             return;
 
         Vector3 start = transform.position;
         Vector3 end = start + stateDirection * GetAttackLineDistance();
         start.z = transform.position.z;
         end.z = transform.position.z;
-        attackLine.SetPosition(0, start);
-        attackLine.SetPosition(1, end);
+
+        if (enableStylizedAttackLine && stylizedAttackLine != null)
+        {
+            float progress = active
+                ? 1f - Mathf.Clamp01(attackActiveFlashTimer / Mathf.Max(0.01f, attackActiveFlashTime))
+                : Mathf.Clamp01(stateTimer / Mathf.Max(0.01f, stateDuration));
+
+            stylizedAttackLine.Show(start, end, progress, active);
+            return;
+        }
+
+        if (attackLine != null)
+        {
+            attackLine.SetPosition(0, start);
+            attackLine.SetPosition(1, end);
+        }
     }
 
     void HideAttackLine()
     {
         if (attackLine != null)
             attackLine.enabled = false;
+
+        if (stylizedAttackLine != null)
+            stylizedAttackLine.Hide();
+    }
+
+    void UpdateActiveAttackLine()
+    {
+        if (attackActiveFlashTimer <= 0f)
+        {
+            HideAttackLine();
+            return;
+        }
+
+        attackActiveFlashTimer = Mathf.Max(0f, attackActiveFlashTimer - Time.deltaTime);
+        UpdateAttackLine(true);
     }
 
     float GetAttackLineDistance()
@@ -639,6 +725,12 @@ public class FogEnemy : MonoBehaviour, IDamageable
 
     void EnsureAttackLine()
     {
+        if (enableStylizedAttackLine)
+        {
+            EnsureStylizedAttackLine();
+            return;
+        }
+
         if (attackLine != null)
             return;
 
@@ -661,6 +753,38 @@ public class FogEnemy : MonoBehaviour, IDamageable
         }
 
         attackLine.enabled = false;
+    }
+
+    void EnsureStylizedAttackLine()
+    {
+        if (stylizedAttackLine != null)
+            return;
+
+        Transform existing = transform.Find("Stylized Attack Warning Line");
+        GameObject lineObject = existing != null ? existing.gameObject : new GameObject("Stylized Attack Warning Line");
+        lineObject.transform.SetParent(transform, false);
+
+        stylizedAttackLine = lineObject.GetComponent<DungeonStylizedLineVisual>();
+        if (stylizedAttackLine == null)
+            stylizedAttackLine = lineObject.AddComponent<DungeonStylizedLineVisual>();
+
+        stylizedAttackLine.Configure(
+            attackLineOuterWidth,
+            attackLineCoreWidth,
+            attackLinePulseSpeed,
+            attackWarningOuterColor,
+            attackWarningCoreColor,
+            attackActiveOuterColor,
+            attackActiveCoreColor
+        );
+        stylizedAttackLine.SetKeepWidthStable(true);
+        stylizedAttackLine.ApplySorting(spriteRenderer, -2);
+        stylizedAttackLine.Hide();
+    }
+
+    bool HasAttackLine()
+    {
+        return enableStylizedAttackLine ? stylizedAttackLine != null : attackLine != null;
     }
 
     void SetColliderEnabled(bool enabled)
@@ -739,6 +863,8 @@ public class FogEnemy : MonoBehaviour, IDamageable
 
     void OnDestroy()
     {
+        deathTween?.Kill();
+
         if (attackLineMaterial != null)
             Destroy(attackLineMaterial);
     }
