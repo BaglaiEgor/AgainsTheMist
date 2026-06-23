@@ -177,18 +177,6 @@ public class FogMaskDrawer : MonoBehaviour
         GL.PopMatrix();
         RenderTexture.active = previousRT == fogMaskRT ? null : previousRT;
 
-        FogMaskPostProcess postProcess = GetComponent<FogMaskPostProcess>();
-        if (postProcess != null)
-        {
-            RenderTexture processedRT = RenderTexture.GetTemporary(fogMaskRT.width, fogMaskRT.height, 0, fogMaskRT.format);
-            processedRT.filterMode = fogMaskRT.filterMode;
-
-            postProcess.ApplyPostProcess(fogMaskRT, processedRT);
-            Graphics.Blit(processedRT, fogMaskRT);
-
-            RenderTexture.ReleaseTemporary(processedRT);
-        }
-
         ApplyFogMaterialParameters();
     }
 

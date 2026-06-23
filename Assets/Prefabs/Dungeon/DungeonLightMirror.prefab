@@ -14,7 +14,6 @@ GameObject:
   - component: {fileID: 4105}
   - component: {fileID: 4106}
   - component: {fileID: 5202256699758518726}
-  - component: {fileID: 3770378436117989101}
   m_Layer: 0
   m_Name: DungeonLightMirror
   m_TagString: Untagged
@@ -185,6 +184,7 @@ MonoBehaviour:
   configureRigidbodyOnAwake: 1
   interactDistance: 2
   rotationCenterOverride: {fileID: 0}
+  rotateTweenDuration: 0.16
   reflectionTriggerCollider: {fileID: 0}
   autoCreateReflectionTrigger: 1
   reflectionTriggerSize: {x: 0.22, y: 0.9}
@@ -235,56 +235,3 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1.3824844}
   m_EdgeRadius: 0
---- !u!114 &3770378436117989101
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4101}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7db70e0ea77f5ac47a8f4565a9406397, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.2D.Runtime::UnityEngine.Rendering.Universal.ShadowCaster2D
-  m_ShadowGroup: 0
-  m_Priority: 1
-  m_ComponentVersion: 5
-  m_HasRenderer: 1
-  m_UseRendererSilhouette: 1
-  m_CastsShadows: 1
-  m_SelfShadows: 0
-  m_AlphaCutoff: 0.1
-  m_ApplyToSortingLayers: 00000000
-  m_ShapePath:
-  - {x: -0.5, y: -0.1800003, z: 0}
-  - {x: -0.5, y: 1.8199921, z: 0}
-  - {x: 0.5000019, y: 1.8199921, z: 0}
-  - {x: 0.5000019, y: -0.1800003, z: 0}
-  m_ShapePathHash: 0
-  m_InstanceId: 0
-  m_ShadowShape2DComponent: {fileID: 5202256699758518726}
-  m_ShadowShape2DProvider:
-    rid: 3641328584049033324
-  m_ShadowCastingSource: 2
-  m_ShadowMesh:
-    m_Mesh: {fileID: 0}
-    m_LocalBounds:
-      m_Center: {x: 0.0000076293945, y: 0.69039917, z: 0}
-      m_Extent: {x: 0.4399948, y: 0.63124084, z: 0}
-    m_EdgeProcessing: 1
-    m_TrimEdge: 0.06
-    m_FlipX: 0
-    m_FlipY: 0
-    m_InitialTrim: 0
-  m_CastingOption: 1
-  m_PreviousTrimEdge: 0.06
-  m_PreviousEdgeProcessing: 1
-  m_PreviousShadowCastingSource: 2
-  m_PreviousShadowShape2DSource: {fileID: 5202256699758518726}
-  references:
-    version: 2
-    RefIds:
-    - rid: 3641328584049033324
-      type: {class: ShadowShape2DProvider_Collider2D, ns: UnityEngine.Rendering.Universal, asm: Unity.RenderPipelines.Universal.2D.Runtime}
-      data: 

@@ -30,12 +30,14 @@ public class CreepyFinalAltarController : MonoBehaviour
 
     [Header("Heart")]
     [SerializeField] private Transform heart;
+    [SerializeField] private SpriteRenderer heartRenderer;
     [SerializeField] private GameObject heartGate;
     [SerializeField] private GameObject altarReadyVisual;
     [Min(0f)] [SerializeField] private float heartShakeTime = 1.2f;
     [Min(0f)] [SerializeField] private float heartShakeDistance = 0.08f;
     [SerializeField] private Vector3 heartFallOffset = new Vector3(0f, -4f, 0f);
     [Min(0.05f)] [SerializeField] private float heartFallTime = 1.5f;
+    [SerializeField] private int heartFallSortingOrder = -5;
     [SerializeField] private bool hideHeartAfterFall = true;
 
     [Header("Fog To Disable")]
@@ -55,6 +57,9 @@ public class CreepyFinalAltarController : MonoBehaviour
 
         if (altarReadyVisual != null)
             altarReadyVisual.SetActive(true);
+
+        if (heartRenderer == null && heart != null)
+            heartRenderer = heart.GetComponentInChildren<SpriteRenderer>();
     }
 
     private void OnMouseDown()
@@ -197,6 +202,9 @@ public class CreepyFinalAltarController : MonoBehaviour
 
             Vector3 fallStart = startPosition;
             Vector3 fallEnd = startPosition + heartFallOffset;
+            if (heartRenderer != null)
+                heartRenderer.sortingOrder = heartFallSortingOrder;
+
             timer = 0f;
             while (timer < heartFallTime)
             {

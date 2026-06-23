@@ -4,6 +4,8 @@ using UnityEngine;
 [DisallowMultipleComponent]
 public class CreepyEyeShooter : MonoBehaviour
 {
+    private const string PlayerHitboxName = "HitBox";
+
     [Header("Refs")]
     [SerializeField] private Transform aimRoot;
     [SerializeField] private SpriteRenderer spriteRenderer;
@@ -175,13 +177,22 @@ public class CreepyEyeShooter : MonoBehaviour
         Collider2D[] hits = Physics2D.OverlapBoxAll(boxCenter, boxSize, angle, playerMask);
         for (int i = 0; i < hits.Length; i++)
         {
-            PlayerHealth playerHealth = hits[i].GetComponentInParent<PlayerHealth>();
-            if (playerHealth == null || playerHealth.IsDead)
+            if (!TryGetPlayerHealthFromHitbox(hits[i], out PlayerHealth playerHealth) || playerHealth.IsDead)
                 continue;
 
             playerHealth.TakeDamage(damage);
             return;
         }
+    }
+
+    private static bool TryGetPlayerHealthFromHitbox(Collider2D other, out PlayerHealth playerHealth)
+    {
+        playerHealth = null;
+        if (other == null || other.name != PlayerHitboxName)
+            return false;
+
+        playerHealth = other.GetComponentInParent<PlayerHealth>();
+        return playerHealth != null;
     }
 
     private void FaceDirection(Vector3 direction)

@@ -8,6 +8,8 @@ using UnityEngine.Rendering.Universal;
 [RequireComponent(typeof(Collider2D))]
 public class DungeonFireTrap : MonoBehaviour
 {
+    private const string PlayerHitboxName = "HitBox";
+
     [Header("Refs")]
     [SerializeField] private SpriteRenderer spriteRenderer;
     [SerializeField] private Transform visualRoot;
@@ -102,8 +104,7 @@ public class DungeonFireTrap : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        PlayerHealth playerHealth = other.GetComponentInParent<PlayerHealth>();
-        if (playerHealth == null || playersInside.Contains(playerHealth))
+        if (!TryGetPlayerHealthFromHitbox(other, out PlayerHealth playerHealth) || playersInside.Contains(playerHealth))
             return;
 
         playersInside.Add(playerHealth);
@@ -111,8 +112,7 @@ public class DungeonFireTrap : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D other)
     {
-        PlayerHealth playerHealth = other.GetComponentInParent<PlayerHealth>();
-        if (playerHealth == null)
+        if (!TryGetPlayerHealthFromHitbox(other, out PlayerHealth playerHealth))
             return;
 
         playersInside.Remove(playerHealth);
@@ -165,6 +165,16 @@ public class DungeonFireTrap : MonoBehaviour
             playerHealth.TakeDamage(damage);
             nextDamageTimeByPlayer[playerHealth] = Time.time + damageCooldown;
         }
+    }
+
+    private static bool TryGetPlayerHealthFromHitbox(Collider2D other, out PlayerHealth playerHealth)
+    {
+        playerHealth = null;
+        if (other == null || other.name != PlayerHitboxName)
+            return false;
+
+        playerHealth = other.GetComponentInParent<PlayerHealth>();
+        return playerHealth != null;
     }
 
     private void SetSprite(Sprite sprite)

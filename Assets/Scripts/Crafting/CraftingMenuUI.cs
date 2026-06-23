@@ -346,6 +346,12 @@ public class CraftingMenuUI : MonoBehaviour
             scrollRect.movementType = ScrollRect.MovementType.Clamped;
             scrollRect.scrollSensitivity = scrollSensitivity;
 
+            if (scrollRect.verticalScrollbar != null)
+            {
+                scrollRect.verticalScrollbar.gameObject.SetActive(false);
+                scrollRect.verticalScrollbar = null;
+            }
+
             ConfigureContentWidth(scrollRect.content);
         }
     }

@@ -60,6 +60,7 @@ public class PlayerDeathRecovery : MonoBehaviour
         if (blackHoldDuration > 0f)
             yield return new WaitForSeconds(blackHoldDuration);
 
+        EntryAndExit.ReturnPlayerToWorldAfterDeath();
         TeleportToRespawn();
         RestoreVitals();
 

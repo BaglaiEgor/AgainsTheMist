@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: DashCharm
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   itemID: DashCharm
-  itemName: "\u0410\u043C\u0443\u043B\u0435\u0442 \u0440\u044B\u0432\u043A\u0430"
+  itemName: "\u0420\u044B\u0432\u043A\u043E\u0432\u044B\u0435 \u0431\u043E\u0442\u0438\u043D\u043A\u0438"
   description: "\u041F\u0440\u043E\u0431\u0435\u043B: \u0440\u044B\u0432\u043E\u043A
     \u0432 \u0441\u0442\u043E\u0440\u043E\u043D\u0443 \u0434\u0432\u0438\u0436\u0435\u043D\u0438\u044F."
   icon: {fileID: 6464076460138874021, guid: e05bcc3f95d999d4cabb70e220d6d485, type: 3}

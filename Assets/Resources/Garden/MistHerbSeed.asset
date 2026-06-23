@@ -18,20 +18,25 @@ MonoBehaviour:
   description: "\u0421\u0435\u043C\u0435\u043D\u0430 \u043A\u0443\u043B\u044C\u0442\u0443\u0440\u044B
     \u0434\u043B\u044F \u043F\u043E\u0434\u0433\u043E\u0442\u043E\u0432\u043A\u0438
     \u043A \u0432\u044B\u043B\u0430\u0437\u043A\u0430\u043C."
-  icon: {fileID: 9132252769873451366, guid: 40d88cd93e5b1bd468fd19e3427de8bb, type: 3}
+  icon: {fileID: 7122671413437011005, guid: 40d88cd93e5b1bd468fd19e3427de8bb, type: 3}
   maxStack: 99
   pickupPrefab: {fileID: 8266306878654680791, guid: 54e73688d6d64b3e8c86eaa68bba8f37, type: 3}
   type: 5
   placementMode: 0
   prefab: {fileID: 0}
+  isDoor: 0
+  doorWallMarkerTile: {fileID: 0}
   tileToPlace: {fileID: 0}
   occupiesBuildCell: 1
+  canPlaceOnWater: 0
+  waterTileToPlace: {fileID: 0}
   seedCrop: {fileID: 11400000, guid: 91a3c3f5f4f9487ab8a5809adf146873, type: 2}
   attackPrefab: {fileID: 0}
   actionRadius: 3
   toolType: 0
   toolPower: 1
   damage: 1
+  attackSpeed: 1
   isLantern: 0
   lanternLightRadius: 2.5
   lanternDrainPerSecond: 1
@@ -40,9 +45,19 @@ MonoBehaviour:
   effectDuration: 0
   healAmount: 0
   cooldown: 0
+  foodRestore: 0
   equipmentType: 0
+  activeEquipmentEffect: 0
+  defense: 0
   frostDamageMultiplier: 1
   pressureGrowthMultiplier: 1
+  dashDistance: 3
+  dashDuration: 0.12
+  sprintSpeedMultiplier: 1.5
+  maxStamina: 100
+  staminaDrainPerSecond: 25
+  staminaRegenPerSecond: 18
+  shieldDamageMultiplier: 0.25
   furnaceFuelSeconds: 0
   furnaceSmeltResult: {fileID: 0}
   furnaceSmeltResultAmount: 1

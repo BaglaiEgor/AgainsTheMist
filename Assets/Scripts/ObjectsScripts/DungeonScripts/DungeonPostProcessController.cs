@@ -14,6 +14,9 @@ public class DungeonPostProcessController : MonoBehaviour
 
         if (normalProfile == null && volume != null)
             normalProfile = volume.sharedProfile;
+
+        if (normalProfile != null && volume != null)
+            volume.sharedProfile = normalProfile;
     }
 
     void Reset()

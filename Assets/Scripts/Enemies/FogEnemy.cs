@@ -11,6 +11,8 @@ public enum FogEnemyBehaviorType
 [RequireComponent(typeof(Collider2D))]
 public class FogEnemy : MonoBehaviour, IDamageable
 {
+    private const string PlayerHitboxName = "HitBox";
+
     private enum EnemyState
     {
         Normal,
@@ -138,6 +140,21 @@ public class FogEnemy : MonoBehaviour, IDamageable
             return;
 
         stateMovementThisFrame = false;
+        FogSystem fogSystem = FogSystem.Instance;
+        if (fogSystem == null)
+            return;
+
+        bool playerInSafeZone = TryGetPlayer(out Transform playerTransform) && fogSystem.IsPositionInLight(playerTransform.position);
+        if (playerInSafeZone)
+        {
+            lightDespawnTimer += Time.deltaTime;
+            if (lightDespawnTimer >= Mathf.Max(0f, despawnDelayInLight))
+            {
+                Destroy(gameObject);
+                return;
+            }
+        }
+
         if (enableGoblinMoves && state != EnemyState.Normal)
         {
             UpdateState();
@@ -145,20 +162,19 @@ public class FogEnemy : MonoBehaviour, IDamageable
             return;
         }
 
-        FogSystem fogSystem = FogSystem.Instance;
-        if (fogSystem == null)
-            return;
-
         bool inFog = fogSystem.IsPositionInEnemyFog(transform.position);
         if (!inFog)
         {
-            lightDespawnTimer += Time.deltaTime;
+            if (!playerInSafeZone)
+                lightDespawnTimer += Time.deltaTime;
+
             if (lightDespawnTimer >= Mathf.Max(0f, despawnDelayInLight))
                 Destroy(gameObject);
             return;
         }
 
-        lightDespawnTimer = 0f;
+        if (!playerInSafeZone)
+            lightDespawnTimer = 0f;
         bool lanternRepelsEnemy = IsLanternRepelActive();
         if (lanternRepelsEnemy && fogSystem.IsPositionInLanternLight(transform.position))
         {
@@ -325,8 +341,7 @@ public class FogEnemy : MonoBehaviour, IDamageable
             Mathf.Max(0f, moveSpeed) * Time.deltaTime
         );
 
-        if (!fogSystem.IsPositionInEnemyFog(nextPosition))
-            return;
+        TryClampPositionToFogBoundary(fogSystem, current, ref nextPosition);
 
         if (lanternRepelsEnemy && fogSystem.IsPositionInLanternLight(nextPosition))
             return;
@@ -391,8 +406,7 @@ public class FogEnemy : MonoBehaviour, IDamageable
         if (enableGoblinMoves)
             return;
 
-        PlayerHealth playerHealth = other.GetComponentInParent<PlayerHealth>();
-        if (playerHealth == null || playerHealth.IsDead)
+        if (!TryGetPlayerHealthFromHitbox(other, out PlayerHealth playerHealth) || playerHealth.IsDead)
             return;
 
         if (contactDamage <= 0)
@@ -410,7 +424,7 @@ public class FogEnemy : MonoBehaviour, IDamageable
         if (other == null)
             return;
 
-        if (other.GetComponentInParent<PlayerHealth>() != null)
+        if (TryGetPlayerHealthFromHitbox(other, out _))
             nextContactDamageTime = Time.time;
     }
 
@@ -520,14 +534,9 @@ public class FogEnemy : MonoBehaviour, IDamageable
         {
             float normalized = Mathf.Clamp01(stateTimer / stateDuration);
             Vector3 nextPosition = Vector3.Lerp(stateStartPosition, stateEndPosition, normalized);
-            if (!CanMoveToEnemyFog(nextPosition))
-            {
-                FinishSpecialState();
-                return;
-            }
-
+            TryClampPositionToFogBoundary(FogSystem.Instance, transform.position, ref nextPosition);
             transform.position = nextPosition;
-            stateMovementThisFrame = true;
+            stateMovementThisFrame = (nextPosition - stateStartPosition).sqrMagnitude > 0.00001f;
 
             if (stateTimer >= Mathf.Max(0f, rollInvulnerableTime))
                 SetColliderEnabled(true);
@@ -553,14 +562,9 @@ public class FogEnemy : MonoBehaviour, IDamageable
         {
             float normalized = Mathf.Clamp01(stateTimer / stateDuration);
             Vector3 nextPosition = Vector3.Lerp(stateStartPosition, stateEndPosition, normalized);
-            if (!CanMoveToEnemyFog(nextPosition))
-            {
-                FinishSpecialState();
-                return;
-            }
-
+            TryClampPositionToFogBoundary(FogSystem.Instance, transform.position, ref nextPosition);
             transform.position = nextPosition;
-            stateMovementThisFrame = true;
+            stateMovementThisFrame = (nextPosition - stateStartPosition).sqrMagnitude > 0.00001f;
             UpdateActiveAttackLine();
             TryApplyLineAttackDamage();
 
@@ -575,8 +579,8 @@ public class FogEnemy : MonoBehaviour, IDamageable
             float knockbackTime = Mathf.Max(0.01f, hitKnockbackDuration);
             float normalized = Mathf.Clamp01(stateTimer / knockbackTime);
             Vector3 nextPosition = Vector3.Lerp(stateStartPosition, stateEndPosition, normalized);
-            if (CanMoveToEnemyFog(nextPosition))
-                transform.position = nextPosition;
+            TryClampPositionToFogBoundary(FogSystem.Instance, transform.position, ref nextPosition);
+            transform.position = nextPosition;
 
             stateMovementThisFrame = normalized < 1f;
 
@@ -621,10 +625,12 @@ public class FogEnemy : MonoBehaviour, IDamageable
             return;
 
         PlayerHealth playerHealth = playerTransform.GetComponentInParent<PlayerHealth>();
-        if (playerHealth == null || playerHealth.IsDead)
+        Collider2D playerHitbox = FindPlayerHitbox(playerTransform);
+        if (playerHealth == null || playerHealth.IsDead || playerHitbox == null)
             return;
 
-        if (IsPointNearSegment(playerTransform.position, stateStartPosition, stateEndPosition, Mathf.Max(0.05f, attackLineWidth) * 3f))
+        float hitboxRadius = Mathf.Max(playerHitbox.bounds.extents.x, playerHitbox.bounds.extents.y);
+        if (IsPointNearSegment(playerHitbox.bounds.center, stateStartPosition, stateEndPosition, Mathf.Max(0.05f, attackLineWidth) * 3f + hitboxRadius))
         {
             attackDamageApplied = true;
             playerHealth.TakeDamage(Mathf.Max(0, lineAttackDamage));
@@ -645,6 +651,31 @@ public class FogEnemy : MonoBehaviour, IDamageable
         float t = Mathf.Clamp01(Vector3.Dot(toPoint, segment) / segmentLengthSqr);
         Vector3 closest = start + segment * t;
         return (point - closest).sqrMagnitude <= distance * distance;
+    }
+
+    private static bool TryGetPlayerHealthFromHitbox(Collider2D other, out PlayerHealth playerHealth)
+    {
+        playerHealth = null;
+        if (other == null || other.name != PlayerHitboxName)
+            return false;
+
+        playerHealth = other.GetComponentInParent<PlayerHealth>();
+        return playerHealth != null;
+    }
+
+    private static Collider2D FindPlayerHitbox(Transform playerTransform)
+    {
+        if (playerTransform == null)
+            return null;
+
+        Collider2D[] colliders = playerTransform.GetComponentsInChildren<Collider2D>(true);
+        for (int i = 0; i < colliders.Length; i++)
+        {
+            if (colliders[i].name == PlayerHitboxName)
+                return colliders[i];
+        }
+
+        return null;
     }
 
     void ShowAttackLine()
@@ -793,10 +824,30 @@ public class FogEnemy : MonoBehaviour, IDamageable
             ownCollider.enabled = enabled;
     }
 
-    bool CanMoveToEnemyFog(Vector3 position)
+    void TryClampPositionToFogBoundary(FogSystem fogSystem, Vector3 currentPosition, ref Vector3 targetPosition)
     {
-        FogSystem fogSystem = FogSystem.Instance;
-        return fogSystem == null || fogSystem.IsPositionInEnemyFog(position);
+        if (fogSystem == null || fogSystem.IsPositionInFog(targetPosition))
+            return;
+
+        if (!fogSystem.IsPositionInFog(currentPosition))
+        {
+            targetPosition = currentPosition;
+            return;
+        }
+
+        Vector3 fogPosition = currentPosition;
+        Vector3 lightPosition = targetPosition;
+
+        for (int i = 0; i < 8; i++)
+        {
+            Vector3 middle = Vector3.Lerp(fogPosition, lightPosition, 0.5f);
+            if (fogSystem.IsPositionInFog(middle))
+                fogPosition = middle;
+            else
+                lightPosition = middle;
+        }
+
+        targetPosition = fogPosition;
     }
 
     void DropResources()

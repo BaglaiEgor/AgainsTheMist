@@ -20,7 +20,6 @@ public class CraftRecipeTooltipPresenter : MonoBehaviour
     [SerializeField] private Vector2 ingredientIconSize = new Vector2(18f, 18f);
     [SerializeField] private float ingredientRowSpacing = 6f;
     [SerializeField] private float maxContentWidth = 260f;
-    [SerializeField] private int tooltipSortingOrder = 1000;
     [SerializeField] private Color enoughColor = new Color(0.45f, 0.95f, 0.45f, 1f);
     [SerializeField] private Color missingColor = new Color(0.95f, 0.4f, 0.4f, 1f);
 
@@ -29,7 +28,6 @@ public class CraftRecipeTooltipPresenter : MonoBehaviour
     private CraftingRecipe recipe;
     private Inventory inventory;
     private Canvas canvas;
-    private Canvas tooltipCanvas;
     private RectTransform canvasRect;
     private RectTransform tooltipParentRect;
     private bool tooltipVisible;
@@ -100,15 +98,6 @@ public class CraftRecipeTooltipPresenter : MonoBehaviour
         if (tooltipFitter != null)
             tooltipFitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
 
-        tooltipCanvas = tooltipRoot.GetComponent<Canvas>();
-        if (tooltipCanvas == null)
-            tooltipCanvas = tooltipRoot.gameObject.AddComponent<Canvas>();
-
-        tooltipCanvas.overrideSorting = true;
-        if (canvas != null)
-            tooltipCanvas.sortingLayerID = canvas.sortingLayerID;
-        tooltipCanvas.sortingOrder = tooltipSortingOrder;
-
         if (resultNameText != null)
         {
             resultNameText.overflowMode = TextOverflowModes.Overflow;
@@ -152,6 +141,7 @@ public class CraftRecipeTooltipPresenter : MonoBehaviour
     private void BuildIngredients()
     {
         ClearIngredientRows();
+        ConfigureIngredientsLayout();
         bool canUseFallbackText = ingredientsFallbackText != null && ingredientsFallbackText != resultExtraText;
 
         if (recipe == null || recipe.ingredients == null || recipe.ingredients.Length == 0)
@@ -176,6 +166,23 @@ public class CraftRecipeTooltipPresenter : MonoBehaviour
 
         for (int i = 0; i < recipe.ingredients.Length; i++)
             CreateIngredientRow(recipe.ingredients[i]);
+    }
+
+    private void ConfigureIngredientsLayout()
+    {
+        if (ingredientsRoot != null)
+        {
+            ingredientsRoot.anchorMin = new Vector2(0f, 1f);
+            ingredientsRoot.anchorMax = new Vector2(0f, 1f);
+            ingredientsRoot.pivot = new Vector2(0f, 1f);
+
+            VerticalLayoutGroup layout = ingredientsRoot.GetComponent<VerticalLayoutGroup>();
+            if (layout != null)
+                layout.childAlignment = TextAnchor.UpperLeft;
+        }
+
+        if (ingredientsFallbackText != null)
+            ingredientsFallbackText.alignment = TextAlignmentOptions.TopLeft;
     }
 
     private void BuildFallbackIngredientsText()
@@ -250,6 +257,11 @@ public class CraftRecipeTooltipPresenter : MonoBehaviour
         GameObject row = new GameObject("IngredientRow", typeof(RectTransform), typeof(HorizontalLayoutGroup));
         row.transform.SetParent(ingredientsRoot, false);
         runtimeIngredientRows.Add(row);
+
+        RectTransform rowRect = row.GetComponent<RectTransform>();
+        rowRect.anchorMin = new Vector2(0f, 1f);
+        rowRect.anchorMax = new Vector2(0f, 1f);
+        rowRect.pivot = new Vector2(0f, 1f);
 
         HorizontalLayoutGroup rowLayout = row.GetComponent<HorizontalLayoutGroup>();
         rowLayout.childAlignment = TextAnchor.MiddleLeft;

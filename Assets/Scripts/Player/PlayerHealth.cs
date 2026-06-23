@@ -9,6 +9,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     [Header("Health")]
     [SerializeField] private int maxHealth = 100;
     [SerializeField] private int currentHealth;
+    [Min(0f)] [SerializeField] private float nonFogDamageInvulnerability = 0.4f;
 
     [Header("UI (Optional)")]
     [SerializeField] private bool autoCreateHealthText = true;
@@ -24,6 +25,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     private Vector3 healthTextBaseScale = Vector3.one;
     private float incomingDamageMultiplier = 1f;
     private float incomingDamageMultiplierTime;
+    private float nextNonFogDamageTime;
 
     public event Action<int, int> HealthChanged;
     public event Action Died;
@@ -80,6 +82,9 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         if (amount <= 0 || isDead)
             return;
 
+        if (applyArmor && Time.time < nextNonFogDamageTime)
+            return;
+
         int finalAmount = Mathf.CeilToInt(amount * Mathf.Clamp01(incomingDamageMultiplier));
         if (applyArmor)
             finalAmount = Mathf.Max(1, finalAmount - GetArmorDefense());
@@ -92,6 +97,10 @@ public class PlayerHealth : MonoBehaviour, IDamageable
             return;
 
         currentHealth = nextHealth;
+
+        if (applyArmor)
+            nextNonFogDamageTime = Time.time + Mathf.Max(0f, nonFogDamageInvulnerability);
+
         RefreshHealthPresentation(true);
 
         if (currentHealth > 0)

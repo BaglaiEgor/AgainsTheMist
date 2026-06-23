@@ -79,6 +79,7 @@ public class PlayerController : MonoBehaviour
     [Header("Active Equipment")]
     [SerializeField] private CanvasGroup climbFadeCanvasGroup;
     [Min(0.05f)] [SerializeField] private float climbTransitionSeconds = 1f;
+    [Min(0.05f)] [SerializeField] private float dungeonTransitionSeconds = 2f;
     [SerializeField] private float climbColliderCheckDistance = 0.18f;
 
     [Header("Active Equipment Feedback")]
@@ -1176,7 +1177,7 @@ public class PlayerController : MonoBehaviour
         SetMovementLocked(true);
         EnsureClimbFadeCanvasGroup();
 
-        float total = Mathf.Max(0.05f, climbTransitionSeconds);
+        float total = Mathf.Max(0.05f, dungeonTransitionSeconds);
         float fadeTime = Mathf.Max(0.02f, total * 0.35f);
         float holdTime = Mathf.Max(0f, total - fadeTime * 2f);
 
@@ -1293,7 +1294,6 @@ public class PlayerController : MonoBehaviour
         Vector3 spawnPos = GetCellCenterWorld(anchorCell);
         GameObject gardenBed = Instantiate(prefab, spawnPos, Quaternion.identity);
         FogObjectTint.EnsureOn(gardenBed);
-        AudioController.Instance?.PlayPlace();
         return true;
     }
 
@@ -1324,7 +1324,7 @@ public class PlayerController : MonoBehaviour
 
             bed.ClearForRemoval();
             Destroy(bed.gameObject);
-            AudioController.Instance?.PlayPlace();
+            AudioController.Instance?.PlayToolSwing();
             return true;
         }
 
@@ -1353,7 +1353,6 @@ public class PlayerController : MonoBehaviour
             return false;
 
         targetPathTilemap.SetTile(cell, pathTile);
-        AudioController.Instance?.PlayPlace();
         return true;
     }
 
@@ -1373,7 +1372,7 @@ public class PlayerController : MonoBehaviour
             return false;
 
         targetPathTilemap.SetTile(cell, null);
-        AudioController.Instance?.PlayPlace();
+        AudioController.Instance?.PlayToolSwing();
         return true;
     }
 
@@ -1507,7 +1506,7 @@ public class PlayerController : MonoBehaviour
             {
                 bool consumed = TryConsumeGardenSeed(currentItem, consumeFromCursor);
                 if (consumed)
-                    AudioController.Instance?.PlayPlace();
+                    AudioController.Instance?.PlayInteract();
                 return consumed;
             }
         }

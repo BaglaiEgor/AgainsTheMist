@@ -3,6 +3,8 @@ using UnityEngine.InputSystem;
 
 public class DemoHotkeys : MonoBehaviour
 {
+    private static DemoHotkeys instance;
+
     [Header("References")]
     [SerializeField] private Inventory inventory;
     [SerializeField] private GameTimeSystem timeSystem;
@@ -19,24 +21,34 @@ public class DemoHotkeys : MonoBehaviour
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     private static void Bootstrap()
     {
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
-        if (FindFirstObjectByType<DemoHotkeys>() != null)
+        if (instance != null)
             return;
 
         GameObject bootstrap = new GameObject("[DemoHotkeys]");
-        DontDestroyOnLoad(bootstrap);
         bootstrap.AddComponent<DemoHotkeys>();
-#endif
+        DontDestroyOnLoad(bootstrap);
     }
 
     private void Awake()
     {
+        if (instance != null && instance != this)
+        {
+            Destroy(this);
+            return;
+        }
+
+        instance = this;
         ResolveReferences();
+    }
+
+    private void OnDestroy()
+    {
+        if (instance == this)
+            instance = null;
     }
 
     private void Update()
     {
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
         ResolveReferences();
 
         Keyboard keyboard = Keyboard.current;
@@ -67,12 +79,10 @@ public class DemoHotkeys : MonoBehaviour
         if (keyboard.f8Key.wasPressedThisFrame)
             SetMorning();
 
-#endif
     }
 
     private void OnGUI()
     {
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
         if (!showOverlay)
             return;
 
@@ -89,7 +99,6 @@ public class DemoHotkeys : MonoBehaviour
         GUILayout.Space(8f);
         GUILayout.Label("Последнее действие: " + lastAction);
         GUILayout.EndArea();
-#endif
     }
 
     private void ResolveReferences()
@@ -131,11 +140,11 @@ public class DemoHotkeys : MonoBehaviour
             return;
 
         int added = 0;
-        added += AddByPath("Tools/Axe", 1) ? 1 : 0;
-        added += AddByPath("Tools/Pickaxe", 1) ? 1 : 0;
-        added += AddByPath("Tools/Hoe", 1) ? 1 : 0;
-        added += AddByPath("Tools/Shovel", 1) ? 1 : 0;
-        added += AddByPath("Weapons/Sword", 1) ? 1 : 0;
+        added += AddByPath("Tools/AxeGold", 1) ? 1 : 0;
+        added += AddByPath("Tools/PickaxeGold", 1) ? 1 : 0;
+        added += AddByPath("Tools/HoeGold", 1) ? 1 : 0;
+        added += AddByPath("Tools/ShovelGold", 1) ? 1 : 0;
+        added += AddByPath("Weapons/SwordGold", 1) ? 1 : 0;
 
         lastAction = added > 0
             ? "Инструменты добавлены"

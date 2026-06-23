@@ -33,3 +33,15 @@ MonoBehaviour:
     minAmount: 1
     maxAmount: 1
     chance: 1
+  - item: {fileID: 11400000, guid: 11bf4d6d8e0189a4f8feee7475f72572, type: 2}
+    minAmount: 1
+    maxAmount: 1
+    chance: 1
+  - item: {fileID: 11400000, guid: c82d0e09011ea40479b56b88fbe64b97, type: 2}
+    minAmount: 1
+    maxAmount: 1
+    chance: 1
+  - item: {fileID: 11400000, guid: fa6132d8e0f4482ca0c1f324af396d71, type: 2}
+    minAmount: 1
+    maxAmount: 1
+    chance: 1

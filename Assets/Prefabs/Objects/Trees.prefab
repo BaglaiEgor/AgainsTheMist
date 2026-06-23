@@ -34,6 +34,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &4433947739835044204
 SpriteRenderer:
+  serializedVersion: 2
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -79,6 +80,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 1
+  m_MaskInteraction: 0
   m_Sprite: {fileID: -1537239281450887881, guid: b4168aaf6826075488f84b0852ccd8a1, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -88,7 +90,6 @@ SpriteRenderer:
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
-  m_MaskInteraction: 0
   m_SpriteSortPoint: 1
 --- !u!1 &3821037230277611826
 GameObject:
@@ -155,9 +156,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ResourceDrop
   drops:
   - prefab: {fileID: 8266306878654680791, guid: 5c6b96d6131e970419c9b3566a75052e, type: 3}
-    minAmount: 1
-    maxAmount: 2
+    minAmount: 3
+    maxAmount: 8
     chance: 1
+    dropOnlyInFrostZone: 0
 --- !u!114 &-2390450229420438302
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -174,6 +176,7 @@ MonoBehaviour:
   height: 1
   centerOnTransform: 0
   groundTilemap: {fileID: 0}
+  placementRotationSteps: 0
 --- !u!114 &4493165079188704377
 MonoBehaviour:
   m_ObjectHideFlags: 0

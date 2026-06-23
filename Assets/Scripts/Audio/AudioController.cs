@@ -31,6 +31,16 @@ public class AudioController : MonoBehaviour
     [SerializeField] private AudioClip dungeonFireClip;
     [Range(0f, 1f)] [SerializeField] private float sfxVolume = 1f;
 
+    [Header("Footsteps")]
+    [Min(0f)] [SerializeField] private float footstepCooldown = 0.25f;
+    [Range(0f, 1f)] [SerializeField] private float footstepVolume = 0.55f;
+    [Min(0.1f)] [SerializeField] private float footstepPitchMin = 0.96f;
+    [Min(0.1f)] [SerializeField] private float footstepPitchMax = 1.04f;
+    [Tooltip("К текущему normalFootstepClip можно добавить ещё 4 варианта.")]
+    [SerializeField] private AudioClip[] normalFootstepVariations = new AudioClip[4];
+    [Tooltip("К текущему snowFootstepClip можно добавить ещё 4 варианта.")]
+    [SerializeField] private AudioClip[] snowFootstepVariations = new AudioClip[4];
+
     [Header("Object SFX Distance")]
     [SerializeField] private string playerTag = "Player";
     [Min(0f)] [SerializeField] private float maxObjectSfxDistance = 12f;
@@ -43,6 +53,7 @@ public class AudioController : MonoBehaviour
     [Range(0f, 1f)] [SerializeField] private float volumeMax = 1f;
 
     private Transform playerTransform;
+    private float lastFootstepTime = float.NegativeInfinity;
 
     private void Awake()
     {
@@ -53,6 +64,7 @@ public class AudioController : MonoBehaviour
         }
 
         Instance = this;
+        DontDestroyOnLoad(gameObject);
         EnsureSources();
         musicVolume = SettingsStorage.MusicVolume;
         sfxVolume = SettingsStorage.SfxVolume;
@@ -79,6 +91,10 @@ public class AudioController : MonoBehaviour
         volumeMin = Mathf.Clamp01(volumeMin);
         volumeMax = Mathf.Max(volumeMin, Mathf.Clamp01(volumeMax));
         maxObjectSfxDistance = Mathf.Max(0f, maxObjectSfxDistance);
+        footstepCooldown = Mathf.Max(0f, footstepCooldown);
+        footstepVolume = Mathf.Clamp01(footstepVolume);
+        footstepPitchMin = Mathf.Max(0.1f, footstepPitchMin);
+        footstepPitchMax = Mathf.Max(footstepPitchMin, footstepPitchMax);
 
         if (!Application.isPlaying)
             return;
@@ -94,7 +110,16 @@ public class AudioController : MonoBehaviour
     public void PlayPotion() => PlaySfx(potionClip);
     public void PlayInteract() => PlaySfx(interactClip);
     public void PlaySnowClimb() => PlaySfx(snowClimbClip);
-    public void PlayFootstep(bool onSnow) => PlaySfx(onSnow ? snowFootstepClip : normalFootstepClip);
+    public void PlayFootstep(bool onSnow)
+    {
+        if (Time.time < lastFootstepTime + footstepCooldown)
+            return;
+
+        lastFootstepTime = Time.time;
+        PlayFootstepSfx(onSnow
+            ? GetRandomFootstepClip(snowFootstepClip, snowFootstepVariations)
+            : GetRandomFootstepClip(normalFootstepClip, normalFootstepVariations));
+    }
     public void PlayEntryExit() => PlaySfx(entryExitClip);
     public void PlayDungeonPlate() => PlaySfx(dungeonPlateClip);
     public void PlayDungeonDoor() => PlaySfx(dungeonDoorClip);
@@ -147,6 +172,44 @@ public class AudioController : MonoBehaviour
 
         sfxSource.pitch = pitch;
         sfxSource.PlayOneShot(clip, sfxVolume * volume);
+    }
+
+    private AudioClip GetRandomFootstepClip(AudioClip mainClip, AudioClip[] variations)
+    {
+        if (variations == null || variations.Length == 0)
+            return mainClip;
+
+        int availableCount = mainClip != null ? 1 : 0;
+
+        foreach (AudioClip variation in variations)
+        {
+            if (variation != null)
+                availableCount++;
+        }
+
+        if (availableCount == 0)
+            return null;
+
+        int selectedIndex = Random.Range(0, availableCount);
+        if (mainClip != null && selectedIndex-- == 0)
+            return mainClip;
+
+        foreach (AudioClip variation in variations)
+        {
+            if (variation != null && selectedIndex-- == 0)
+                return variation;
+        }
+
+        return mainClip;
+    }
+
+    private void PlayFootstepSfx(AudioClip clip)
+    {
+        if (sfxSource == null || clip == null)
+            return;
+
+        sfxSource.pitch = Random.Range(footstepPitchMin, footstepPitchMax);
+        sfxSource.PlayOneShot(clip, sfxVolume * footstepVolume);
     }
 
     private void PlaySfxNearPlayer(AudioClip clip, Vector3 sourcePosition)

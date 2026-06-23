@@ -262,6 +262,18 @@ public class PlacementPreviewController : MonoBehaviour
                 return false;
         }
 
+        if (item.toolType == ToolType.Hoe || item.toolType == ToolType.Shovel)
+        {
+            currentPreviewItem = item;
+            currentAnchorCell = groundTilemap.WorldToCell(mouseWorld);
+            previewCells.Clear();
+            previewCells.Add(currentAnchorCell);
+            previewActive = true;
+            previewMode = PreviewMode.ToolTarget;
+            allValid = true;
+            return true;
+        }
+
         Collider2D[] hits = Physics2D.OverlapPointAll(mouseWorld);
         for (int i = 0; i < hits.Length; i++)
         {
@@ -522,7 +534,7 @@ public class PlacementPreviewController : MonoBehaviour
         Transform previewTransform = structurePreviewRenderer.transform;
         previewTransform.position = worldPos;
         previewTransform.rotation = Quaternion.Euler(0f, 0f, GetStructurePreviewRotationZ(currentPreviewItem, currentAnchorCell));
-        previewTransform.localScale = sourceRenderer.transform.localScale;
+        previewTransform.localScale = sourceRenderer.transform.lossyScale;
     }
 
     float GetStructurePreviewRotationZ(ItemData item, Vector3Int anchorCell)

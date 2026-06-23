@@ -63,7 +63,7 @@ MonoBehaviour:
   shakeAmount: 0.035
   shakeSpeed: 35
   generateRoundZone: 1
-  roundZoneRadius: 1.15
+  roundZoneRadius: 1.725
   roundWarningColor: {r: 0.050980397, g: 0.023529414, b: 0.03137255, a: 0.35}
   roundActiveColor: {r: 0.06666667, g: 0.058823533, b: 0.08627451, a: 0.55}
   roundZoneSortingOrder: 11

@@ -24,8 +24,6 @@ MonoBehaviour:
     sprite: {fileID: -3567642306667176507, guid: 40d88cd93e5b1bd468fd19e3427de8bb, type: 3}
   - growth01: 0.5
     sprite: {fileID: 8998466956692986993, guid: 40d88cd93e5b1bd468fd19e3427de8bb, type: 3}
-  - growth01: 0.75
-    sprite: {fileID: 8998466956692986993, guid: 40d88cd93e5b1bd468fd19e3427de8bb, type: 3}
   - growth01: 1
     sprite: {fileID: 2241011251173496442, guid: 40d88cd93e5b1bd468fd19e3427de8bb, type: 3}
   harvestDrops:

@@ -19,17 +19,22 @@ MonoBehaviour:
   icon: {fileID: -5518487545602096814, guid: e2925b792fe1a3d41bef820d18445b32, type: 3}
   maxStack: 99
   pickupPrefab: {fileID: 5996793340830461179, guid: 2fe36dbe5eca4dd4d9cc28a4c06da173, type: 3}
-  type: 0
+  type: 1
   placementMode: 0
   prefab: {fileID: 0}
+  isDoor: 0
+  doorWallMarkerTile: {fileID: 0}
   tileToPlace: {fileID: 0}
   occupiesBuildCell: 1
+  canPlaceOnWater: 0
+  waterTileToPlace: {fileID: 0}
   seedCrop: {fileID: 0}
   attackPrefab: {fileID: 0}
   actionRadius: 1
   toolType: 0
   toolPower: 1
   damage: 1
+  attackSpeed: 1
   isLantern: 0
   lanternLightRadius: 2.5
   lanternDrainPerSecond: 1
@@ -40,9 +45,17 @@ MonoBehaviour:
   cooldown: 0
   foodRestore: 0
   equipmentType: 0
+  activeEquipmentEffect: 0
   defense: 0
   frostDamageMultiplier: 1
   pressureGrowthMultiplier: 1
+  dashDistance: 3
+  dashDuration: 0.12
+  sprintSpeedMultiplier: 1.5
+  maxStamina: 100
+  staminaDrainPerSecond: 25
+  staminaRegenPerSecond: 18
+  shieldDamageMultiplier: 0.25
   furnaceFuelSeconds: 0
   furnaceSmeltResult: {fileID: 0}
   furnaceSmeltResultAmount: 1

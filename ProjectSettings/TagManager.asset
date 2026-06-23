@@ -41,5 +41,8 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Plates
+    uniqueID: 30994477
+    locked: 0
   m_RenderingLayers:
   - Default

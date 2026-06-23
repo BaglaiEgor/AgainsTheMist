@@ -19,7 +19,7 @@ MonoBehaviour:
   icon: {fileID: -7017549586409258068, guid: 03fc42ba0104ee547af8882ca6b1d283, type: 3}
   maxStack: 99
   pickupPrefab: {fileID: 3843033638012045351, guid: 801238b7e920759418f74c449cd44f91, type: 3}
-  type: 0
+  type: 1
   placementMode: 0
   prefab: {fileID: 0}
   isDoor: 0
@@ -49,6 +49,13 @@ MonoBehaviour:
   defense: 0
   frostDamageMultiplier: 1
   pressureGrowthMultiplier: 1
+  dashDistance: 3
+  dashDuration: 0.12
+  sprintSpeedMultiplier: 1.5
+  maxStamina: 100
+  staminaDrainPerSecond: 25
+  staminaRegenPerSecond: 18
+  shieldDamageMultiplier: 0.25
   furnaceFuelSeconds: 0
   furnaceSmeltResult: {fileID: 0}
   furnaceSmeltResultAmount: 1

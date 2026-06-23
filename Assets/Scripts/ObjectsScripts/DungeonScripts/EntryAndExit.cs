@@ -24,6 +24,25 @@ public class EntryAndExit : MonoBehaviour
     public bool isEntry;
 
     public static bool IsPlayerInDungeon { get; private set; }
+    private static Collider2D savedCameraBounds;
+
+    public static void ReturnPlayerToWorldAfterDeath()
+    {
+        if (!IsPlayerInDungeon)
+            return;
+
+        EntryAndExit[] portals = FindObjectsByType<EntryAndExit>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        for (int i = 0; i < portals.Length; i++)
+        {
+            if (portals[i] != null && !portals[i].isEntry)
+            {
+                portals[i].ApplyDungeonState();
+                return;
+            }
+        }
+
+        IsPlayerInDungeon = false;
+    }
 
     public string InteractLabel => isEntry ? "Войти" : "Выйти";
 
@@ -110,7 +129,17 @@ public class EntryAndExit : MonoBehaviour
         if (cameraConfiner == null)
             return;
 
-        cameraConfiner.BoundingShape2D = isEntry ? cameraBounds : null;
+        if (isEntry)
+        {
+            savedCameraBounds = cameraConfiner.BoundingShape2D;
+            cameraConfiner.BoundingShape2D = cameraBounds;
+        }
+        else
+        {
+            cameraConfiner.BoundingShape2D = savedCameraBounds;
+            savedCameraBounds = null;
+        }
+
         cameraConfiner.InvalidateBoundingShapeCache();
     }
 

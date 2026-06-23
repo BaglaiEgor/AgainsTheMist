@@ -7,8 +7,13 @@ public class CursorStackController : MonoBehaviour, IItemContainer
 {
     private static int activeCursorCount;
 
+#if UNITY_EDITOR
+    private const string BoldPixelsFontPath = "Assets/Sprites/prost/BoldPixels.asset";
+#endif
+
     [Header("Visual")]
     [SerializeField] private Vector2 cursorOffset = new Vector2(14f, -14f);
+    [SerializeField] private TMP_FontAsset amountFont;
 
     private readonly InventoryItem cursorSlot = new InventoryItem();
     private int transactionDepth;
@@ -31,10 +36,19 @@ public class CursorStackController : MonoBehaviour, IItemContainer
     public void Initialize(Transform dragParentTransform)
     {
         dragParent = dragParentTransform as RectTransform;
+        ResolveAmountFont(dragParentTransform);
         ResolveRootCanvas(dragParentTransform);
         EnsureVisual();
         HideVisual();
     }
+
+#if UNITY_EDITOR
+    private void OnValidate()
+    {
+        if (amountFont == null)
+            amountFont = UnityEditor.AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(BoldPixelsFontPath);
+    }
+#endif
 
     private void Update()
     {
@@ -259,9 +273,22 @@ public class CursorStackController : MonoBehaviour, IItemContainer
 
         amountText = textObject.GetComponent<TextMeshProUGUI>();
         amountText.raycastTarget = false;
+        amountText.font = amountFont;
         amountText.fontSize = 16f;
         amountText.alignment = TextAlignmentOptions.BottomRight;
         amountText.color = Color.white;
+    }
+
+    private void ResolveAmountFont(Transform dragParentTransform)
+    {
+        if (amountFont != null || dragParentTransform == null)
+            return;
+
+        TextMeshProUGUI referenceText = dragParentTransform.GetComponentInParent<InventoryUI>()
+            ?.GetComponentInChildren<TextMeshProUGUI>(true);
+
+        if (referenceText != null)
+            amountFont = referenceText.font;
     }
 
     private void UpdateVisual(ItemData item, int visualAmount)

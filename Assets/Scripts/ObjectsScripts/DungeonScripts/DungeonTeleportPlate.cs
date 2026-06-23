@@ -1,10 +1,13 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 [DisallowMultipleComponent]
 [RequireComponent(typeof(Collider2D))]
 public class DungeonTeleportPlate : MonoBehaviour
 {
+    private const string WorldSortingLayer = "Default";
+
     [System.Serializable]
     private class TeleportTarget
     {
@@ -15,10 +18,17 @@ public class DungeonTeleportPlate : MonoBehaviour
 
     [Header("Refs")]
     [SerializeField] private SpriteRenderer spriteRenderer;
+    [SerializeField] private Light2D plateLight;
 
     [Header("Sprites")]
     [SerializeField] private Sprite releasedSprite;
     [SerializeField] private Sprite pressedSprite;
+
+    [Header("Glow")]
+    [SerializeField] private int plateSortingOrder;
+    [Range(1f, 2f)] [SerializeField] private float glowScale = 1.35f;
+    [SerializeField] private Color releasedGlowColor = new Color(1f, 0.35f, 0.12f, 0.38f);
+    [SerializeField] private Color pressedGlowColor = new Color(1f, 0.62f, 0.22f, 0.72f);
 
     [Header("Teleport")]
     [SerializeField] private List<TeleportTarget> teleportTargets = new();
@@ -29,6 +39,8 @@ public class DungeonTeleportPlate : MonoBehaviour
 
     private readonly List<Component> pressers = new();
     private Collider2D plateCollider;
+    private SpriteRenderer glowRenderer;
+    private Material glowMaterial;
     private bool isPressed;
     private bool hasTriggered;
 
@@ -39,6 +51,12 @@ public class DungeonTeleportPlate : MonoBehaviour
 
         if (spriteRenderer == null)
             spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+
+        if (plateLight == null)
+            plateLight = GetComponent<Light2D>();
+
+        ConfigureWorldSorting();
+        EnsureGlow();
 
         RefreshVisual();
     }
@@ -154,11 +172,56 @@ public class DungeonTeleportPlate : MonoBehaviour
 
     private void RefreshVisual()
     {
+        Sprite targetSprite = isPressed ? pressedSprite : releasedSprite;
+        if (targetSprite == null)
+            return;
+
+        if (spriteRenderer != null)
+            spriteRenderer.sprite = targetSprite;
+
+        if (glowRenderer != null)
+        {
+            glowRenderer.sprite = targetSprite;
+            glowRenderer.color = isPressed ? pressedGlowColor : releasedGlowColor;
+        }
+
+        if (plateLight != null)
+            plateLight.lightCookieSprite = targetSprite;
+    }
+
+    private void ConfigureWorldSorting()
+    {
         if (spriteRenderer == null)
             return;
 
-        Sprite targetSprite = isPressed ? pressedSprite : releasedSprite;
-        if (targetSprite != null)
-            spriteRenderer.sprite = targetSprite;
+        spriteRenderer.sortingLayerName = WorldSortingLayer;
+        spriteRenderer.sortingOrder = plateSortingOrder;
+    }
+
+    private void EnsureGlow()
+    {
+        if (spriteRenderer == null || glowRenderer != null)
+            return;
+
+        GameObject glowObject = new GameObject("Glow", typeof(SpriteRenderer));
+        glowObject.transform.SetParent(spriteRenderer.transform, false);
+        glowObject.transform.localScale = Vector3.one * glowScale;
+
+        glowRenderer = glowObject.GetComponent<SpriteRenderer>();
+        glowRenderer.sortingLayerID = spriteRenderer.sortingLayerID;
+        glowRenderer.sortingOrder = spriteRenderer.sortingOrder - 1;
+
+        Shader shader = Shader.Find("Sprites/Default");
+        if (shader != null)
+        {
+            glowMaterial = new Material(shader);
+            glowRenderer.material = glowMaterial;
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (glowMaterial != null)
+            Destroy(glowMaterial);
     }
 }

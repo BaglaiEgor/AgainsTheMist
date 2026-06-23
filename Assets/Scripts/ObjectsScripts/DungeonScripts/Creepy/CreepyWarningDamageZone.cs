@@ -8,6 +8,7 @@ using UnityEngine;
 public class CreepyWarningDamageZone : MonoBehaviour
 {
     private const int GeneratedCircleSize = 128;
+    private const string PlayerHitboxName = "HitBox";
 
     [Header("Refs")]
     [SerializeField] private SpriteRenderer warningRenderer;
@@ -37,6 +38,12 @@ public class CreepyWarningDamageZone : MonoBehaviour
     [SerializeField] private bool useCreepyPalette = true;
     [SerializeField] private Color creepyWarningColor = new Color(0.72f, 0.18f, 0.95f, 0.24f);
     [SerializeField] private Color creepyActiveColor = new Color(1f, 0.35f, 0.95f, 0.42f);
+
+    [Header("Generated Zone Glow")]
+    [Range(0.1f, 1f)] [SerializeField] private float innerGlowScale = 0.58f;
+    [SerializeField] private Color innerWarningGlowColor = new Color(0.9f, 0.55f, 1f, 0.42f);
+    [SerializeField] private Color innerActiveGlowColor = new Color(1f, 0.9f, 1f, 0.82f);
+
     [Header("Tween Feedback")]
     [Min(0.01f)] [SerializeField] private float warningAppearDuration = 0.18f;
     [SerializeField] private Vector3 activePunchScale = new Vector3(0.18f, 0.18f, 0f);
@@ -46,6 +53,8 @@ public class CreepyWarningDamageZone : MonoBehaviour
     private readonly Dictionary<PlayerHealth, float> nextDamageTimeByPlayer = new();
     private Collider2D zoneCollider;
     private float generatedRadius = 0.75f;
+    private SpriteRenderer warningGlowRenderer;
+    private SpriteRenderer activeGlowRenderer;
     private Coroutine routine;
     private bool damageActive;
     private bool warningVisible;
@@ -53,6 +62,8 @@ public class CreepyWarningDamageZone : MonoBehaviour
     private Color activeBaseColor = Color.white;
     private Vector3 warningBaseScale = Vector3.one;
     private Vector3 activeBaseScale = Vector3.one;
+    private Vector3 warningGlowBaseScale = Vector3.one;
+    private Vector3 activeGlowBaseScale = Vector3.one;
     private Tween warningTween;
     private Tween activeTween;
     private static Sprite generatedCircleSprite;
@@ -73,10 +84,16 @@ public class CreepyWarningDamageZone : MonoBehaviour
     private void Update()
     {
         if (warningVisible && pulseWarningVisual)
+        {
             AnimateRendererPulse(warningRenderer, warningBaseColor, warningBaseScale, warningPulseSpeed, warningPulseStrength);
+            AnimateGlowPulse(warningGlowRenderer, warningPulseSpeed, warningPulseStrength);
+        }
 
         if (damageActive && pulseActiveVisual)
+        {
             AnimateRendererPulse(activeRenderer, activeBaseColor, activeBaseScale, activePulseSpeed, activePulseStrength);
+            AnimateGlowPulse(activeGlowRenderer, activePulseSpeed, activePulseStrength);
+        }
 
         if (damageActive)
             ApplyDamage();
@@ -99,15 +116,13 @@ public class CreepyWarningDamageZone : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        PlayerHealth playerHealth = other.GetComponentInParent<PlayerHealth>();
-        if (playerHealth != null && !playersInside.Contains(playerHealth))
+        if (TryGetPlayerHealthFromHitbox(other, out PlayerHealth playerHealth) && !playersInside.Contains(playerHealth))
             playersInside.Add(playerHealth);
     }
 
     private void OnTriggerExit2D(Collider2D other)
     {
-        PlayerHealth playerHealth = other.GetComponentInParent<PlayerHealth>();
-        if (playerHealth == null)
+        if (!TryGetPlayerHealthFromHitbox(other, out PlayerHealth playerHealth))
             return;
 
         playersInside.Remove(playerHealth);
@@ -161,6 +176,9 @@ public class CreepyWarningDamageZone : MonoBehaviour
                 warningRenderer.transform.localScale = warningBaseScale;
             }
         }
+
+        if (warningGlowRenderer != null)
+            warningGlowRenderer.enabled = visible;
     }
 
     public void SetDamageActive(bool active)
@@ -179,6 +197,9 @@ public class CreepyWarningDamageZone : MonoBehaviour
                 activeRenderer.transform.localScale = activeBaseScale;
             }
         }
+
+        if (activeGlowRenderer != null)
+            activeGlowRenderer.enabled = active;
 
         if (active)
             ApplyDamage();
@@ -217,6 +238,14 @@ public class CreepyWarningDamageZone : MonoBehaviour
         activeRenderer = CreateCircleRenderer("Generated Damage Circle", activeColor, sortingOrder + 1);
         warningRenderer.transform.localScale = Vector3.one * radius * 2f;
         activeRenderer.transform.localScale = Vector3.one * radius * 2f;
+
+        warningGlowRenderer = CreateGlowRenderer("Generated Warning Glow", innerWarningGlowColor, sortingOrder + 1);
+        activeGlowRenderer = CreateGlowRenderer("Generated Damage Glow", innerActiveGlowColor, sortingOrder + 2);
+        float glowDiameter = radius * 2f * innerGlowScale;
+        warningGlowRenderer.transform.localScale = Vector3.one * glowDiameter;
+        activeGlowRenderer.transform.localScale = Vector3.one * glowDiameter;
+        warningGlowBaseScale = warningGlowRenderer.transform.localScale;
+        activeGlowBaseScale = activeGlowRenderer.transform.localScale;
 
         BoxCollider2D boxCollider = GetComponent<BoxCollider2D>();
         if (boxCollider != null)
@@ -328,11 +357,7 @@ public class CreepyWarningDamageZone : MonoBehaviour
         for (int i = 0; i < hits.Length; i++)
         {
             Collider2D hit = hits[i];
-            if (hit == null)
-                continue;
-
-            PlayerHealth playerHealth = hit.GetComponentInParent<PlayerHealth>();
-            if (playerHealth != null && !playersInside.Contains(playerHealth))
+            if (TryGetPlayerHealthFromHitbox(hit, out PlayerHealth playerHealth) && !playersInside.Contains(playerHealth))
                 playersInside.Add(playerHealth);
         }
     }
@@ -345,15 +370,27 @@ public class CreepyWarningDamageZone : MonoBehaviour
         if (zoneCollider == null || !zoneCollider.enabled)
             return true;
 
-        Collider2D playerCollider = playerHealth.GetComponent<Collider2D>();
-        if (playerCollider == null)
-            playerCollider = playerHealth.GetComponentInChildren<Collider2D>();
-        if (playerCollider == null)
-            return zoneCollider.OverlapPoint(playerHealth.transform.position);
-
         Bounds zoneBounds = zoneCollider.bounds;
         zoneBounds.Expand(0.05f);
-        return zoneBounds.Intersects(playerCollider.bounds);
+        Collider2D[] playerColliders = playerHealth.GetComponentsInChildren<Collider2D>(true);
+        for (int i = 0; i < playerColliders.Length; i++)
+        {
+            Collider2D playerCollider = playerColliders[i];
+            if (playerCollider != null && playerCollider.name == PlayerHitboxName && zoneBounds.Intersects(playerCollider.bounds))
+                return true;
+        }
+
+        return false;
+    }
+
+    private static bool TryGetPlayerHealthFromHitbox(Collider2D collider, out PlayerHealth playerHealth)
+    {
+        playerHealth = null;
+        if (collider == null || collider.name != PlayerHitboxName)
+            return false;
+
+        playerHealth = collider.GetComponentInParent<PlayerHealth>();
+        return playerHealth != null;
     }
 
     private float ResolveOverlapRadius()
@@ -386,6 +423,12 @@ public class CreepyWarningDamageZone : MonoBehaviour
     {
         warningTween?.Kill();
         activeTween?.Kill();
+
+        if (warningGlowRenderer != null)
+            Destroy(warningGlowRenderer.material);
+
+        if (activeGlowRenderer != null)
+            Destroy(activeGlowRenderer.material);
     }
 
     private void AnimateRendererPulse(SpriteRenderer renderer, Color baseColor, Vector3 baseScale, float speed, float strength)
@@ -400,6 +443,19 @@ public class CreepyWarningDamageZone : MonoBehaviour
 
         float scaleWave = 1f + strength * 0.18f * Mathf.Sin(Time.time * speed * 1.2f);
         renderer.transform.localScale = baseScale * scaleWave;
+    }
+
+    private void AnimateGlowPulse(SpriteRenderer renderer, float speed, float strength)
+    {
+        if (renderer == null || !renderer.enabled)
+            return;
+
+        float wave = 0.5f + 0.5f * Mathf.Sin(Time.time * speed);
+        Color color = renderer.color;
+        color.a = Mathf.Lerp(0.35f, 1f, wave);
+        renderer.color = color;
+        Vector3 baseScale = renderer == warningGlowRenderer ? warningGlowBaseScale : activeGlowBaseScale;
+        renderer.transform.localScale = baseScale * (1f + strength * 0.06f * Mathf.Sin(Time.time * speed * 1.2f));
     }
 
     private void HideExistingRenderers()
@@ -425,6 +481,16 @@ public class CreepyWarningDamageZone : MonoBehaviour
         renderer.color = color;
         renderer.sortingOrder = sortingOrder;
         renderer.enabled = false;
+        return renderer;
+    }
+
+    private SpriteRenderer CreateGlowRenderer(string objectName, Color color, int sortingOrder)
+    {
+        SpriteRenderer renderer = CreateCircleRenderer(objectName, color, sortingOrder);
+        Shader shader = Shader.Find("Sprites/Default");
+        if (shader != null)
+            renderer.material = new Material(shader);
+
         return renderer;
     }
 

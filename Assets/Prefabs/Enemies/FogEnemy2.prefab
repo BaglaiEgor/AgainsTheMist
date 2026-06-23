@@ -129,8 +129,8 @@ CircleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0.11839846, y: -0.009798169}
-  m_Radius: 0.3189908
+  m_Offset: {x: 0.08322651, y: -0.009798169}
+  m_Radius: 0.28381884
 --- !u!50 &-2637373459309636090
 Rigidbody2D:
   serializedVersion: 5
@@ -189,6 +189,15 @@ MonoBehaviour:
   attackDashDuration: 0.18
   attackLineWidth: 0.08
   attackLineColor: {r: 1, g: 0.12, b: 0.08, a: 0.9}
+  enableStylizedAttackLine: 1
+  attackLineOuterWidth: 0.22
+  attackLineCoreWidth: 0.08
+  attackLinePulseSpeed: 10
+  attackWarningOuterColor: {r: 0.55, g: 0.12, b: 0.82, a: 0.55}
+  attackWarningCoreColor: {r: 0.95, g: 0.55, b: 1, a: 0.75}
+  attackActiveOuterColor: {r: 1, g: 0.2, b: 0.95, a: 0.95}
+  attackActiveCoreColor: {r: 1, g: 0.85, b: 1, a: 1}
+  attackActiveFlashTime: 0.1
   approachRollChance: 0.25
   approachRollCooldown: 2.2
   rollDodgeChance: 0.45
@@ -199,6 +208,8 @@ MonoBehaviour:
   hitKnockbackDuration: 0.16
   hitAnimationDuration: 0.22
   deathAnimationDuration: 0.75
+  simpleDeathTweenDuration: 0.18
+  deathPunchScale: {x: 0.12, y: 0.12, z: 0}
   enableSpriteAnimation: 0
   spriteRenderer: {fileID: 9008969921172199115}
   idleSprites:

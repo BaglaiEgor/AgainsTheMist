@@ -195,7 +195,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d4af3df6d2f4d14ab35dd7f4f0db9d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIButtonJuice
-  hoverScale: 1.04
+  hoverScale: 1.03
   hoverDuration: 0.1
   clickPunchScale: 0.08
   clickPunchDuration: 0.12

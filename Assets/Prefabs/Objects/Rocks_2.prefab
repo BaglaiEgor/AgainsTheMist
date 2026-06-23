@@ -68,11 +68,6 @@ MonoBehaviour:
     maxAmount: 5
     chance: 1
     dropOnlyInFrostZone: 0
-  - prefab: {fileID: 5996793340830461179, guid: 7295cdae0fb74d73a4b8eea3bc197b4c, type: 3}
-    minAmount: 2
-    maxAmount: 3
-    chance: 0.85
-    dropOnlyInFrostZone: 0
 --- !u!114 &-3033613547935884987
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -89,6 +84,7 @@ MonoBehaviour:
   height: 1
   centerOnTransform: 0
   groundTilemap: {fileID: 0}
+  placementRotationSteps: 0
 --- !u!1 &2857818016613033955
 GameObject:
   m_ObjectHideFlags: 0
