@@ -18,6 +18,8 @@ public class DemoHotkeys : MonoBehaviour
 
     private string lastAction = "Демо-режим готов";
 
+    private const float FastTimeScale = 5f;
+
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     private static void Bootstrap()
     {
@@ -79,6 +81,9 @@ public class DemoHotkeys : MonoBehaviour
         if (keyboard.f8Key.wasPressedThisFrame)
             SetMorning();
 
+        if (keyboard.f9Key.wasPressedThisFrame)
+            ToggleFastTime();
+
     }
 
     private void OnGUI()
@@ -96,6 +101,7 @@ public class DemoHotkeys : MonoBehaviour
         GUILayout.Label("F7: пауза/продолжить время");
         GUILayout.Label("F8: установить 08:00");
         GUILayout.Label("F1: показать/скрыть подсказку");
+        GUILayout.Label("F9: Time speed x5 / x1");
         GUILayout.Space(8f);
         GUILayout.Label("Последнее действие: " + lastAction);
         GUILayout.EndArea();
@@ -205,6 +211,16 @@ public class DemoHotkeys : MonoBehaviour
 
         timeSystem.SetTime(timeSystem.Day, 8, 0);
         lastAction = $"Утро установлено: День {timeSystem.Day}, 08:00";
+    }
+
+    private void ToggleFastTime()
+    {
+        if (!EnsureTimeSystem())
+            return;
+
+        bool fastTimeEnabled = timeSystem.TimeScale >= FastTimeScale;
+        timeSystem.SetTimeScale(fastTimeEnabled ? 1f : FastTimeScale);
+        lastAction = fastTimeEnabled ? "Time speed: x1" : "Time speed: x5";
     }
 
     private bool AddByPath(string resourcePath, int amount)

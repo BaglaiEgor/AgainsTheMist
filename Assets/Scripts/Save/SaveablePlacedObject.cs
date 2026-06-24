@@ -15,3 +15,16 @@ public class SaveablePlacedObject : MonoBehaviour
         rotationSteps = ((steps % 4) + 4) % 4;
     }
 }
+
+[DisallowMultipleComponent]
+public class SaveableWorldObject : MonoBehaviour
+{
+    [SerializeField] private string prefabId;
+
+    public string PrefabId => prefabId;
+
+    public void Initialize(string id)
+    {
+        prefabId = id;
+    }
+}

@@ -35,10 +35,10 @@ MonoBehaviour:
   seedCrop: {fileID: 0}
   attackPrefab: {fileID: 5642904015008106225, guid: f29d7ddbf7fa0c74582458b7966c3e60, type: 3}
   actionRadius: 3
-  toolType: 0
+  toolType: 3
   toolPower: 1
   damage: 1
-  attackSpeed: 1
+  attackSpeed: 6
   isLantern: 0
   lanternLightRadius: 2.5
   lanternDrainPerSecond: 1
@@ -53,6 +53,13 @@ MonoBehaviour:
   defense: 0
   frostDamageMultiplier: 1
   pressureGrowthMultiplier: 1
+  dashDistance: 3
+  dashDuration: 0.12
+  sprintSpeedMultiplier: 1.5
+  maxStamina: 100
+  staminaDrainPerSecond: 25
+  staminaRegenPerSecond: 18
+  shieldDamageMultiplier: 0.25
   furnaceFuelSeconds: 0
   furnaceSmeltResult: {fileID: 0}
   furnaceSmeltResultAmount: 1

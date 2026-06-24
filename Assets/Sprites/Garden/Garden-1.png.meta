@@ -1773,28 +1773,6 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Garden-1_73
-      rect:
-        serializedVersion: 2
-        x: 160
-        y: 30
-        width: 16
-        height: 16
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 17c96cc650af0ec70800000000000000
-      internalID: 8998466956692986993
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
       name: Garden-1_74
       rect:
         serializedVersion: 2
@@ -1887,11 +1865,11 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 48
-        y: 32
+        y: 33
         width: 16
         height: 16
-      alignment: 9
-      pivot: {x: 0.5, y: 0.37811637}
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1912,8 +1890,8 @@ TextureImporter:
         y: 3
         width: 16
         height: 16
-      alignment: 9
-      pivot: {x: 0.5, y: 0.20714617}
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1953,11 +1931,11 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 160
-        y: 3
+        y: 33
         width: 16
         height: 16
-      alignment: 9
-      pivot: {x: 0.50388527, y: 0.14889446}
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1978,8 +1956,8 @@ TextureImporter:
         y: 2
         width: 16
         height: 16
-      alignment: 9
-      pivot: {x: 0.5, y: 0.20714617}
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1997,11 +1975,11 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 64
-        y: 30
+        y: 31
         width: 16
         height: 16
-      alignment: 9
-      pivot: {x: 0.5, y: 0.37811637}
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -2010,6 +1988,28 @@ TextureImporter:
       bones: []
       spriteID: e0791d58c8262bf43bec7d5bdf6943d8
       internalID: -5780759089164795902
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Garden-1_66
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 2
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d4d33a612a3b9464f95aea4e8bffc1a3
+      internalID: 4522578890047766526
       vertices: []
       indices: 
       edges: []

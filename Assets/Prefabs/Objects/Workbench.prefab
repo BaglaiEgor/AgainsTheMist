@@ -277,7 +277,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ResourceDrop
   drops:
-  - prefab: {fileID: 3234137013417555007}
+  - prefab: {fileID: 5996793340830461179, guid: f4fb4d59cbc14a9080d5e345ca20b4b4, type: 3}
     minAmount: 1
     maxAmount: 1
     chance: 1
@@ -396,7 +396,7 @@ GameObject:
   - component: {fileID: 1844592630440474596}
   - component: {fileID: 4922119314129729450}
   m_Layer: 0
-  m_Name: Child
+  m_Name: HitBox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

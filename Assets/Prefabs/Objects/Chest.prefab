@@ -63,7 +63,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ResourceDrop
   drops:
-  - prefab: {fileID: 2439470639307641166}
+  - prefab: {fileID: 5996793340830461179, guid: da6df4ba79c34f0da1b0f7336a133f59, type: 3}
     minAmount: 1
     maxAmount: 1
     chance: 1

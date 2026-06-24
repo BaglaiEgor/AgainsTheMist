@@ -32,6 +32,7 @@ public class GameTimeSystem : MonoBehaviour
     public bool IsNight => isNight;
     public bool IsDay => !isNight;
     public bool IsRunning => isRunning;
+    public float TimeScale => timeScale;
     public string TimeLabel => $"{currentHour:00}:{currentMinute:00}";
     public float TimeOfDay01 => (currentHour * MinutesPerHour + currentMinute) / (float)MinutesPerDay;
     public float TimeOfDayPrecise01
@@ -91,6 +92,11 @@ public class GameTimeSystem : MonoBehaviour
     public void ToggleRunning()
     {
         isRunning = !isRunning;
+    }
+
+    public void SetTimeScale(float value)
+    {
+        timeScale = Mathf.Max(0f, value);
     }
 
     public void SetTime(int day, int hour, int minute, bool notify = true)

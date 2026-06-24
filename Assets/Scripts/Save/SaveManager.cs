@@ -168,7 +168,7 @@ public class SaveManager : MonoBehaviour
         if (data == null)
             yield break;
 
-        PrepareSceneForLoad();
+        PrepareSceneForLoad(data.version >= 2);
         yield return null;
 
         ApplySaveData(data);
@@ -288,6 +288,23 @@ public class SaveManager : MonoBehaviour
         foreach (SavePlacedTileData tile in SaveablePlacedTileRegistry.Tiles)
             data.placedTiles.Add(tile);
 
+        foreach (SaveableWorldObject saveable in FindObjectsByType<SaveableWorldObject>(FindObjectsSortMode.None))
+        {
+            if (saveable == null || string.IsNullOrWhiteSpace(saveable.PrefabId))
+                continue;
+
+            WorldObject worldObject = saveable.GetComponent<WorldObject>();
+            if (worldObject == null)
+                continue;
+
+            data.worldObjects.Add(new SaveWorldObjectData
+            {
+                prefabId = saveable.PrefabId,
+                position = ToSaveVector3(saveable.transform.position),
+                currentHealth = worldObject.CurrentHealth
+            });
+        }
+
         return data;
     }
 
@@ -297,6 +314,7 @@ public class SaveManager : MonoBehaviour
         RestoreGardenBeds(data.gardenBeds);
         RestorePlacedLanterns(data.placedLanterns);
         RestorePlacedTiles(data.placedTiles);
+        RestoreWorldObjects(data.worldObjects);
 
         PlayerController player = FindFirstObjectByType<PlayerController>();
         if (player != null)
@@ -461,6 +479,28 @@ public class SaveManager : MonoBehaviour
         }
     }
 
+    private void RestoreWorldObjects(List<SaveWorldObjectData> worldObjects)
+    {
+        if (worldObjects == null)
+            return;
+
+        WorldObjectSpawner spawner = FindFirstObjectByType<WorldObjectSpawner>();
+        if (spawner == null)
+            return;
+
+        for (int i = 0; i < worldObjects.Count; i++)
+        {
+            SaveWorldObjectData data = worldObjects[i];
+            if (data == null)
+                continue;
+
+            GameObject go = spawner.RestoreSavedObject(data.prefabId, ToVector3(data.position));
+            WorldObject worldObject = go != null ? go.GetComponent<WorldObject>() : null;
+            if (worldObject != null)
+                worldObject.RestoreHealth(data.currentHealth);
+        }
+    }
+
     private void RestoreChests(List<SaveContainerData> chests)
     {
         if (chests == null)
@@ -489,7 +529,7 @@ public class SaveManager : MonoBehaviour
         }
     }
 
-    private void PrepareSceneForLoad()
+    private void PrepareSceneForLoad(bool clearWorldObjects)
     {
         foreach (SaveablePlacedObject placed in FindObjectsByType<SaveablePlacedObject>(FindObjectsSortMode.None))
         {
@@ -501,6 +541,15 @@ public class SaveManager : MonoBehaviour
         {
             if (bed != null)
                 Destroy(bed.gameObject);
+        }
+
+        if (!clearWorldObjects)
+            return;
+
+        foreach (SaveableWorldObject worldObject in FindObjectsByType<SaveableWorldObject>(FindObjectsSortMode.None))
+        {
+            if (worldObject != null)
+                Destroy(worldObject.gameObject);
         }
     }
 

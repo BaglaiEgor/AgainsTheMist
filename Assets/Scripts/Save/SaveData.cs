@@ -4,7 +4,7 @@ using System.Collections.Generic;
 [Serializable]
 public class GameSaveData
 {
-    public int version = 1;
+    public int version = 2;
     public string sceneName = "GameScene";
     public SaveVector3 playerPosition;
     public int playerHealth;
@@ -30,6 +30,7 @@ public class GameSaveData
     public List<SavePlacedObjectData> placedObjects = new();
     public List<SavePlacedLanternData> placedLanterns = new();
     public List<SavePlacedTileData> placedTiles = new();
+    public List<SaveWorldObjectData> worldObjects = new();
 }
 
 [Serializable]
@@ -106,4 +107,12 @@ public class SavePlacedTileData
     public string itemId;
     public string tilemapName;
     public SaveVector3Int cell;
+}
+
+[Serializable]
+public class SaveWorldObjectData
+{
+    public string prefabId;
+    public SaveVector3 position;
+    public int currentHealth;
 }

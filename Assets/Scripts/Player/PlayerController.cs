@@ -136,7 +136,18 @@ public class PlayerController : MonoBehaviour
         EnsurePlacementTilemaps();
         EnsureTileMiningSystems();
         EnsureBridgeGapPatches();
+        StartCoroutine(RefreshBridgeCollidersAfterPhysicsStart());
         EnsurePlacementPreviewController();
+    }
+
+    IEnumerator RefreshBridgeCollidersAfterPhysicsStart()
+    {
+        yield return new WaitForFixedUpdate();
+
+        BridgeGapPatchManager.RefreshColliderGeometry(bridgeTilemap);
+
+        if (snowBridgeTilemap != null && snowBridgeTilemap != bridgeTilemap)
+            BridgeGapPatchManager.RefreshColliderGeometry(snowBridgeTilemap);
     }
 
     #region move
@@ -1604,8 +1615,8 @@ public class PlayerController : MonoBehaviour
         if (collider == null)
             return false;
 
-        string colliderName = collider.gameObject.name;
-        return colliderName == ToolHitColliderName;
+        return collider.gameObject.name == ToolHitColliderName ||
+               collider.GetComponentInParent<WorldObject>() != null;
     }
 
 

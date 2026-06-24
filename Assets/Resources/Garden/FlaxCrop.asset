@@ -15,7 +15,7 @@ MonoBehaviour:
   cropId: FlaxCrop
   displayName: "\u0413\u0440\u044F\u0434\u043A\u0430 \u041B\u044C\u043D\u0430"
   growthMinutes: 720
-  growthMultiplierInFog: 1
+  growthMultiplierInFog: 0
   growthMultiplierOutsideFog: 1
   growthStages:
   - growth01: 0
@@ -30,12 +30,12 @@ MonoBehaviour:
     sprite: {fileID: 3481867090164630220, guid: 40d88cd93e5b1bd468fd19e3427de8bb, type: 3}
   harvestDrops:
   - prefab: {fileID: 8266306878654680791, guid: 9731528fe1729ea46ba4f2c069fdc8ad, type: 3}
-    minAmount: 0
-    maxAmount: 0
-    chance: 0
+    minAmount: 1
+    maxAmount: 3
+    chance: 1
     dropOnlyInFrostZone: 0
-  - prefab: {fileID: 0}
-    minAmount: 0
-    maxAmount: 0
-    chance: 0
+  - prefab: {fileID: 8266306878654680791, guid: 9e6d7e370005b1d4a977c40a00d86771, type: 3}
+    minAmount: 1
+    maxAmount: 3
+    chance: 1
     dropOnlyInFrostZone: 0

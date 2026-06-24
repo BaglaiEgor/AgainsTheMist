@@ -12,6 +12,8 @@ public class WorldObject : MonoBehaviour
 
     private ObjectHealthUI healthUI;
 
+    public int CurrentHealth => currentHealth;
+
     void Awake()
     {
         currentHealth = maxHealth;
@@ -66,6 +68,14 @@ public class WorldObject : MonoBehaviour
 
         if (currentHealth <= 0)
             Die();
+    }
+
+    public void RestoreHealth(int health)
+    {
+        currentHealth = Mathf.Clamp(health, 1, maxHealth);
+
+        if (healthUI != null)
+            healthUI.SetHealth(currentHealth, maxHealth);
     }
 
     void Die()

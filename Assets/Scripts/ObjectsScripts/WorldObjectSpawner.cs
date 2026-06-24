@@ -257,6 +257,7 @@ public class WorldObjectSpawner : MonoBehaviour
             Vector3 worldPos = GetCellCenterWorld(cell);
             GameObject spawnedObject = Instantiate(prefab, worldPos, Quaternion.identity, objectsParent);
             FogObjectTint.EnsureOn(spawnedObject);
+            MarkAsSaveable(spawnedObject, prefab.name);
             return true;
         }
 
@@ -367,6 +368,42 @@ public class WorldObjectSpawner : MonoBehaviour
         }
 
         return candidateIndices.Count - 1;
+    }
+
+    public GameObject GetPrefab(string prefabId)
+    {
+        if (string.IsNullOrWhiteSpace(prefabId) || spawnTable == null)
+            return null;
+
+        for (int i = 0; i < spawnTable.Count; i++)
+        {
+            GameObject prefab = spawnTable[i].prefab;
+            if (prefab != null && prefab.name == prefabId)
+                return prefab;
+        }
+
+        return null;
+    }
+
+    public GameObject RestoreSavedObject(string prefabId, Vector3 position)
+    {
+        GameObject prefab = GetPrefab(prefabId);
+        if (prefab == null)
+            return null;
+
+        GameObject spawnedObject = Instantiate(prefab, position, Quaternion.identity, objectsParent);
+        FogObjectTint.EnsureOn(spawnedObject);
+        MarkAsSaveable(spawnedObject, prefabId);
+        return spawnedObject;
+    }
+
+    private static void MarkAsSaveable(GameObject worldObject, string prefabId)
+    {
+        SaveableWorldObject saveable = worldObject.GetComponent<SaveableWorldObject>();
+        if (saveable == null)
+            saveable = worldObject.AddComponent<SaveableWorldObject>();
+
+        saveable.Initialize(prefabId);
     }
 
     void Shuffle(List<Vector3Int> list)

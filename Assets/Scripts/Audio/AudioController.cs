@@ -8,6 +8,7 @@ public class AudioController : MonoBehaviour
     [Header("Sources")]
     [SerializeField] private AudioSource musicSource;
     [SerializeField] private AudioSource sfxSource;
+    [SerializeField] private AudioSource trapSfxSource;
 
     [Header("Music")]
     [SerializeField] private AudioClip musicClip;
@@ -30,6 +31,9 @@ public class AudioController : MonoBehaviour
     [SerializeField] private AudioClip dungeonTrapClip;
     [SerializeField] private AudioClip dungeonFireClip;
     [Range(0f, 1f)] [SerializeField] private float sfxVolume = 1f;
+
+    [Header("Trap SFX")]
+    [Range(0f, 1f)] [SerializeField] private float trapSfxVolume = 0.3f;
 
     [Header("Footsteps")]
     [Min(0f)] [SerializeField] private float footstepCooldown = 0.25f;
@@ -86,6 +90,7 @@ public class AudioController : MonoBehaviour
     {
         musicVolume = Mathf.Clamp01(musicVolume);
         sfxVolume = Mathf.Clamp01(sfxVolume);
+        trapSfxVolume = Mathf.Clamp01(trapSfxVolume);
         pitchMin = Mathf.Max(0.1f, pitchMin);
         pitchMax = Mathf.Max(pitchMin, pitchMax);
         volumeMin = Mathf.Clamp01(volumeMin);
@@ -123,14 +128,14 @@ public class AudioController : MonoBehaviour
     public void PlayEntryExit() => PlaySfx(entryExitClip);
     public void PlayDungeonPlate() => PlaySfx(dungeonPlateClip);
     public void PlayDungeonDoor() => PlaySfx(dungeonDoorClip);
-    public void PlayDungeonTrap() => PlaySfx(dungeonTrapClip);
-    public void PlayDungeonFire() => PlaySfx(dungeonFireClip);
+    public void PlayDungeonTrap() => PlayTrapSfx(dungeonTrapClip);
+    public void PlayDungeonFire() => PlayTrapSfx(dungeonFireClip);
 
     public void PlayInteract(Vector3 sourcePosition) => PlaySfxNearPlayer(interactClip, sourcePosition);
     public void PlayDungeonPlate(Vector3 sourcePosition) => PlaySfxNearPlayer(dungeonPlateClip, sourcePosition);
     public void PlayDungeonDoor(Vector3 sourcePosition) => PlaySfxNearPlayer(dungeonDoorClip, sourcePosition);
-    public void PlayDungeonTrap(Vector3 sourcePosition) => PlaySfxNearPlayer(dungeonTrapClip, sourcePosition);
-    public void PlayDungeonFire(Vector3 sourcePosition) => PlaySfxNearPlayer(dungeonFireClip, sourcePosition);
+    public void PlayDungeonTrap(Vector3 sourcePosition) => PlayTrapSfxNearPlayer(dungeonTrapClip, sourcePosition);
+    public void PlayDungeonFire(Vector3 sourcePosition) => PlayTrapSfxNearPlayer(dungeonFireClip, sourcePosition);
 
     public float GetMusicVolume() => musicVolume;
     public float GetSfxVolume() => sfxVolume;
@@ -212,12 +217,34 @@ public class AudioController : MonoBehaviour
         sfxSource.PlayOneShot(clip, sfxVolume * footstepVolume);
     }
 
+    private void PlayTrapSfx(AudioClip clip)
+    {
+        if (trapSfxSource == null || clip == null || trapSfxSource.isPlaying)
+            return;
+
+        float pitch = randomizeSfx ? Random.Range(pitchMin, pitchMax) : 1f;
+        float volume = randomizeSfx ? Random.Range(volumeMin, volumeMax) : 1f;
+
+        trapSfxSource.clip = clip;
+        trapSfxSource.pitch = pitch;
+        trapSfxSource.volume = sfxVolume * trapSfxVolume * volume;
+        trapSfxSource.Play();
+    }
+
     private void PlaySfxNearPlayer(AudioClip clip, Vector3 sourcePosition)
     {
         if (!IsSourceNearPlayer(sourcePosition))
             return;
 
         PlaySfx(clip);
+    }
+
+    private void PlayTrapSfxNearPlayer(AudioClip clip, Vector3 sourcePosition)
+    {
+        if (!IsSourceNearPlayer(sourcePosition))
+            return;
+
+        PlayTrapSfx(clip);
     }
 
     private bool IsSourceNearPlayer(Vector3 sourcePosition)
@@ -265,6 +292,9 @@ public class AudioController : MonoBehaviour
 
         if (sfxSource == null)
             sfxSource = sources.Length > 1 ? sources[1] : gameObject.AddComponent<AudioSource>();
+
+        if (trapSfxSource == null)
+            trapSfxSource = sources.Length > 2 ? sources[2] : gameObject.AddComponent<AudioSource>();
     }
 
     private void ApplySourceSettings()
@@ -281,6 +311,12 @@ public class AudioController : MonoBehaviour
             sfxSource.playOnAwake = false;
             sfxSource.loop = false;
             sfxSource.volume = sfxVolume;
+        }
+
+        if (trapSfxSource != null)
+        {
+            trapSfxSource.playOnAwake = false;
+            trapSfxSource.loop = false;
         }
     }
 }

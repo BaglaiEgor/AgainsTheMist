@@ -17,7 +17,7 @@ MonoBehaviour:
   description: "\u041F\u0440\u043E\u0431\u0435\u043B: \u043D\u0430 \u043D\u0435\u0441\u043A\u043E\u043B\u044C\u043A\u043E
     \u0441\u0435\u043A\u0443\u043D\u0434 \u0441\u043D\u0438\u0437\u0438\u0442\u044C
     \u0432\u0445\u043E\u0434\u044F\u0449\u0438\u0439 \u0443\u0440\u043E\u043D."
-  icon: {fileID: -7040649574334360884, guid: bbef5c1b1be0d494abd4dffbe2255e88, type: 3}
+  icon: {fileID: 4252887539390309802, guid: 2036fef58d3bbb74baf09ceb27cb146d, type: 3}
   maxStack: 1
   pickupPrefab: {fileID: 5996793340830461179, guid: 6eee5f2cd74245a68463737cacba27eb, type: 3}
   type: 7

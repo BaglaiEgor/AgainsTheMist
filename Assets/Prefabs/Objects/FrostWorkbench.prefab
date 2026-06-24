@@ -56,7 +56,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -102,6 +102,7 @@ GameObject:
   - component: {fileID: 4245490029093990074}
   - component: {fileID: -2343986122936134529}
   - component: {fileID: 5291141002139558882}
+  - component: {fileID: 914352407143902115}
   m_Layer: 0
   m_Name: FrostWorkbench
   m_TagString: Untagged
@@ -171,6 +172,24 @@ MonoBehaviour:
   height: 1
   centerOnTransform: 0
   groundTilemap: {fileID: 0}
+--- !u!114 &914352407143902115
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3234137013417555007}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 764cd5861c463a04e8cb49c168d9c271, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::ResourceDrop
+  drops:
+  - prefab: {fileID: 5996793340830461179, guid: bd4188e9c38240259f1e78a6e1e3cf9d, type: 3}
+    minAmount: 1
+    maxAmount: 1
+    chance: 1
+    dropOnlyInFrostZone: 0
 --- !u!1 &5343533449048690306
 GameObject:
   m_ObjectHideFlags: 0
@@ -285,7 +304,7 @@ GameObject:
   - component: {fileID: 7676605729299858714}
   - component: {fileID: 1844592630440474596}
   m_Layer: 0
-  m_Name: Child
+  m_Name: HitBox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
